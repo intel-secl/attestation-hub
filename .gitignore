@@ -1,0 +1,11 @@
+**/target/
+.settings
+.project
+.classpath
+.idea
+pom.xml.versionsBackup
+pom.xml.releaseBackup
+*.iml
+~*
+*.tmp
+/features/attestation-cache-hub-client-jaxrs2/nbproject/

@@ -1,0 +1,185 @@
+{
+    "token": {
+        "is_domain": false,
+        "methods": [
+            "password"
+        ],
+        "roles": [
+            {
+                "id": "fa0c157d568a4418ac0ae64214b1a193",
+                "name": "admin"
+            }
+        ],
+        "expires_at": "2018-06-06T01:41:41.000000Z",
+        "project": {
+            "domain": {
+                "id": "default",
+                "name": "Default"
+            },
+            "id": "cb7d79d56b4e424c93087c565ccb2b44",
+            "name": "demo"
+        },
+        "catalog": [
+            {
+                "endpoints": [
+                    {
+                        "url": "http://192.168.0.1/identity",
+                        "interface": "public",
+                        "region": "RegionOne",
+                        "region_id": "RegionOne",
+                        "id": "0b4057ac153b4229a6c58a987f40c5e9"
+                    },
+                    {
+                        "url": "http://192.168.0.1/identity",
+                        "interface": "admin",
+                        "region": "RegionOne",
+                        "region_id": "RegionOne",
+                        "id": "833425a43427408db456723ca3a29c8e"
+                    }
+                ],
+                "type": "identity",
+                "id": "11e6fdb864fc4cd4b6fc18c8a8e54c3a",
+                "name": "keystone"
+            },
+            {
+                "endpoints": [
+                    {
+                        "url": "http://192.168.0.1/volume/",
+                        "interface": "public",
+                        "region": "RegionOne",
+                        "region_id": "RegionOne",
+                        "id": "f0ba8819c3a14931b1f0e8b58761f46e"
+                    }
+                ],
+                "type": "block-storage",
+                "id": "16b5574ad86c47e2b1e3437b15cb279a",
+                "name": "cinder"
+            },
+            {
+                "endpoints": [
+                    {
+                        "url": "http://192.168.0.1/volume/v1/cb7d79d56b4e424c93087c565ccb2b44",
+                        "interface": "public",
+                        "region": "RegionOne",
+                        "region_id": "RegionOne",
+                        "id": "045442cb594c4775baba7166c5a6a033"
+                    }
+                ],
+                "type": "volume",
+                "id": "2948e3c429dd4d5c9c4444dc098e1100",
+                "name": "cinder"
+            },
+            {
+                "endpoints": [
+                    {
+                        "url": "http://192.168.0.1/compute/v2/cb7d79d56b4e424c93087c565ccb2b44",
+                        "interface": "public",
+                        "region": "RegionOne",
+                        "region_id": "RegionOne",
+                        "id": "e9cb325b75be44c799d00c64255c33dc"
+                    }
+                ],
+                "type": "compute_legacy",
+                "id": "48a3e2e72304434cae8eeab7640d759e",
+                "name": "nova_legacy"
+            },
+            {
+                "endpoints": [
+                    {
+                        "url": "http://192.168.0.1/placement",
+                        "interface": "public",
+                        "region": "RegionOne",
+                        "region_id": "RegionOne",
+                        "id": "14c6a49a8a9d43cb8822fd3a991f5ed7"
+                    }
+                ],
+                "type": "placement",
+                "id": "59200ed76a804d6d9953c2cc8ed76634",
+                "name": "placement"
+            },
+            {
+                "endpoints": [
+                    {
+                        "url": "http://192.168.0.1:9696/",
+                        "interface": "public",
+                        "region": "RegionOne",
+                        "region_id": "RegionOne",
+                        "id": "9bbf96ce084b484cb8cea6d9cf442805"
+                    }
+                ],
+                "type": "network",
+                "id": "63c35ed373d44bc1b82d7a878ab6312a",
+                "name": "neutron"
+            },
+            {
+                "endpoints": [
+                    {
+                        "url": "http://192.168.0.1/compute/v2.1",
+                        "interface": "public",
+                        "region": "RegionOne",
+                        "region_id": "RegionOne",
+                        "id": "c2d4620afa7f4db197fa19b3f10ad199"
+                    }
+                ],
+                "type": "compute",
+                "id": "a609e564a25e4600a488e96150241eed",
+                "name": "nova"
+            },
+            {
+                "endpoints": [
+                    {
+                        "url": "http://192.168.0.1/image",
+                        "interface": "public",
+                        "region": "RegionOne",
+                        "region_id": "RegionOne",
+                        "id": "c31d2451f26149469d51550ef91247f8"
+                    }
+                ],
+                "type": "image",
+                "id": "af3caf7a59b847dc87e7cac6430fbe89",
+                "name": "glance"
+            },
+            {
+                "endpoints": [
+                    {
+                        "url": "http://192.168.0.1/volume/v2/cb7d79d56b4e424c93087c565ccb2b44",
+                        "interface": "public",
+                        "region": "RegionOne",
+                        "region_id": "RegionOne",
+                        "id": "d6326968e1d04d43aa9619322714de85"
+                    }
+                ],
+                "type": "volumev2",
+                "id": "e974e8311a8d4d138520ad7c326a92e1",
+                "name": "cinderv2"
+            },
+            {
+                "endpoints": [
+                    {
+                        "url": "http://192.168.0.1/volume/v3/cb7d79d56b4e424c93087c565ccb2b44",
+                        "interface": "public",
+                        "region": "RegionOne",
+                        "region_id": "RegionOne",
+                        "id": "08aa1b46125d49f79c4e312e768b8d95"
+                    }
+                ],
+                "type": "volumev3",
+                "id": "ff6c7380008a4033b5d6f866354c8982",
+                "name": "cinderv3"
+            }
+        ],
+        "user": {
+            "password_expires_at": null,
+            "domain": {
+                "id": "default",
+                "name": "Default"
+            },
+            "id": "25ed83911623463ab33bd673249bda9a",
+            "name": "admin"
+        },
+        "audit_ids": [
+            "zBLQR1s5QYiZi7oIQe9dUw"
+        ],
+        "issued_at": "2018-06-06T00:41:41.000000Z"
+    }
+}

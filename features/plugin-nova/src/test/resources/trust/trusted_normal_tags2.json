@@ -1,0 +1,15 @@
+{
+    "trust": {
+        "bios": true,
+        "vmm": true,
+        "location": false
+    },
+    "hostname": "hostname2",
+    "valid_to": "2018-06-07T20:41:29.059Z",
+    "trusted": true,
+    "asset_tags": {
+        "country": ["IN"],
+        "city": ["Hyderabad", "Bangalore"],
+        "state": ["AP", "TN", "KA"]
+    }
+}

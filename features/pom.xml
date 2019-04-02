@@ -1,0 +1,34 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>com.intel.mtwilson.attestation.hub</groupId>
+    <artifactId>attestation-hub-features</artifactId>
+    <version>4.4-SNAPSHOT</version>
+    
+    <packaging>pom</packaging>
+    
+    <parent>
+        <groupId>com.intel.mtwilson.maven</groupId>
+        <artifactId>mtwilson-maven-java</artifactId>
+        <version>4.4-SNAPSHOT</version>
+        <relativePath />
+    </parent>
+    
+    <modules>
+        <module>api</module>
+        <module>attestation-cache-hub-client-jaxrs2</module>
+        <module>attestation-hub-common</module>
+        <module>attestation-hub-postgresql</module>
+        <module>attestation-hub-setup</module>
+        <module>attestation-hub-version</module>
+        <module>core</module>
+        <module>persistence</module>
+        <module>plugins</module>
+        <module>plugins-api</module>
+        <module>plugin-kubernetes</module>
+        <module>plugin-mesos</module>
+        <module>plugin-nova</module>       
+        <module>webservice</module>        
+    </modules>
+    
+</project>

@@ -1,0 +1,12 @@
+# A successful build produces the following files:
+packages/attestation-hub/target/attestation-hub-*.bin
+packages/attestation-hub/target/attestation-hub-*.bin.README
+packages/attestation-hub/target/attestation-hub-*.bin.README.sig
+
+features/attestation-cache-hub-client-jaxrs2/target/attestation-cache-hub-client-jaxrs2-*-SNAPSHOT.jar
+features/attestation-cache-hub-client-jaxrs2/target/attestation-cache-hub-client-jaxrs2-*-SNAPSHOT.zip
+features/attestation-cache-hub-client-jaxrs2/target/attestation-cache-hub-client-jaxrs2-*-javadoc.zip
+
+packages/attestation-hub-docker/target/attestation-hub-docker-*.zip
+packages/attestation-hub-docker/target/attestation-hub-docker-*.zip.README
+packages/attestation-hub-docker/target/attestation-hub-docker-*.zip.README.sig

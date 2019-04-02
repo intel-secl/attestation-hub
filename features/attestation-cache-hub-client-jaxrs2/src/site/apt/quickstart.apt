@@ -1,0 +1,195 @@
+           ---------------------------------------------------------
+           Intel Security Libraries Integration Hub API Quickstart
+           ---------------------------------------------------------
+           ---------------------------------------------------------
+                              2018-16-03
+           ---------------------------------------------------------
+
+Background
+
+     ISecL (Intel Security Libraries) is the product name for the Remote Trust
+Integration Solution that provides a secure mechanism in a data center to attest
+the trust of different hypervisors and Operating systems on multiple devices
+including servers, clients, network and storage components.  The primary purpose
+of this integration is for trust verification, remediation, reporting, and
+compliance in a Data Center and Cloud environments.
+
+	The ISecL Integration Hub acts as the central integration point between
+ISecL and any number of 3rd party services.  The primary purpose of the Hub is to 
+collect and maintain up-to-date integration information, and to “push” that 
+information to the external services.
+
+	All integration hub APIs are REST-based. There are 2 options for
+the users to call into the REST APIs of integration hub:
+
+	[[1]]Directly calling into the REST APIs.
+	
+	[[2]]Using the API Client Toolkit.
+
+	
+*Directly calling into the REST APIs
+
+	During the ISecL integration hub installation, the user can export the environment variables ATTESTATION_HUB_USERNAME and ATTESTATION_HUB_PASSWORD.
+        These credentials can be used for basic authorization to access the REST APIs of the integration hub. If these environment variables are
+        not set during installation, then they will get generated automatically and randomly, and get registered with the Host Verification Service (HVS).
+	
+	If the user wants to skip the security, then the user has to ensure that the IP address of the client is added to the trusted IP list
+        in the integration hub shiro configuration. This can be accomplished by updating the contents of the shiro.ini file under /opt/attestation-hub/configuration
+        with the following content:
+
+	"iniHostRealm=com.intel.mtwilson.shiro.authc.host.IniHostRealm"
+	iniHostRealm.allow=192.168.0.1,192.168.0.2
+	
+	When the integration hub sees that the API call is being made from a client that is trusted, then further authentication is skipped.
+        If the trusted IP is not configured then the user has to implement either basic authentication or certificate based authentication.
+	
+*Using the API Client Toolkit
+
+	In order to simplify the invocation of the integration hub APIs, ISecL Integration Hub also provides an API client toolkit which encapsulates multiple API calls. 
+        The toolkit contains the following:
+
+	[[1]]Zip file containing the client and related dependent jar files
+
+
+Getting started with the SDK
+	
+* Importing the ISecL Integration Hub jars
+
+	After the installation of the ISecL integration service, trust agent on a host and integration hub on controller, users can call into the APIs for
+        performing various different functions. The sample code below shows how users can initialize the integration hub client using the API client toolkit.
+        Refer to the full javadoc API Documentation (included) for details on all the available methods.
+
+	To start with users need to include the ISecL Integration Hub jar files in their project and import the following packages:
+	
++---
+import com.intel.mtwilson.attestationhub.client.jaxrs2.Hosts;
+import com.intel.mtwilson.attestationhub.client.jaxrs2.HostAssignments;
+import com.intel.mtwilson.attestationhub.client.jaxrs2.Tenants;
+import com.intel.attestationhub.api.Mapping;
+import com.intel.attestationhub.api.Tenant;
+import com.intel.attestationhub.api.Tenant.Plugin;
+import com.intel.attestationhub.api.Tenant.PluginProperty;
+import com.intel.dcsg.cpg.tls.policy.TlsConnection;
+import com.intel.dcsg.cpg.tls.policy.TlsPolicy;
+import javax.ws.rs.core.Response;
+import java.util.Properties;
+import javax.net.URL;
++---
+
+*Setting up the required properties
+
+	To use the API, the client object needs to be configured with the credentials of the integration hub. Note that the username and password must be the same as what was used during installation.
+        User needs to specify TLS policy. Specify the policy type and it's value in properties. The client then calls createTlsPolicy method to create TLS policy of specified policy type. The policy type should be set as allowed on your host.
+        Following are the keys for each policy type. For more information on policy type, refer TLS Policy javadocs.
+        
+        mtwilson.api.tls.policy.certificate.sha256 &&
+        mtwilson.api.tls.policy.certificate.sha1                - certificate-digest 
+
+        mtwilson.api.tls.policy.certificate.keystore.file &&
+        mtwilson.api.tls.policy.certificate.keystore.password   - certificate
+        
+        mtwilson.api.tls.policy.publickey.keystore.file &&
+        twilson.api.tls.policy.publickey.keystore.password      - public-key
+
+        mtwilson.api.tls.policy.publickey.sha256 &&
+        mtwilson.api.tls.policy.publickey.sha1                  - public-key-digest
+
+        mtwilson.api.tls.policy.insecure                        - INSECURE
+
++---
+private static Properties getClientProperties() {
+    Properties properties = new Properties();
+    properties.setProperty("mtwilson.api.username", [ATTESTATION_HUB_USERNAME]);
+    properties.setProperty("mtwilson.api.password", [ATTESTATION_HUB_PASSWORD]);
+    properties.put("mtwilson.api.tls.policy.certificate.sha256", "db7d1de5690ebdbeab40875b5cf91ba0b08cf0ef7271d7efbc4cd8d6c36f299d");
+    return properties;
+}
++---
+
+*Tenant Registration
+
+        Tenant registration is the process of adding one or more tenants to the ISecL Integration Hub database.
+            These tenants correspond to different external services, and are used for "pushing" information to the external services.
+            Please refer to the Tenants javaDocs for calling the Create REST API directly.
+
++---
+
+    // Instantiate the api client object for tenant creation with the specified properties
+    Tenants client = new Tenants(getClientProperties());
+    Tenant tenant = new Tenant();
+    tenant.setName("COKE");
+
+    List<Plugin> plugins = new ArrayList<>();
+
+    Plugin plugin = new Plugin();
+    plugin.setName("nova");
+
+    List<Property> prop = new ArrayList<>();
+
+    Property property = new Property();
+    property.setKey("api.endpoint");
+    property.setValue("http://openstack.server.com:8774");
+    prop.add(property);
+
+    property.setKey("auth.endpoint");
+    property.setValue("http://openstack.server.com:5000");
+    prop.add(property);
+
+    property.setKey("auth.version");
+    property.setValue("v2");
+    prop.add(property);
+
+    property.setKey("user.name");
+    property.setValue("admin");
+    prop.add(property);
+
+    property.setKey("user.password");
+    property.setValue("password");
+    prop.add(property);
+
+    property.setKey("tenant.name");
+    property.setValue("default");
+    prop.add(property);
+
+    property.setKey("plugin.provider");
+    property.setValue("com.intel.attestationhub.plugin.nova.NovaPluginImpl");
+    prop.add(property);
+
+    plugin.setProperties(prop);
+    plugins.add(plugin);
+
+    tenant.setPlugins(plugins);
+    Response response = client.create(tenant);
+
++---
+
+*Host-Assignment Creation
+
+    The host-assignment creation creates a host-assignment record with tenant details and other host information in the ISecL Integration Hub database.
+        This host-assignment record will be used by the integration hub to find out the tenant to which to push its integration information.
+        Please refer to the Host-Assignments javaDocs for calling the Create REST API directly.
+
++---
+
+    // Instantiate the api client object for host-assignment creation with the specified properties
+    HostAssignments client = new HostAssignments(getClientProperties());
+    Mapping mapping = new Mapping();
+    mapping.tenant_id = "72B99FA9-8FBB-4F20-B988-3990EB4410DA";
+    mapping.hardware_uuids = Arrays.asList("97a65f4e-62ed-479b-9e4e-efa143ac5d5e", "a8f024fc-ebcd-40f3-8ba9-6be4bf6ecb9c");
+    Response response = client.create(mapping);
+
++---
+
+*Retrieving a Host Information
+
+    The host information retrieval retrieves a host record with various details including hostname, samlreport and several other information in the Host Verification Service database.
+        Please refer to the Hosts javaDocs for calling the Retrieve REST API directly.
+
++---
+
+    //Instantiate the api client object for host retrieval with the specified properties
+    Hosts client = new Hosts(getClientProperties());
+    String id = "97a65f4e-62ed-479b-9e4e-efa143ac5d5e";
+    Response response = client.retrieve(id);
+
++---

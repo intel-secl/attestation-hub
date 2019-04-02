@@ -1,0 +1,53 @@
+version: "3.1"
+services:
+   ahub-pg-db:
+      image: postgres:9.4
+      command: postgres -c 'max_connections=400' -c 'shared_buffers=400MB'
+      secrets:
+           - db.password
+      volumes:
+         - ahub-pgdata-volume:/var/lib/postgresql/data
+      environment:
+         POSTGRES_DB: ahub_db
+         POSTGRES_USER: ahub_user
+         POSTGRES_PASSWORD_FILE: /run/secrets/db.password
+
+   attestation-hub:
+      image: isecl-attestation-hub:latest
+      build: .
+      hostname: attestation-hub
+      links: 
+         - "ahub-pg-db"
+      ports:
+         - 19445:19445
+
+      secrets:
+         - source: attestation-hub_env
+           target: attestation-hub.env
+         - db.password
+
+      environment:
+         DATABASE_HOSTNAME: ahub-pg-db
+         DATABASE_PORTNUM: 5432
+         MTWILSON_PORT: 8443
+         POSTGRES_DB: ahub_db
+         POSTGRES_USER: ahub_user
+
+      volumes:
+         - ahub-config-volume:/opt/attestation-hub/configuration
+         - ahub-logs-volume:/opt/attestation-hub/logs
+         - ahub-tenant-config-volume:/opt/tenant-config
+
+volumes:
+   ahub-pgdata-volume:
+   ahub-config-volume:
+   ahub-logs-volume:
+   ahub-tenant-config-volume:
+
+secrets:
+   attestation-hub_env:
+      file: ./attestation-hub.env
+
+   db.password:
+      file: ./db.password
+

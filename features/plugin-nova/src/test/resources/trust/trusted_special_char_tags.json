@@ -1,0 +1,18 @@
+{
+    "trust": {
+        "bios": true,
+        "vmm": true,
+        "location": false
+    },
+    "hostname": "hostname1",
+    "valid_to": "2018-06-07T20:41:29.059Z",
+    "trusted": true,
+    "asset_tags": {
+        "country": ["_US"],
+        "city_": ["_Hillsboro", "Aus Tin"],
+        "state@": ["A-Z", "O#R", "$TX"],
+        "foo bar": ["zzz"],
+        "foo_bar": ["zzz"],
+        "foo__bar": ["_z_z"]
+    }
+}
