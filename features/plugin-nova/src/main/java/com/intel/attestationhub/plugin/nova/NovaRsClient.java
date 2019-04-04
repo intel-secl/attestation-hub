@@ -41,8 +41,8 @@ public class NovaRsClient {
 
     private PlacementClient placementClient;
 
-    // Contains the trait version(prefix of CUSTOM_CIT) of all the asset tags encountered
-    private Set<String> assetTagTraitsSuperSet = new HashSet<>();
+    // Contains the trait version(prefix of CUSTOM_CIT) of all the attributes encountered
+    private Set<String> customTraitsSuperSet = new HashSet<>();
 
     @VisibleForTesting
     NovaRsClient() {
@@ -56,24 +56,24 @@ public class NovaRsClient {
     }
 
     public void sendDataToEndpoint(PublishData publishData) throws AttestationHubException {
-        log.debug("Sending to Traits Data to Nova");
+        log.debug("Sending the Traits Data to Nova");
 
         // Linked hash map so order is maintained...which helps with unit tests
-        Map<String, Set<String>> hostCitTraitsMap = new LinkedHashMap<>();
+        Map<String, Set<String>> hostCustomTraitsMap = new LinkedHashMap<>();
 
         for (HostDetails host : publishData.hostDetailsList) {
-            Set<String> assetTagTraits = generateTraitsFromAssetTags(host);
-            this.assetTagTraitsSuperSet.addAll(assetTagTraits);
-            hostCitTraitsMap.put(host.hostname, assetTagTraits);
+            Set<String> customTraits = generateTraitsFromTrustReport(host);
+            this.customTraitsSuperSet.addAll(customTraits);
+            hostCustomTraitsMap.put(host.hostname, customTraits);
         }
 
-        Set<String> newTraits = Sets.difference(this.assetTagTraitsSuperSet, this.placementClient.getOpenstackTraits());
+        Set<String> newTraits = Sets.difference(this.customTraitsSuperSet, this.placementClient.getOpenstackTraits());
         this.placementClient.createOpenstackTraits(newTraits);
 
         boolean anyErrorEncountered = false;
         List<String> networkErrorHosts = new ArrayList<>();
 
-        for (Entry<String, Set<String>> hostEntry : hostCitTraitsMap.entrySet()) {
+        for (Entry<String, Set<String>> hostEntry : hostCustomTraitsMap.entrySet()) {
             String hostName = hostEntry.getKey();
             Set<String> latestCitTraits = hostEntry.getValue();
             try {
@@ -110,10 +110,11 @@ public class NovaRsClient {
     }
 
     @VisibleForTesting
-    Set<String> generateTraitsFromAssetTags(HostDetails host) throws AttestationHubException {
+    Set<String> generateTraitsFromTrustReport(HostDetails host) throws AttestationHubException {
         log.debug("getTraitList for {} jsonString : {}", host.hostname, host.trust_report);
-        String prefix = Constants.CIT_TRAIT_PREFIX + Constants.AT_PREFIX;
-        StringBuffer assetBuffer;
+        String tagPrefix = Constants.CIT_TRAIT_PREFIX + Constants.AT_PREFIX;
+        String featurePrefix = Constants.CIT_TRAIT_PREFIX + Constants.HAS_PREFIX;
+        StringBuffer buffer;
         Set<String> traitSet = new HashSet<>();
 
         try {
@@ -126,21 +127,47 @@ public class NovaRsClient {
                 traitSet.add(Constants.CIT_TRUSTED_TRAIT);
 
                 for (Entry<String, List<String>> tagEntry : trustReport.getAssetTags().entrySet()) {
-                    String assetKey = tagEntry.getKey() // Replace any _ with 2 _. Helps differentiate A B = C -> A_B_C and A_B = C  -> A__B_C
+                    String tagKey = tagEntry.getKey() // Replace any _ with 2 _. Helps differentiate A B = C -> A_B_C and A_B = C  -> A__B_C
                             .replaceAll("_",
                                     Constants.OPENSTACK_TRAITS_DELIMITER + Constants.OPENSTACK_TRAITS_DELIMITER)
                             .replaceAll(REGEX_NONSTANDARD_CHAR, Constants.OPENSTACK_TRAITS_DELIMITER);
 
                     if (tagEntry.getValue() != null) {
-                        for (String asset : tagEntry.getValue()) {
-                            assetBuffer = new StringBuffer();
-                            String assetString = asset
+                        for (String value : tagEntry.getValue()) {
+                            buffer = new StringBuffer();
+                            String tagValue = value
                                     .replaceAll("_",
                                             Constants.OPENSTACK_TRAITS_DELIMITER + Constants.OPENSTACK_TRAITS_DELIMITER)
                                     .replaceAll(REGEX_NONSTANDARD_CHAR, Constants.OPENSTACK_TRAITS_DELIMITER);
-                            assetBuffer = assetBuffer.append(prefix).append(assetKey)
-                                    .append(Constants.OPENSTACK_TRAITS_DELIMITER).append(assetString);
-                            traitSet.add(assetBuffer.toString().toUpperCase());
+                            buffer = buffer.append(tagPrefix).append(tagKey)
+                                    .append(Constants.OPENSTACK_TRAITS_DELIMITER).append(tagValue);
+                            traitSet.add(buffer.toString().toUpperCase());
+                        }
+                    }
+                }
+
+                for (Entry<String, String> featureEntry : trustReport.getHardwareFeatures().entrySet()) {
+                    String featureKey = featureEntry.getKey() // Replace any _ with 2 _. Helps differentiate A B = C -> A_B_C and A_B = C  -> A__B_C
+                            .replaceAll("_",
+                                    Constants.OPENSTACK_TRAITS_DELIMITER + Constants.OPENSTACK_TRAITS_DELIMITER)
+                            .replaceAll(REGEX_NONSTANDARD_CHAR, Constants.OPENSTACK_TRAITS_DELIMITER);
+
+                    if (featureEntry.getValue() != null) {
+                        String value = featureEntry.getValue();
+                        /*
+                        Add Hardware feature as trait only if it is enabled
+                         */
+                        if (!value.equals("false")) {
+                            buffer = new StringBuffer();
+                            buffer = buffer.append(featurePrefix).append(featureKey);
+                            if (!value.equals("true")) {
+                                String featureValue = value
+                                        .replaceAll("_",
+                                                Constants.OPENSTACK_TRAITS_DELIMITER + Constants.OPENSTACK_TRAITS_DELIMITER)
+                                        .replaceAll(REGEX_NONSTANDARD_CHAR, Constants.OPENSTACK_TRAITS_DELIMITER);
+                                buffer = buffer.append(Constants.OPENSTACK_TRAITS_DELIMITER).append(featureValue);
+                            }
+                            traitSet.add(buffer.toString().toUpperCase());
                         }
                     }
                 }
@@ -162,7 +189,7 @@ public class NovaRsClient {
      * @param resourceProviderId the resource provider id
      * @param hostName the resource provider name
      * @param latestCitTraits the latest set of CIT traits
-     * @param tries number of times to retry the request in case a conflict is encountered.
+     * @param retriesOnConflict number of times to retry the request in case a conflict is encountered.
      *
      * @throws AttestationHubException in case of any errors(other than 409 conflict, for which we retry) happen
      */

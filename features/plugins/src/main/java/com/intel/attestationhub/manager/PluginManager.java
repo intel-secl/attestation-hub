@@ -160,12 +160,18 @@ public class PluginManager {
 	}
 	HostDetails details = new HostDetails();
 	String trustTagsJson = host.getTrustTagsJson();
-	details.hardwareUuid = host.getHardwareUuid();
 	details.uuid = host.getId();
 	details.hardwareUuid = host.getHardwareUuid();
 	details.trust_report = trustTagsJson;
 	details.hostname = host.getHostName();
+
+	if (StringUtils.isBlank(trustTagsJson)) {
+		log.error("** No trust tags json available for host uuid: {} for generating a JWS", host.getId());
+		return details;
+	}
+
 	Map<String, List<String>> assetTags = new HashMap<>();
+	Map<String, String> hardwareFeatures = new HashMap<>();
 	ObjectMapper objectMapper = new ObjectMapper();
 
 	if (StringUtils.isNotBlank(host.getAssetTags())) {
@@ -180,9 +186,18 @@ public class PluginManager {
 		log.error("Error converting tags to JSON", e);
 	    }
 	}
-	if (StringUtils.isBlank(trustTagsJson)) {
-	    log.error("** No trust tags json available for host uuid: {} for generating a JWS", host.getId());
-	    return details;
+
+	if (StringUtils.isNotBlank(host.getHardwareFeatures())) {
+		try {
+			TypeReference<Map<String, String>> typeRef = new TypeReference<Map<String, String>>() {};
+			hardwareFeatures = objectMapper.readValue(host.getHardwareFeatures(), typeRef);
+		} catch (JsonParseException e) {
+			log.error("Error converting tags to JSON", e);
+		} catch (JsonMappingException e) {
+			log.error("Error converting tags to JSON", e);
+		} catch (IOException e) {
+			log.error("Error converting tags to JSON", e);
+		}
 	}
 
 	String errorMsg = "Error parsing trust response";
@@ -191,6 +206,7 @@ public class PluginManager {
 	    hostTrustResponse.setValidTo(host.getValidTo());
 	    hostTrustResponse.setTrusted(host.getTrusted() == null ? false : host.getTrusted());
 	    hostTrustResponse.setAssetTags(assetTags);
+	    hostTrustResponse.setHardwareFeatures(hardwareFeatures);
 	    String trustReportWithAdditions = objectMapper.writeValueAsString(hostTrustResponse);
 	    details.trust_report = trustReportWithAdditions;
 	   // String signedTrustReport = createSignedTrustReport(trustReportWithAdditions);

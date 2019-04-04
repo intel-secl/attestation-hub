@@ -39,6 +39,7 @@ public class Constants {
 
     public static final String CIT_TRAIT_PREFIX = "CUSTOM_CIT";
     public static final String AT_PREFIX = "_AT_";
+    public static final String HAS_PREFIX = "_HAS_";
     public static final String CIT_TRUSTED_TRAIT = CIT_TRAIT_PREFIX + "_TRUSTED";
     public static final String OPENSTACK_TRAITS_DELIMITER = "_";
 

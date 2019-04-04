@@ -21,14 +21,19 @@ public class HubTrustReport {
     @JsonProperty("asset_tags")
     private Map<String, List<String>> assetTags;
 
+    @JsonProperty("hardware_features")
+    private Map<String, String> hardwareFeatures;
+
     HubTrustReport() {
     }
 
     @JsonCreator
     public HubTrustReport(@JsonProperty("trusted") boolean trusted,
-            @JsonProperty("asset_tags") Map<String, List<String>> assetTags) {
+                          @JsonProperty("asset_tags") Map<String, List<String>> assetTags,
+                          @JsonProperty("hardware_features") Map<String, String> hardwareFeatures) {
         this.trusted = trusted;
         this.assetTags = assetTags != null ? assetTags : new HashMap<>();
+        this.hardwareFeatures = hardwareFeatures != null ? hardwareFeatures : new HashMap<>();
     }
 
     public boolean isTrusted() {
@@ -37,6 +42,10 @@ public class HubTrustReport {
 
     public Map<String, List<String>> getAssetTags() {
         return this.assetTags;
+    }
+
+    public Map<String, String> getHardwareFeatures() {
+        return this.hardwareFeatures;
     }
 
 }

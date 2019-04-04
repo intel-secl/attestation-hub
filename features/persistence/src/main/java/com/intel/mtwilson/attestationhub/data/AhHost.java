@@ -84,6 +84,8 @@ public class AhHost implements Serializable {
     private Boolean trusted;
     @Column(name = "asset_tags")
     private String assetTags;
+    @Column(name = "hardware_features")
+    private String hardwareFeatures;
 
     public AhHost() {
 	deleted = false;
@@ -237,6 +239,14 @@ public class AhHost implements Serializable {
 
     public void setAssetTags(String assetTags) {
 	this.assetTags = assetTags;
+    }
+
+    public String getHardwareFeatures() {
+        return hardwareFeatures;
+    }
+
+    public void setHardwareFeatures(String hardwareFeatures) {
+        this.hardwareFeatures = hardwareFeatures;
     }
 
     @Override

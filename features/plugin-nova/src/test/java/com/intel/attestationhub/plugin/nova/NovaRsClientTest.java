@@ -434,7 +434,7 @@ public class NovaRsClientTest {
         String trustReportJson = TestUtils.loadJsonData(TRUST_FOLDER + "trusted_normal_tags.json");
         HostDetails hostDetails = generateHostDetails(trustReportJson);
 
-        Set<String> actualSet = this.novaClient.generateTraitsFromAssetTags(hostDetails);
+        Set<String> actualSet = this.novaClient.generateTraitsFromTrustReport(hostDetails);
 
         assertEquals(new TreeSet<>(HOST1_CIT_TAGS), new TreeSet<>(actualSet));
     }
@@ -445,7 +445,7 @@ public class NovaRsClientTest {
         HostDetails hostDetails = generateHostDetails(trustReportJson);
         Set<String> expectedSet = Collections.emptySet();
 
-        Set<String> actualSet = this.novaClient.generateTraitsFromAssetTags(hostDetails);
+        Set<String> actualSet = this.novaClient.generateTraitsFromTrustReport(hostDetails);
 
         assertEquals(new TreeSet<>(expectedSet), new TreeSet<>(actualSet));
     }
@@ -459,7 +459,7 @@ public class NovaRsClientTest {
                 "CUSTOM_CIT_AT_CITY___AUS_TIN", "CUSTOM_CIT_AT_CITY_____HILLSBORO",
                 "CUSTOM_CIT_AT_FOO_BAR_ZZZ", "CUSTOM_CIT_AT_FOO__BAR_ZZZ", "CUSTOM_CIT_AT_FOO____BAR___Z__Z");
 
-        Set<String> actualSet = this.novaClient.generateTraitsFromAssetTags(hostDetails);
+        Set<String> actualSet = this.novaClient.generateTraitsFromTrustReport(hostDetails);
 
         assertEquals(new TreeSet<>(expectedSet), new TreeSet<>(actualSet));
     }
@@ -470,7 +470,7 @@ public class NovaRsClientTest {
         HostDetails hostDetails = generateHostDetails(trustReportJson);
         Set<String> expectedSet = Sets.newHashSet("CUSTOM_CIT_TRUSTED");
 
-        Set<String> actualSet = this.novaClient.generateTraitsFromAssetTags(hostDetails);
+        Set<String> actualSet = this.novaClient.generateTraitsFromTrustReport(hostDetails);
 
         assertEquals(expectedSet, actualSet);
     }
@@ -480,7 +480,7 @@ public class NovaRsClientTest {
         HostDetails hostDetails = generateHostDetails("{}");
         Set<String> expectedSet = new HashSet<>();
 
-        Set<String> actualSet = this.novaClient.generateTraitsFromAssetTags(hostDetails);
+        Set<String> actualSet = this.novaClient.generateTraitsFromTrustReport(hostDetails);
 
         assertEquals(expectedSet, actualSet);
     }

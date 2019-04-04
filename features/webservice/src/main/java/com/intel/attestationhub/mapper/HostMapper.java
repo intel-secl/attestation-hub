@@ -65,25 +65,27 @@ public class HostMapper {
 	    Assertion assertion = trustAssertion.getAssertion();
 	    List<AttributeStatement> attributeStatements = assertion.getAttributeStatements();
 	    String tag;
-	    String tagValue;
+	    String tagValue = null;
 	    String trustTag;
 	    String trustTagValue = null;
+	    String featureTag;
+	    String featureTagValue = null;
 	    Map<String, List<String>> assetTagToValueMap = new HashMap<String, List<String>>();
+	    Map<String, String> featureToValueMap = new HashMap<>();
 	    List<String> tagValueList;
 	    for (AttributeStatement attributeStatement : attributeStatements) {
 		List<Attribute> attributes = attributeStatement.getAttributes();
 		for (Attribute attribute : attributes) {
-		    tagValue = null;
 		    String name = attribute.getName();
 		    if (name.startsWith(Constants.SAML_TAG)) {
-                        tag = name;
+		        tag = name;
 			if (StringUtils.isBlank(tag)) {
 			    continue;
 			}
 			if (assetTagToValueMap.containsKey(tag)) {
 			    tagValueList = assetTagToValueMap.get(tag);
 			} else {
-			    tagValueList = new ArrayList<String>();
+			    tagValueList = new ArrayList<>();
 			    assetTagToValueMap.put(tag, tagValueList);
 			}
 			List<XMLObject> attributeValues = attribute.getAttributeValues();
@@ -96,7 +98,7 @@ public class HostMapper {
 			}
 			tagValueList.add(tagValue);
 		    } else if (name.startsWith(Constants.TRUST_TAG)) {
-                        trustTag = name;
+		        trustTag = name;
 			if (StringUtils.isBlank(trustTag)) {
 			    continue;
 			}
@@ -113,7 +115,25 @@ public class HostMapper {
 			} else {
 			    trustTagValueList.put(trustTag, trustTagValue);
 			}
-		    }
+		    } else if (name.startsWith(Constants.FEATURE_TAG)) {
+		        featureTag = name;
+			if (StringUtils.isBlank(featureTag)) {
+			    continue;
+			}
+			List<XMLObject> attributeValues = attribute.getAttributeValues();
+			for (XMLObject xmlObject : attributeValues) {
+			    Element dom = xmlObject.getDOM();
+			    featureTagValue = dom.getTextContent();
+			}
+			if (StringUtils.isBlank(featureTagValue)) {
+			    continue;
+			}
+			if (featureToValueMap.containsKey(featureTag)) {
+			    featureTagValue = featureToValueMap.get(featureTag);
+			} else {
+			    featureToValueMap.put(featureTag, featureTagValue);
+			}
+			}
 		}
 
 		ObjectMapper mapper = new ObjectMapper();
@@ -122,6 +142,13 @@ public class HostMapper {
 		    ahHost.setAssetTags(writeValueAsString);
 		} catch (JsonProcessingException e) {
 		    log.error("Error converting map of asset tags to JSON");
+		}
+
+		try {
+		    String writeValueAsString = mapper.writeValueAsString(featureToValueMap);
+		    ahHost.setHardwareFeatures(writeValueAsString);
+        } catch (JsonProcessingException e) {
+		    log.error("Error converting map of hardware features to JSON");
 		}
 	    }
 

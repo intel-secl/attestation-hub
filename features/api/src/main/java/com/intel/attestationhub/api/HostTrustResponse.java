@@ -27,6 +27,8 @@ public class HostTrustResponse {
     private boolean trusted;
     @JsonProperty("asset_tags")
     private Map<String, List<String>> assetTags;
+    @JsonProperty("hardware_features")
+    private Map<String, String> hardwareFeatures;
 
     public String getHostName() {
 	return hostName;
@@ -68,6 +70,12 @@ public class HostTrustResponse {
         this.assetTags = assetTags;
     }
 
-    
+    public Map<String, String> getHardwareFeatures() {
+        return hardwareFeatures;
+    }
+
+    public void setHardwareFeatures(Map<String, String> hardwareFeatures) {
+        this.hardwareFeatures = hardwareFeatures;
+    }
 
 }
