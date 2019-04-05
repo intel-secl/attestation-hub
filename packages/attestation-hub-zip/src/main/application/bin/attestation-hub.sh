@@ -405,6 +405,7 @@ case "$1" in
   restart)
     attestation_hub_stop
     scheduler_stop
+    sleep 1
     attestation_hub_start
     scheduler_start
     ;;
