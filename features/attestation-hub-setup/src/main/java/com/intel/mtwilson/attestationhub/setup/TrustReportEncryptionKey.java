@@ -37,13 +37,6 @@ public class TrustReportEncryptionKey extends AbstractSetupTask {
 
     @Override
     protected void execute() throws Exception {
-	/*
-	 * RsaKeyUtil keyUtil = new RsaKeyUtil(); KeyPair keyPair =
-	 * keyUtil.generateKeyPair(2048); File pubFile = new
-	 * File(PUBLIC_KEY_PATH); File priFile = new File(PRIVATE_KEY_PATH);
-	 * writeKeyToFile(keyPair.getPrivate(), priFile);
-	 * writeKeyToFile(keyPair.getPublic(), pubFile);
-	 */
 	String command = "openssl genrsa 2048 > " + Folders.configuration() + File.separator + "TEMP"
 		+ Constants.PRIVATE_KEY_FILE;
 	ExecUtil.executeQuoted("/bin/bash", "-c", command);
@@ -62,6 +55,4 @@ public class TrustReportEncryptionKey extends AbstractSetupTask {
 	ExecUtil.executeQuoted("/bin/bash", "-c", command);
 
     }
-
-
 }

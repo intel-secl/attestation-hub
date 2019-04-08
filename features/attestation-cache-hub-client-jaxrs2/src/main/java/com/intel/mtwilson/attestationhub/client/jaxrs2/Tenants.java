@@ -7,7 +7,6 @@ package com.intel.mtwilson.attestationhub.client.jaxrs2;
 
 import com.intel.attestationhub.api.Tenant;
 import com.intel.attestationhub.api.TenantFilterCriteria;
-import com.intel.dcsg.cpg.tls.policy.TlsConnection;
 import com.intel.mtwilson.jaxrs2.client.MtWilsonClient;
 import java.util.HashMap;
 import java.util.Properties;

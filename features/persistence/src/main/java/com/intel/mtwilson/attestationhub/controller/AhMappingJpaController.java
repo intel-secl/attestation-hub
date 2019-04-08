@@ -19,10 +19,6 @@ import com.intel.mtwilson.attestationhub.controller.exceptions.PreexistingEntity
 import com.intel.mtwilson.attestationhub.data.AhMapping;
 import com.intel.mtwilson.attestationhub.data.AhTenant;
 
-/**
- *
- * @author GS-0681
- */
 public class AhMappingJpaController implements Serializable {
 
     public AhMappingJpaController(EntityManagerFactory emf) {

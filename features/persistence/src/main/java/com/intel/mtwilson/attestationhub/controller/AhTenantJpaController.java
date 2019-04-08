@@ -21,15 +21,8 @@ import com.intel.mtwilson.attestationhub.controller.exceptions.PreexistingEntity
 import com.intel.mtwilson.attestationhub.data.AhMapping;
 import com.intel.mtwilson.attestationhub.data.AhTenant;
 
-/**
- *
- * @author GS-0681
- */
 public class AhTenantJpaController implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
     public AhTenantJpaController(EntityManagerFactory emf) {

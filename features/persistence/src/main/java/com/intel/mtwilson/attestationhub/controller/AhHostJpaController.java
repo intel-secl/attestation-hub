@@ -18,10 +18,6 @@ import com.intel.mtwilson.attestationhub.controller.exceptions.NonexistentEntity
 import com.intel.mtwilson.attestationhub.controller.exceptions.PreexistingEntityException;
 import com.intel.mtwilson.attestationhub.data.AhHost;
 
-/**
- *
- * @author GS-0681
- */
 public class AhHostJpaController implements Serializable {
 
     /**

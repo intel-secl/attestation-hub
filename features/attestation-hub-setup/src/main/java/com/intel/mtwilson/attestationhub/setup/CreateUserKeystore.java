@@ -107,15 +107,7 @@ public class CreateUserKeystore extends AbstractSetupTask {
         try {
 
             CaCertificates certClient = new CaCertificates(properties);
-            //X509Certificate rootCertificate = certClient.retrieveCaCertificate("root");
             X509Certificate samlCertificate = certClient.retrieveCaCertificate("saml");
-            //X509Certificate privacyCertificate = certClient.retrieveCaCertificate("privacy");
-
-            //log.debug("Adding CA Certificate with alias {} from server {}", rootCertificate.getSubjectX500Principal().getName(), server.getHost());
-            //keystore.addTrustedCaCertificate(rootCertificate, rootCertificate.getSubjectX500Principal().getName());
-
-            //log.debug("Adding Privacy CA Certificate with alias {} from server {}", privacyCertificate.getSubjectX500Principal().getName(), server.getHost());
-            //keystore.addTrustedCaCertificate(privacyCertificate, privacyCertificate.getSubjectX500Principal().getName());
 
             if (samlCertificate.getBasicConstraints() == -1) { // -1 indicates the cert is not a CA cert
                 log.debug("Adding SAML Certificate with alias {} from server {}", samlCertificate.getSubjectX500Principal().getName(), server.getHost());

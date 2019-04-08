@@ -5,8 +5,6 @@
 
 package com.intel.attestationhub.service.impl;
 
-//import java.io.File;
-//import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -23,10 +21,6 @@ import com.intel.mtwilson.attestationhub.common.Constants;
 import com.intel.mtwilson.attestationhub.controller.AhTenantPluginCredentialJpaController;
 import com.intel.mtwilson.attestationhub.data.AhTenantPluginCredential;
 import org.apache.commons.lang.StringUtils;
-//import org.ini4j.InvalidFileFormatException;
-//import org.ini4j.Profile.Section;
-//import org.ini4j.Wini;
-//import org.apache.shiro.config.Ini;
 
 import com.intel.attestationhub.api.HostFilterCriteria;
 import com.intel.attestationhub.api.MWHost;
@@ -40,8 +34,6 @@ import com.intel.attestationhub.mapper.HostMapper;
 import com.intel.attestationhub.mapper.TenantMapper;
 import com.intel.attestationhub.service.AttestationHubService;
 import com.intel.mtwilson.flavor.rest.v2.model.Host;
-//import com.intel.mtwilson.attestationhub.common.AttestationHubConfigUtil;
-//import com.intel.mtwilson.attestationhub.common.Constants;
 import com.intel.mtwilson.attestationhub.controller.AhHostJpaController;
 import com.intel.mtwilson.attestationhub.controller.AhMappingJpaController;
 import com.intel.mtwilson.attestationhub.controller.AhTenantJpaController;
@@ -52,9 +44,6 @@ import com.intel.mtwilson.attestationhub.data.AhMapping;
 import com.intel.mtwilson.attestationhub.data.AhTenant;
 import com.intel.mtwilson.attestationhub.exception.AttestationHubException;
 import com.intel.mtwilson.attestationhub.service.PersistenceServiceFactory;
-//import java.io.BufferedWriter;
-//import java.io.FileWriter;
-//import org.apache.shiro.config.Ini.Section;
 
 public class AttestationHubServiceImpl implements AttestationHubService {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AttestationHubServiceImpl.class);
@@ -62,79 +51,7 @@ public class AttestationHubServiceImpl implements AttestationHubService {
     public static AttestationHubService getInstance() {
 	return new AttestationHubServiceImpl();
     }
-/*
-	@Override
-	public void writeTenantConfig(Tenant tenant) throws AttestationHubException {
-	String tenantConfigDirPath = AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH);
-	String tenantConfigFileName = tenantConfigDirPath + File.separator + tenant.getId() + ".ini";
-	File iniFile = new File(tenantConfigFileName);
-	// this method is called in case of edit and add. SO if the file
-	// is not existing, create one
-	if (!iniFile.exists()) {
-	    try {
-		iniFile.createNewFile();
-	    } catch (IOException e) {
-		log.error("Unable to create ini file for tenant", e);
-		throw new AttestationHubException("Unable to create a config file for tenant", e);
-	    }
-	}
-	// Create default section
-        StringBuilder stringbuilder = new StringBuilder();
-	stringbuilder.append("[default]");
-        stringbuilder.append(System.getProperty("line.separator")).append("name = ").append(tenant.getName());
-	// Add the plugins
-	for (Plugin plugin : tenant.getPlugins()) {
-            stringbuilder.append(System.getProperty("line.separator"));
-	    String pluginName = plugin.getName().toLowerCase();
-	    log.debug("Creating {} plugin ", pluginName);
-            stringbuilder.append(System.getProperty("line.separator")).append("[").append(pluginName).append("]");
-	    List<PluginProperty> properties = plugin.getProperties();
-	    for (PluginProperty property : properties) {
-                stringbuilder.append(System.getProperty("line.separator")).append(property.getKey()).append(" = ").append(property.getValue());
-	    }
-	}
-        try(FileWriter f = new FileWriter(iniFile);
-           BufferedWriter s = new BufferedWriter(f)){
-            s.write(stringbuilder.toString());
-        }
-        catch (Exception e){
-	    throw new AttestationHubException("Unable to write tenant configuration to a ini file.", e);
-        }
-    }
 
-	@Override
-    public Tenant readTenantConfig(String tenantId) throws AttestationHubException {
-	Ini iniConfig = initIni(tenantId);
-	Tenant tenant = new Tenant();
-        tenant.setName(iniConfig.getSectionProperty("default", "name"));
-	for (String sectionName : iniConfig.getSectionNames()) {
-            if (sectionName.equalsIgnoreCase("default"))
-                continue;
-            Section section = iniConfig.getSection(sectionName);           
-            Plugin plugin = tenant.addPlugin(sectionName);
-            for (String key : section.keySet()) {
-                plugin.addProperty(key, section.get(key));
-            }
-	}
-	return tenant;
-
-    }
-
-	private Ini initIni(String tenantId) throws AttestationHubException {
-	String tenantConfigDirPath = AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH);
-	String tenantConfigFileName = tenantConfigDirPath + File.separator + tenantId + ".ini";
-        Ini iniConfig;
-
-	try {
-            iniConfig = new Ini();
-            iniConfig.loadFromPath(tenantConfigFileName);
-	} catch (Exception e) {
-	    log.error("initWini: Error reading the ini file for tenant to init the Shiro INI ", e);
-	    throw new AttestationHubException(e);
-	}
-	return iniConfig;
-    }
-*/
 	public static boolean dataEncryptionKeyConfigured() {
 		log.debug("Checking whether encryption key is configured");
 		String dekBase64 = AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_DATA_ENCRYPTION_KEY);
@@ -145,41 +62,7 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 		log.debug("encryption key is configured");
 		return true;
 	}
-/*
-	private  Map<String,List<PluginProperty>> getCredentialFromTenant(Tenant tenant) {
-		log.info("Getting credentials from tenant");
-		List<PluginProperty> credentials = new ArrayList<>();
-		Map<String,List<PluginProperty>> pluginCredentialsMap = new HashMap<>();
-		List<Plugin> plugins = tenant.getPlugins();
-		for (Plugin plugin : plugins) {
-			credentials.add(plugin.getProperty("user.name"));
-			credentials.add(plugin.getProperty("user.password"));
-			pluginCredentialsMap.put(plugin.getName(), credentials);
-		}
-		return pluginCredentialsMap;
-	}
 
-	private void removeCredentialFromTenant(Tenant tenant) {
-		log.info("Removing credentials from tenant");
-		List<Plugin> plugins = tenant.getPlugins();
-		for (Plugin plugin : plugins) {
-			log.info("plugin name : " + plugin.getName());
-			List<PluginProperty> properties = plugin.getProperties();
-			for (PluginProperty property : properties) {
-				log.info("key : " + property.getKey());
-				log.info("value : " + property.getValue());
-			}
-			plugin.removeProperty("user.name");
-			plugin.removeProperty("user.password");
-			log.info("plugin name : " + plugin.getName());
-			List<PluginProperty> properties_new = plugin.getProperties();
-			for (PluginProperty property : properties_new) {
-				log.info("key : " + property.getKey());
-				log.info("value : " + property.getValue());
-			}
-		}
-	}
-*/
 	// Removing plugin credentials before storing tenant to database
 	private  Map<String,List<Tenant.PluginProperty>> removeCredentialFromTenant(Tenant tenant) {
 		log.debug("Removing credentials from tenant");
@@ -244,7 +127,6 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 	PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
 	AhTenantJpaController tenantController = persistenceServiceFactory.getTenantController();
 	Map<String,List<Tenant.PluginProperty>> pluginCredentialsMap = removeCredentialFromTenant(tenant);
-	//removeCredentialFromTenant(tenant);
 	AhTenant ahTenant = TenantMapper.mapApiToJpa(tenant);
 	try {
 		if (dataEncryptionKeyConfigured()) {
@@ -256,8 +138,6 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 			log.error("Cannot create tenant, data encryption key is not configured");
 			throw new AttestationHubException("Cannot create tenant, data encryption key is not configured");
 		}
-	    // Write a file to disk using the ID as the file name
-	    //writeTenantConfig(tenant);
 	} catch (Exception e) {
 	    log.error("Error saving the tenant");
 	    throw new AttestationHubException("Error saving the tenant", e);
@@ -313,7 +193,6 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 	PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
 	AhTenantJpaController tenantController = persistenceServiceFactory.getTenantController();
 	Map<String,List<Tenant.PluginProperty>> pluginCredentialsMap = removeCredentialFromTenant(tenant);
-	//removeCredentialFromTenant(tenant);
 	AhTenant ahTenant = TenantMapper.mapApiToJpa(tenant);
 	try {
 	    AhTenant existingTenant = tenantController.findAhTenant(tenant.getId());
@@ -340,7 +219,6 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 	    log.error(msg, e);
 	    throw new AttestationHubException(msg, e);
 	}
-	//writeTenantConfig(tenant);
 	return tenant;
     }
 
@@ -366,12 +244,6 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 	    log.error(msg, e);
 	    throw new AttestationHubException(msg, e);
 	}
-	/*String tenantConfigDirPath = AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH);
-	String tenantConfigFileName = tenantConfigDirPath + File.separator + tenantId + ".ini";
-	boolean success = (new File(tenantConfigFileName)).delete();
-	if (success) {
-	    log.debug("The file has been successfully deleted");
-	}*/
     }
 
     @Override

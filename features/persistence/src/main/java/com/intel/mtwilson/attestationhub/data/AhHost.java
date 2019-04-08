@@ -19,10 +19,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author gs-0681
- */
 @Entity
 @Table(name = "ah_host")
 @Cacheable(false)

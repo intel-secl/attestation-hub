@@ -365,7 +365,6 @@ public class ApplyDatabasePatches extends AbstractSetupTask {
                 }
             }
         }
-        /// log.info("Table Names list :"+list);
         return list;
     }
 
