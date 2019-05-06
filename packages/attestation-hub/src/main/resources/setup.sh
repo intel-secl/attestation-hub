@@ -43,7 +43,7 @@ export ATTESTATION_HUB_DB_HOSTNAME=${ATTESTATION_HUB_DB_HOSTNAME:-localhost}
 export ATTESTATION_HUB_DB_PORTNUM=${ATTESTATION_HUB_DB_PORTNUM:-5432}
 export ATTESTATION_HUB_DB_DRIVER=${ATTESTATION_HUB_DB_DRIVER:-org.postgresql.Driver}
 export MTWILSON_SERVER_PORT=${MTWILSON_SERVER_PORT:-8443}
-export POSTGRESQL_KEEP_PGPASS=${POSTGRESQL_KEEP_PGPASS:-false}
+export POSTGRESQL_KEEP_PGPASS=${POSTGRESQL_KEEP_PGPASS:-true}
 
 # the env directory is not configurable; it is defined as ATTESTATION_HUB_HOME/env and
 # the administrator may use a symlink if necessary to place it anywhere else

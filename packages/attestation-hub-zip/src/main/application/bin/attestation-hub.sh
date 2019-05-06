@@ -365,6 +365,7 @@ rm -f /usr/local/bin/attestation-hub
 rm -f /usr/bin/attestation-hub
 rm -rf /opt/attestation-hub
 rm -rf /etc/logrotate.d/attestation-hub
+rm -f ~/.pgpass
 groupdel attestation-hub > /dev/null 2>&1
 userdel attestation-hub > /dev/null 2>&1
 
