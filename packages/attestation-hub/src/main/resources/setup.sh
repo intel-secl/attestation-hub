@@ -464,6 +464,7 @@ if [ -z "$ATTESTATION_HUB_NOSETUP" ]; then
   # delete the temporary setup environment variables file
   rm -f $ATTESTATION_HUB_ENV/attestation-hub-setup
 fi
+rm -f ~/.pgpass
 
 # ensure the attestation-hub owns all the content created during setup
 for directory in $ATTESTATION_HUB_HOME $ATTESTATION_HUB_CONFIGURATION $ATTESTATION_HUB_JAVA $ATTESTATION_HUB_BIN $ATTESTATION_HUB_ENV $ATTESTATION_HUB_REPOSITORY $ATTESTATION_HUB_LOGS; do
