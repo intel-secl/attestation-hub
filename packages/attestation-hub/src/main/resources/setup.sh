@@ -276,16 +276,16 @@ mkdir -p $ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH
 # attestation-hub requires java 1.8 or later
 if [ "$IS_RPM" != "true" ]; then
 
-	echo "Installing Java..."
-	JAVA_REQUIRED_VERSION=${JAVA_REQUIRED_VERSION:-1.8}
-	java_install_openjdk
-	JAVA_CMD=$(type -p java | xargs readlink -f)
-	JAVA_HOME=$(dirname $JAVA_CMD | xargs dirname | xargs dirname)
-	JAVA_REQUIRED_VERSION=$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')
-	echo "# $(date)" > $ATTESTATION_HUB_ENV/attestation-hub-java
-	echo "export JAVA_HOME=$JAVA_HOME" >> $ATTESTATION_HUB_ENV/attestation-hub-java
-	echo "export JAVA_CMD=$JAVA_CMD" >> $ATTESTATION_HUB_ENV/attestation-hub-java
-	echo "export JAVA_REQUIRED_VERSION=$JAVA_REQUIRED_VERSION" >> $ATTESTATION_HUB_ENV/attestation-hub-java
+    echo "Installing Java..."
+    JAVA_REQUIRED_VERSION=${JAVA_REQUIRED_VERSION:-1.8}
+    java_install_openjdk
+    JAVA_CMD=$(type -p java | xargs readlink -f)
+    JAVA_HOME=$(dirname $JAVA_CMD | xargs dirname | xargs dirname)
+    JAVA_REQUIRED_VERSION=$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')
+    echo "# $(date)" > $ATTESTATION_HUB_ENV/attestation-hub-java
+    echo "export JAVA_HOME=$JAVA_HOME" >> $ATTESTATION_HUB_ENV/attestation-hub-java
+    echo "export JAVA_CMD=$JAVA_CMD" >> $ATTESTATION_HUB_ENV/attestation-hub-java
+    echo "export JAVA_REQUIRED_VERSION=$JAVA_REQUIRED_VERSION" >> $ATTESTATION_HUB_ENV/attestation-hub-java
 
     if [ -f "${JAVA_HOME}/jre/lib/security/java.security" ]; then
       echo "Replacing java.security file, existing file will be backed up"
