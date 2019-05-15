@@ -287,6 +287,11 @@ if [ "$IS_RPM" != "true" ]; then
 	echo "export JAVA_CMD=$JAVA_CMD" >> $ATTESTATION_HUB_ENV/attestation-hub-java
 	echo "export JAVA_REQUIRED_VERSION=$JAVA_REQUIRED_VERSION" >> $ATTESTATION_HUB_ENV/attestation-hub-java
 
+    if [ -f "${JAVA_HOME}/jre/lib/security/java.security" ]; then
+      echo "Replacing java.security file, existing file will be backed up"
+      backup_file "${JAVA_HOME}/jre/lib/security/java.security"
+      cp java.security "${JAVA_HOME}/jre/lib/security/java.security"
+    fi
 fi
 # libguestfs packages has a custom prompt about installing supermin which ignores the �-y� option we provide to apt-get. Following code will help to avoid that prompt 
 #export DEBIAN_FRONTEND=noninteractive
