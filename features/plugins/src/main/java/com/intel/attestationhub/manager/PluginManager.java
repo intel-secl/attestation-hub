@@ -32,9 +32,6 @@ import com.intel.mtwilson.attestationhub.controller.AhTenantPluginCredentialJpaC
 import com.intel.mtwilson.attestationhub.controller.exceptions.NonexistentEntityException;
 import com.intel.mtwilson.attestationhub.data.AhTenantPluginCredential;
 import org.apache.commons.lang.StringUtils;
-//import org.jose4j.jws.AlgorithmIdentifiers;
-//import org.jose4j.jws.JsonWebSignature;
-//import org.jose4j.lang.JoseException;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -90,7 +87,6 @@ public class PluginManager {
 	    Tenant readTenantConfig;
 	    try {
 		readTenantConfig = TenantMapper.mapJpatoApi(ahTenant);
-		//readTenantConfig = attestationHubService.readTenantConfig(ahTenant.getId());
 		log.info("Retrieved configuration for the tenant: {}", ahTenant.getId());
 	    } catch (AttestationHubException e) {
 		log.error("Error reading configuration for the tenant {}", ahTenant.getId(), e);
@@ -272,37 +268,7 @@ public class PluginManager {
 	}
 
     }
-/* Commenting to remove dependency on jose4j */
-/*
-    private String createSignedTrustReport(String trustReportWithAdditions) {
-	Key privateKey = null;
-	try {
-	    privateKey = loadPrivateKey();
-	} catch (AttestationHubException e) {
-	    log.error("No private key found for encypting trust report", e);
-	}
-	if (privateKey == null) {
-	    log.error("No privateKey for creating signed report");
-	    return null;
-	}
-	JsonWebSignature jws = new JsonWebSignature();
-	// Set the trust report
-	jws.setPayload(trustReportWithAdditions);
-	// Set the signature algorithm on the JWS that will integrity protect
-	// the payload
-	jws.setAlgorithmHeaderValue(AlgorithmIdentifiers.RSA_USING_SHA256);
-	// Set the signing key on the JWS
-	jws.setKey(privateKey);
-	String jwsCompactSerialization = null;
-	try {
-	    jwsCompactSerialization = jws.getCompactSerialization();
-	} catch (JoseException e) {
-	    log.error("Error signing the trust report", e);
-	}
-	log.info("JWS format of trust report: {}", jwsCompactSerialization);
-	return jwsCompactSerialization;
-    }
-*/
+
     private Key loadPrivateKey() throws AttestationHubException {
 	File prikeyFile = new File(PRIVATE_KEY_PATH);
 	if (!(prikeyFile.exists())) {

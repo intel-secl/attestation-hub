@@ -8,10 +8,6 @@ package com.intel.attestationhub.plugin.nova.identity;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.net.URL;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.net.MalformedURLException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;

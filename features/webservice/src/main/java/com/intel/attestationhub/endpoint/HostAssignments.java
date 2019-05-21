@@ -38,10 +38,6 @@ import com.intel.mtwilson.attestationhub.data.AhMapping;
 import com.intel.mtwilson.attestationhub.exception.AttestationHubException;
 import com.intel.mtwilson.launcher.ws.ext.V2;
 
-/**
- * @author GS Lab
- * 
- */
 @V2
 @Path("/")
 public class HostAssignments {

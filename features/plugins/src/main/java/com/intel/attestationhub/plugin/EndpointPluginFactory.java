@@ -11,7 +11,6 @@ package com.intel.attestationhub.plugin;
 import org.apache.commons.lang.StringUtils;
 
 import com.intel.attestationhub.api.Tenant.Plugin;
-import com.intel.attestationhub.endpoint.Tenants;
 import com.intel.dcsg.cpg.extensions.Plugins;
 
 /**

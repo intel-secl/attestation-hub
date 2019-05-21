@@ -43,6 +43,7 @@ export ATTESTATION_HUB_DB_HOSTNAME=${ATTESTATION_HUB_DB_HOSTNAME:-localhost}
 export ATTESTATION_HUB_DB_PORTNUM=${ATTESTATION_HUB_DB_PORTNUM:-5432}
 export ATTESTATION_HUB_DB_DRIVER=${ATTESTATION_HUB_DB_DRIVER:-org.postgresql.Driver}
 export MTWILSON_SERVER_PORT=${MTWILSON_SERVER_PORT:-8443}
+export POSTGRESQL_KEEP_PGPASS=${POSTGRESQL_KEEP_PGPASS:-true}
 
 # the env directory is not configurable; it is defined as ATTESTATION_HUB_HOME/env and
 # the administrator may use a symlink if necessary to place it anywhere else
@@ -275,17 +276,22 @@ mkdir -p $ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH
 # attestation-hub requires java 1.8 or later
 if [ "$IS_RPM" != "true" ]; then
 
-	echo "Installing Java..."
-	JAVA_REQUIRED_VERSION=${JAVA_REQUIRED_VERSION:-1.8}
-	java_install_openjdk
-	JAVA_CMD=$(type -p java | xargs readlink -f)
-	JAVA_HOME=$(dirname $JAVA_CMD | xargs dirname | xargs dirname)
-	JAVA_REQUIRED_VERSION=$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')
-	echo "# $(date)" > $ATTESTATION_HUB_ENV/attestation-hub-java
-	echo "export JAVA_HOME=$JAVA_HOME" >> $ATTESTATION_HUB_ENV/attestation-hub-java
-	echo "export JAVA_CMD=$JAVA_CMD" >> $ATTESTATION_HUB_ENV/attestation-hub-java
-	echo "export JAVA_REQUIRED_VERSION=$JAVA_REQUIRED_VERSION" >> $ATTESTATION_HUB_ENV/attestation-hub-java
+    echo "Installing Java..."
+    JAVA_REQUIRED_VERSION=${JAVA_REQUIRED_VERSION:-1.8}
+    java_install_openjdk
+    JAVA_CMD=$(type -p java | xargs readlink -f)
+    JAVA_HOME=$(dirname $JAVA_CMD | xargs dirname | xargs dirname)
+    JAVA_REQUIRED_VERSION=$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')
+    echo "# $(date)" > $ATTESTATION_HUB_ENV/attestation-hub-java
+    echo "export JAVA_HOME=$JAVA_HOME" >> $ATTESTATION_HUB_ENV/attestation-hub-java
+    echo "export JAVA_CMD=$JAVA_CMD" >> $ATTESTATION_HUB_ENV/attestation-hub-java
+    echo "export JAVA_REQUIRED_VERSION=$JAVA_REQUIRED_VERSION" >> $ATTESTATION_HUB_ENV/attestation-hub-java
 
+    if [ -f "${JAVA_HOME}/jre/lib/security/java.security" ]; then
+      echo "Replacing java.security file, existing file will be backed up"
+      backup_file "${JAVA_HOME}/jre/lib/security/java.security"
+      cp java.security "${JAVA_HOME}/jre/lib/security/java.security"
+    fi
 fi
 # libguestfs packages has a custom prompt about installing supermin which ignores the �-y� option we provide to apt-get. Following code will help to avoid that prompt 
 #export DEBIAN_FRONTEND=noninteractive
@@ -392,8 +398,7 @@ if [ $postgres_installed -eq 0 ]; then
     echo "Replacing PostgreSQL local 'peer' authentication with 'md5' authentication..."
     sed -i 's/^local.*all.*all.*peer/local all all md5/' $postgres_pghb_conf
   fi
-  #if [ "$POSTGRESQL_KEEP_PGPASS" != "true" ]; then   # Use this line after 2.0 GA, and verify compatibility with other commands
-  if [ "${POSTGRESQL_KEEP_PGPASS:-true}" == "false" ]; then
+  if [ "$POSTGRESQL_KEEP_PGPASS" != "true" ]; then
     if [ -f ${ATTESTATION_HUB_HOME}/.pgpass ]; then
       echo "Removing .pgpass file to prevent insecure database password storage in plaintext..."
       rm -f ${ATTESTATION_HUB_HOME}/.pgpass
@@ -464,6 +469,7 @@ if [ -z "$ATTESTATION_HUB_NOSETUP" ]; then
   # delete the temporary setup environment variables file
   rm -f $ATTESTATION_HUB_ENV/attestation-hub-setup
 fi
+rm -f ~/.pgpass
 
 # ensure the attestation-hub owns all the content created during setup
 for directory in $ATTESTATION_HUB_HOME $ATTESTATION_HUB_CONFIGURATION $ATTESTATION_HUB_JAVA $ATTESTATION_HUB_BIN $ATTESTATION_HUB_ENV $ATTESTATION_HUB_REPOSITORY $ATTESTATION_HUB_LOGS; do

@@ -7,7 +7,6 @@ package com.intel.attestationhub.mtwclient;
 
 import com.intel.attestationhub.api.MWHost;
 import com.intel.dcsg.cpg.extensions.Extensions;
-import com.intel.dcsg.cpg.io.UUID;
 import com.intel.mtwilson.Folders;
 import com.intel.mtwilson.flavor.client.jaxrs.Reports;
 import com.intel.mtwilson.flavor.rest.v2.model.ReportCollection;
@@ -58,77 +57,8 @@ public class AttestationServiceClient {
         Extensions.register(TlsPolicyCreator.class,
                 com.intel.mtwilson.tls.policy.creator.impl.CertificateDigestTlsPolicyCreator.class);
         populateAttestationServiceProperties();
-        /*URL server = null;
-        try {
-            server = new URL(AttestationHubConfigUtil.get(Constants.MTWILSON_API_URL));
-        } catch (MalformedURLException e) {
-            log.error("Error forming Attestation Service URL", e);
-            throw new AttestationHubException(e);
-        }
-        String user = AttestationHubConfigUtil.get(Constants.MTWILSON_API_USER);
-        String password = AttestationHubConfigUtil.get(Constants.MTWILSON_API_PASSWORD);
-        String keystore = Folders.configuration() + File.separator + user + ".jks";
-
-        UserCollection users = null;
-        try {
-            Users client = new Users(mtwProperties);
-            UserFilterCriteria criteria = new UserFilterCriteria();
-            criteria.filter = true;
-            criteria.nameEqualTo = user;
-            users = client.searchUsers(criteria);
-        } catch (Exception e) {
-            log.error("Unable to check if the user already exists in MTW", e);
-            if (e.getMessage().indexOf("java.net.ConnectException: Connection refused") != 1) {
-                throw new AttestationHubException(e);
-            }
-        }
-        File userJks = new File(keystore);
-
-        if (users != null && users.getUsers().size() > 0 && userJks.exists()) {
-            log.info("User: {} already created in MTW. Not creating again", user);
-        } else {
-            log.info("Creating user: {} in MTW", user);
-            Properties properties = new Properties();
-            File folder = new File(Folders.configuration());
-            properties.setProperty("mtwilson.api.tls.policy.certificate.sha256",
-                    AttestationHubConfigUtil.get(Constants.MTWILSON_API_TLS));
-            String comment = null;
-            try {
-                comment = formatCommentRequestedRoles("Attestation", "Challenger");
-            } catch (JsonProcessingException e) {
-                log.error("Error creating user roles", e);
-                throw new AttestationHubException(e);
-            }
-
-            try {
-                MwClientUtil.createUserInDirectoryV2(folder, user, password, server, comment, properties);
-            } catch (IOException | CryptographyException e) {
-                log.error("Error creating user keystore", e);
-                throw new AttestationHubException(e);
-            }
-        }*/
-    }
-/*
-    private static String formatCommentRequestedRoles(String... roles) throws JsonProcessingException {
-        UserComment userComment = new UserComment();
-        userComment.roles.addAll(Arrays.asList(roles));
-        ObjectMapper yaml = createYamlMapper();
-        return yaml.writeValueAsString(userComment);
     }
 
-    private static class UserComment {
-        public HashSet<String> roles = new HashSet<>();
-    }
-
-    private static ObjectMapper createYamlMapper() {
-        YAMLFactory yamlFactory = new YAMLFactory();
-        yamlFactory.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
-        yamlFactory.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
-        ObjectMapper mapper = new ObjectMapper(yamlFactory);
-        mapper.setPropertyNamingStrategy(new PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy());
-        return mapper;
-    }
-*/
     public static AttestationServiceClient getInstance() throws AttestationHubException {
         if (attestationServiceClient == null) {
             attestationServiceClient = new AttestationServiceClient();

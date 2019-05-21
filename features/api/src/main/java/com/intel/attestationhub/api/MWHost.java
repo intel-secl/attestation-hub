@@ -5,9 +5,7 @@
 
 package com.intel.attestationhub.api;
 
-//import com.intel.mtwilson.as.rest.v2.model.Host;
 import com.intel.mtwilson.flavor.rest.v2.model.Host;
-//import com.intel.mtwilson.as.rest.v2.model.HostAttestation;
 import com.intel.mtwilson.flavor.rest.v2.model.Report;
 import com.intel.mtwilson.supplemental.saml.TrustAssertion;
 

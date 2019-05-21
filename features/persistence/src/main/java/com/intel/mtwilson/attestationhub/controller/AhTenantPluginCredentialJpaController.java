@@ -11,7 +11,7 @@ import com.intel.mtwilson.attestationhub.common.Constants;
 import com.intel.mtwilson.attestationhub.controller.exceptions.NonexistentEntityException;
 import com.intel.mtwilson.attestationhub.controller.exceptions.PreexistingEntityException;
 import com.intel.mtwilson.attestationhub.data.AhTenantPluginCredential;
-import com.intel.mtwilson.crypto.Aes128;
+import com.intel.dcsg.cpg.crypto.Aes128;
 import com.intel.mtwilson.util.ASDataCipher;
 import com.intel.mtwilson.util.Aes128DataCipher;
 import org.apache.commons.codec.binary.Base64;

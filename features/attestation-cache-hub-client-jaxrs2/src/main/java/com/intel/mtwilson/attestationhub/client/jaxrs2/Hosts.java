@@ -7,7 +7,6 @@ package com.intel.mtwilson.attestationhub.client.jaxrs2;
 
 import com.intel.mtwilson.jaxrs2.client.MtWilsonClient;
 import com.intel.attestationhub.api.HostFilterCriteria;
-import com.intel.dcsg.cpg.tls.policy.TlsConnection;
 import java.util.HashMap;
 import java.util.Properties;
 import javax.ws.rs.core.MediaType;

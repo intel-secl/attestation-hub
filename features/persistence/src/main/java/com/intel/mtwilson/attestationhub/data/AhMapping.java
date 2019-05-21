@@ -25,10 +25,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.annotations.UuidGenerator;
 
-/**
- *
- * @author GS-0681
- */
 @Entity
 @Table(name = "ah_mapping")
 @XmlRootElement

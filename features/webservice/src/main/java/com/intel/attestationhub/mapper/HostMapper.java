@@ -180,7 +180,6 @@ public class HostMapper {
     public static Host mapAhHostToCitHost(AhHost ahHost) throws CertificateException {
 	Host host = new Host();
 	host.setId(new UUID(ahHost.getId().getBytes()));
-//	host.setBiosMleUuid(ahHost.getBiosMleUuid());
 	host.setConnectionString(ahHost.getConnectionUrl());
 	host.setHardwareUuid(UUID.valueOf(ahHost.getHardwareUuid()));
 	host.setHostName(ahHost.getHostName());

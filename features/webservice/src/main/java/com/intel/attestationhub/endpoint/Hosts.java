@@ -35,11 +35,6 @@ import com.intel.mtwilson.attestationhub.data.AhHost;
 import com.intel.mtwilson.attestationhub.exception.AttestationHubException;
 import com.intel.mtwilson.launcher.ws.ext.V2;
 
-/**
- * @author GS Lab
- * 
- */
-
 @V2
 @Path("/hosts")
 public class Hosts {

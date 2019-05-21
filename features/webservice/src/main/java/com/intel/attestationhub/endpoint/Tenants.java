@@ -36,10 +36,6 @@ import com.intel.mtwilson.attestationhub.controller.exceptions.NonexistentEntity
 import com.intel.mtwilson.attestationhub.exception.AttestationHubException;
 import com.intel.mtwilson.launcher.ws.ext.V2;
 
-/**
- * @author GS Lab
- * 
- */
 @V2
 @Path("/tenants")
 public class Tenants {

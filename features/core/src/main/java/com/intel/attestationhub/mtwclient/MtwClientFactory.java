@@ -7,7 +7,6 @@ package com.intel.attestationhub.mtwclient;
 
 import java.util.Properties;
 
-//import com.intel.mtwilson.attestation.client.jaxrs.HostAttestations;
 import com.intel.mtwilson.flavor.client.jaxrs.Reports;
 import com.intel.mtwilson.flavor.client.jaxrs.Hosts;
 import com.intel.mtwilson.attestationhub.exception.AttestationHubException;
