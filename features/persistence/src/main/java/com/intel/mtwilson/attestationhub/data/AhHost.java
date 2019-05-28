@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 	@NamedQuery(name = "AhHost.findByBiosMleUuid", query = "SELECT a FROM AhHost a WHERE a.biosMleUuid = :biosMleUuid"),
 	@NamedQuery(name = "AhHost.findByVmmMleUuid", query = "SELECT a FROM AhHost a WHERE a.vmmMleUuid = :vmmMleUuid"),
 	@NamedQuery(name = "AhHost.findByAikCertificate", query = "SELECT a FROM AhHost a WHERE a.aikCertificate = :aikCertificate"),
-	@NamedQuery(name = "AhHost.findByAikSha256", query = "SELECT a FROM AhHost a WHERE a.aikSha256 = :aikSha256"),
+	@NamedQuery(name = "AhHost.findByAikSha384", query = "SELECT a FROM AhHost a WHERE a.aikSha384 = :aikSha384"),
 	@NamedQuery(name = "AhHost.findByConnectionUrl", query = "SELECT a FROM AhHost a WHERE a.connectionUrl = :connectionUrl"),
 	@NamedQuery(name = "AhHost.findByTrustTagsJson", query = "SELECT a FROM AhHost a WHERE a.trustTagsJson = :trustTagsJson"),
 	@NamedQuery(name = "AhHost.findBySamlReport", query = "SELECT a FROM AhHost a WHERE a.samlReport = :samlReport"),
@@ -55,8 +55,8 @@ public class AhHost implements Serializable {
     private String vmmMleUuid;
     @Column(name = "aik_certificate")
     private String aikCertificate;
-    @Column(name = "aik_sha256")
-    private String aikSha256;
+    @Column(name = "aik_sha384")
+    private String aikSha384;
     @Column(name = "connection_url")
     private String connectionUrl;
     @Column(name = "trust_tags_json")
@@ -141,12 +141,12 @@ public class AhHost implements Serializable {
 	this.aikCertificate = aikCertificate;
     }
 
-    public String getAikSha256() {
-	return aikSha256;
+    public String getAikSha384() {
+	return aikSha384;
     }
 
-    public void setAikSha256(String aikSha256) {
-	this.aikSha256 = aikSha256;
+    public void setAikSha384(String aikSha384) {
+	this.aikSha384 = aikSha384;
     }
 
     public String getConnectionUrl() {

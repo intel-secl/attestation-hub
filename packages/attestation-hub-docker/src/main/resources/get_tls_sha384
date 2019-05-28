@@ -38,6 +38,6 @@ if [ -z "$MTWILSON_IP_ADDRESS" ]; then
     echo "Insufficient argument provided , reguired :- MTWILSON_IP_ADDRESS, MTWILSON_PORT"
 else
    get_master_cert || return 1
-   fingerprint=$(openssl x509 -noout -in /tmp/trustagent.pem -fingerprint -sha256 | awk -F= '$1="Var"{print $2}' | sed -r 's/[:]+//g' | tr '[:upper:]' '[:lower:]')
+   fingerprint=$(openssl x509 -noout -in /tmp/trustagent.pem -fingerprint -sha384 | awk -F= '$1="Var"{print $2}' | sed -r 's/[:]+//g' | tr '[:upper:]' '[:lower:]')
    echo $fingerprint
 fi

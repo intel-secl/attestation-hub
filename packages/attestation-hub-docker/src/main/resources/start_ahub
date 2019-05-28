@@ -59,8 +59,8 @@ if [ ! -f $ATTESTATION_HUB_CONFIGURATION/.setup_done ]; then
   rm -f /run/secrets/attestation-hub.env &> /dev/null
   rm -f /run/secrets/db.password &> /dev/null
 
-  if [ -z $MTWILSON_IP_ADDRESS ] || [ -z $MTWILSON_USERNAME ] || [ -z $MTWILSON_PASSWORD ] || [ -z $MTWILSON_TLS_CERT_SHA256 ] || -z [ $POSTGRES_PASSWORD ]; then
-    echo -e "\033[0;31m Missing configuration: POSTGRES_PASSWORD MTWILSON_IP_ADDRESS MTWILSON_USERNAME MTWILSON_PASSWORD MTWILSON_TLS_CERT_SHA256 are mandatory"
+  if [ -z $MTWILSON_IP_ADDRESS ] || [ -z $MTWILSON_USERNAME ] || [ -z $MTWILSON_PASSWORD ] || [ -z $MTWILSON_TLS_CERT_SHA384 ] || -z [ $POSTGRES_PASSWORD ]; then
+    echo -e "\033[0;31m Missing configuration: POSTGRES_PASSWORD MTWILSON_IP_ADDRESS MTWILSON_USERNAME MTWILSON_PASSWORD MTWILSON_TLS_CERT_SHA384 are mandatory"
     exit
   fi 
 
@@ -75,9 +75,9 @@ if [ ! -f $ATTESTATION_HUB_CONFIGURATION/.setup_done ]; then
 
   # Running this out of the setup loop to ensure that AHUB always comes up after Verification service is up
   get_master_cert || return 1
-  fingerprint=$(openssl x509 -noout -in /tmp/trustagent.pem -fingerprint -sha256 | awk -F= '$1="Var"{print $2}' | sed -r 's/[:]+//g' | tr '[:upper:]' '[:lower:]')
-  if [ "$fingerprint" != $MTWILSON_TLS_CERT_SHA256]; then
-    echo "Provided MTWILSON_TLS_CERT_SHA256 does not match the hosts TLS Cert of the Host"
+  fingerprint=$(openssl x509 -noout -in /tmp/trustagent.pem -fingerprint -sha384 | awk -F= '$1="Var"{print $2}' | sed -r 's/[:]+//g' | tr '[:upper:]' '[:lower:]')
+  if [ "$fingerprint" != $MTWILSON_TLS_CERT_SHA384]; then
+    echo "Provided MTWILSON_TLS_CERT_SHA384 does not match the hosts TLS Cert of the Host"
     exit
   fi
 
@@ -100,7 +100,7 @@ if [ ! -f $ATTESTATION_HUB_CONFIGURATION/.setup_done ]; then
    attestation-hub config mtwilson.api.url  https://$MTWILSON_HOSTNAME:$MTWILSON_PORT/mtwilson/v2 > /dev/null
    attestation-hub config mtwilson.api.username $MTWILSON_USERNAME  > /dev/null
    attestation-hub config mtwilson.api.password $MTWILSON_PASSWORD  > /dev/null
-   attestation-hub config mtwilson.api.tls.policy.certificate.sha256  $MTWILSON_TLS_CERT_SHA256 > /dev/null
+   attestation-hub config mtwilson.api.tls.policy.certificate.sha384  $MTWILSON_TLS_CERT_SHA384 > /dev/null
 
    export ATTESTATION_HUB_PORT_HTTP=19082 > /dev/null
    export ATTESTATION_HUB_PORT_HTTPS=19445 > /dev/null

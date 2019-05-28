@@ -106,13 +106,13 @@ Running the container
                           # If running on a container, name it "verification-service"
         MTWILSON_USERNAME=<Verification Service User>
         MTWILSON_PASSWORD=<Verification Service Password>
-        MTWILSON_TLS_CERT_SHA256=<Verification Service TLS SHA256>
+        MTWILSON_TLS_CERT_SHA384=<Verification Service TLS SHA384>
 
         AHUB_USER_NAME=<Username>
         AHUB_USER_PASSWORD=<Password>
 
-     A helper script (get_tls_sha256) is provided along with the package. This script
-     would retrieve the tls sha256 from the server. Please source the above env file
+     A helper script (get_tls_sha384) is provided along with the package. This script
+     would retrieve the tls sha384 from the server. Please source the above env file
      before invoking the helper script.
 
 

@@ -37,7 +37,7 @@ public class TrustReportEncryptionKey extends AbstractSetupTask {
 
     @Override
     protected void execute() throws Exception {
-	String command = "openssl genrsa 2048 > " + Folders.configuration() + File.separator + "TEMP"
+	String command = "openssl genrsa 3072 > " + Folders.configuration() + File.separator + "TEMP"
 		+ Constants.PRIVATE_KEY_FILE;
 	ExecUtil.executeQuoted("/bin/bash", "-c", command);
 	command = "openssl rsa -in "

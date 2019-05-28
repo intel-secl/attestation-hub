@@ -54,7 +54,7 @@ public class CreateUserKeystore extends AbstractSetupTask {
 
         properties = new Properties();
         folder = new File(Folders.configuration());
-        properties.setProperty("mtwilson.api.tls.policy.certificate.sha256",
+        properties.setProperty("mtwilson.api.tls.policy.certificate.sha384",
                 AttestationHubConfigUtil.get(Constants.MTWILSON_API_TLS));
     }
 
