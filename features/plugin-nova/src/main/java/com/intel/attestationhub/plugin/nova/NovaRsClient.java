@@ -41,7 +41,7 @@ public class NovaRsClient {
 
     private PlacementClient placementClient;
 
-    // Contains the trait version(prefix of CUSTOM_CIT) of all the attributes encountered
+    // Contains the trait version(prefix of ISECL) of all the attributes encountered
     private Set<String> customTraitsSuperSet = new HashSet<>();
 
     @VisibleForTesting
