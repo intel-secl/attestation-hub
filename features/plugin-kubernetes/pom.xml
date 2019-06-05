@@ -28,6 +28,12 @@
             		<groupId>com.intel.mtwilson.attestation-hub</groupId>
 	                <artifactId>attestation-hub-core</artifactId>
                         <version>${project.version}</version>
+			<exclusions>
+			    <exclusion>
+				<groupId>ch.qos.logback</groupId>
+		            <artifactId>logback-classic</artifactId>
+			</exclusion>
+			</exclusions> 
         	</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
