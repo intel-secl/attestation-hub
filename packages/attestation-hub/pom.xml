@@ -126,7 +126,6 @@
                                 <require>wget >= 1.14</require>
                                 <require>xmlstarlet >= 1.6</require>
                                 <require>logrotate >= 3.7</require>
-                                <require>monit</require>
                                 <require>openssl-devel</require>
                                 <require>make</require>
                                 <require>gcc</require>
