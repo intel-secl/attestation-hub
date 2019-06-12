@@ -74,17 +74,13 @@ public class KubernetesClient {
 	 */
 	public void sendDataToEndpoint(List<String> jsonList) throws AttestationHubException {
 		for (String json : jsonList) {
-			// If geolocation CRD is not created then received json can be null
 			if (!json.equals(Plugin.NULL)) {
 				JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
 				String tenantId = jsonObject.getAsJsonObject(Plugin.METADATA).get(Plugin.NAME).toString()
 						.replace(Plugin.SLASH_COMMA, Plugin.EMPTY_STRING);
 				String crdKind = jsonObject.get(Plugin.KIND).toString().replace(Plugin.SLASH_COMMA,
 						Plugin.EMPTY_STRING);
-				String urlKind = Plugin.URL_PLATFORM;
-				if (crdKind.equals(Plugin.GEOLOCATION_CRD)) {
-					urlKind = Plugin.URL_GEOLOCATION;
-				}
+				String urlKind = Plugin.URL_HOSTATTRIBUTES;
 				// Create an if block for new CRD
 				// To build an URI invoke buildEndpointUri method of this class
 				URI uri = buildEndpointUri(jsonObject, tenantId, urlKind);

@@ -28,12 +28,8 @@ public class CRDManager {
 	 */
 	public List<String> generateCrd(PublishData data) throws AttestationHubException {
 		List<String> jsonList = new ArrayList<>();
-		if (Constants.CREATE_PLATFORM_CRD) {
-			jsonList.add(new PlatformCRDGenerator().createCRD(data.hostDetailsList, data.tenantId));
-		}
-		if (Constants.CREATE_GEOLOCATION_CRD) {
-			jsonList.add(new GeolocationCRDGenerator().createCRD(data.hostDetailsList, data.tenantId));
-		}
+		jsonList.add(new HostAttributesCRDGenerator().createCRD(data.hostDetailsList, data.tenantId));
+
 		// Make an entry here for new CRD object to be created. See upper if
 		// statements
 		// for reference.

@@ -30,14 +30,12 @@ public class Constants {
 
 	public static class Plugin {
 		public static final String URL_TYPE = "API";
-		public static final String URL_PLATFORM = "platformcrds";
-		public static final String URL_GEOLOCATION = "geolocationcrds";
-		public static final String PATH = "/apis/isecl.intel.com/v1beta1/namespaces/default/";
+		public static final String URL_HOSTATTRIBUTES = "hostattributes";
+		public static final String PATH = "/apis/crd.isecl.intel.com/v1beta1/namespaces/default/";
 		public static final String SLASH = "/";
 		public static final String METADATA = "metadata";
 		public static final String NAME = "name";
 		public static final String KIND = "kind";
-		public static final String GEOLOCATION_CRD = "GeolocationCrd";
 		public static final String NULL = "null";
 		public static final String RESOURCE_VERSION = "resourceVersion";
 		public static final Integer ZERO = 0;

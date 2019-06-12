@@ -9,9 +9,9 @@ import com.intel.attestationhub.plugin.kubernetes.crd.template.Metadata;
 /**
  * @author abhishekx.negi@intel.com
  *
- *         Metadata for the Platform CRD object. Add a variable for a new field
+ *         Metadata for the HostAttributes CRD object. Add a variable for a new field
  *         required.
  */
-public class PlatformMetadata extends Metadata {
+public class HostAttributesMetadata extends Metadata {
 
 }

@@ -46,6 +46,7 @@ public class KubernetesConnector {
 	protected HttpResponse get(CloseableHttpClient httpClient, URI uri) throws AttestationHubException {
 		HttpResponse response = null;
 		HttpGet getRequest = new HttpGet(uri);
+	
 		try {
 			response = httpClient.execute(getRequest);
 		} catch (IOException e) {
@@ -83,6 +84,7 @@ public class KubernetesConnector {
 	protected HttpResponse post(CloseableHttpClient httpClient, URI uri, String crdObject)
 			throws AttestationHubException {
 		HttpPost postRequest = new HttpPost(uri);
+	
 		HttpEntity entity = null;
 		try {
 			entity = new StringEntity(crdObject);
