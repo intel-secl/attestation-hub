@@ -42,9 +42,5 @@
       </plugin>
     </plugins>
   </build>
-  <properties>
-    <project.version>5.0-SNAPSHOT</project.version>
-    <jclouds.version>2.1.0</jclouds.version>
-  </properties>
 </project>
 
