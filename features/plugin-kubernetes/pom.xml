@@ -1,26 +1,91 @@
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <modelVersion>4.0.0</modelVersion>
-    
-    <groupId>com.intel.mtwilson.attestation-hub</groupId>
-    <artifactId>attestation-hub-kubernetes-plugin</artifactId>
-    
-    <name>kubernetes-plugin</name>
-    <url>http://maven.apache.org</url>
-    
-    <parent>
-        <groupId>com.intel.mtwilson.maven</groupId>
-        <artifactId>mtwilson-core-feature-zip</artifactId>
-        <version>4.5-SNAPSHOT</version>
-        <relativePath />
-    </parent>
-    
-    <dependencies>
-        <!-- attestation hub -->
-        <dependency>
-            <groupId>com.intel.mtwilson.attestation-hub</groupId>
-            <artifactId>attestation-hub-plugins-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
-    
-</project>
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+        <groupId>com.intel.mtwilson.attestation.hub.features</groupId>
+	<artifactId>attestation-hub-kubernetes-plugin</artifactId>
+	<name>kubernetes-plugin</name>
+	<url>http://maven.apache.org</url>
+	<parent>
+		<groupId>com.intel.mtwilson.maven</groupId>
+		<artifactId>mtwilson-core-feature-zip</artifactId>
+		<version>4.5-SNAPSHOT</version>
+		<relativePath />
+	</parent>
+	<dependencies>
+		<!-- attestation hub -->
+		<dependency>
+			<groupId>com.intel.mtwilson.attestation-hub</groupId>
+			<artifactId>attestation-hub-plugins-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+            		<groupId>com.intel.mtwilson.attestation-hub</groupId>
+	                <artifactId>attestation-hub-core</artifactId>
+                        <version>${project.version}</version>
+			<exclusions>
+			    <exclusion>
+				<groupId>ch.qos.logback</groupId>
+		            <artifactId>logback-classic</artifactId>
+			</exclusion>
+			</exclusions> 
+        	</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+		<!-- jclouds OpenStack dependencies -->
+		<dependency>
+			<groupId>org.apache.jclouds.api</groupId>
+			<artifactId>openstack-keystone</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jclouds.api</groupId>
+			<artifactId>openstack-nova</artifactId>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<!-- Maven shade -->
+			<!-- Shading because JClouds require guava18.0 but guava16.0 was sub-dependency of existing
+				attestation hub file and during build maven was finding 16.0 in path first -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+					<!-- Run shade goal on package phase -->
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<transformers>
+								<!-- add Main-Class to manifest file -->
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project> 
