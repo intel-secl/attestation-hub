@@ -15,10 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
+import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
@@ -26,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Base64;
 
 import com.intel.attestationhub.mapper.TenantMapper;
 import com.intel.mtwilson.attestationhub.controller.AhTenantPluginCredentialJpaController;
@@ -195,7 +193,6 @@ public class PluginManager {
 			log.error("Error converting tags to JSON", e);
 		}
 	}
-
 	String errorMsg = "Error parsing trust response";
 	try {
 	    HostTrustResponse hostTrustResponse = objectMapper.readValue(trustTagsJson, HostTrustResponse.class);
@@ -205,10 +202,10 @@ public class PluginManager {
 	    hostTrustResponse.setHardwareFeatures(hardwareFeatures);
 	    String trustReportWithAdditions = objectMapper.writeValueAsString(hostTrustResponse);
 	    details.trust_report = trustReportWithAdditions;
-	   // String signedTrustReport = createSignedTrustReport(trustReportWithAdditions);
-	   // if (StringUtils.isNotBlank(signedTrustReport)) {
-	   //	details.signed_trust_report = signedTrustReport;
-	   // }
+	    String signedTrustReport = createSignedTrustReport(trustReportWithAdditions);
+	    if (StringUtils.isNotBlank(signedTrustReport)) {
+		details.signed_trust_report = signedTrustReport;
+	    }
 	} catch (JsonParseException e) {
 	    log.error(errorMsg, e);
 	} catch (JsonMappingException e) {
@@ -268,8 +265,42 @@ public class PluginManager {
 	}
 
     }
+    
+	private String createSignedTrustReport(String trustReportWithAdditions) {
+		PrivateKey privateKey;
+		String signedTrustReport = null;
+		try {
+			privateKey = loadPrivateKey();
+			if (privateKey == null) {
+				log.error("No privateKey for creating signed report");
+				return null;
+			}
+			Signature signature = Signature.getInstance("SHA256withRSA");
+			signature.initSign(privateKey);
+			byte[] trustReportAsBytes = trustReportWithAdditions.getBytes();
+			signature.update(trustReportAsBytes);
+			signedTrustReport = Base64.getEncoder().encodeToString(signature.sign());
+		}
+		catch (AttestationHubException e) {
+			log.error("No private key found for encrypting trust report", e);
+		}
+		catch (NoSuchAlgorithmException exc) {
+			log.error ("Algorithm name is invalid or not supported", exc);
+		}
+		catch (InvalidKeyException exc) {
+			log.error("Invalid private key provided for signing", exc);
+		}
+		catch (SignatureException exc) {
+			log.error("Error signing trust report", exc);
+		}
+		catch (Exception exc) {
+			log.error ("Unknown exception occurred", exc);
+		}
+		log.info("JWS format of trust report: {}", signedTrustReport);
+		return  signedTrustReport;
+	}
 
-    private Key loadPrivateKey() throws AttestationHubException {
+    private PrivateKey loadPrivateKey() throws AttestationHubException {
 	File prikeyFile = new File(PRIVATE_KEY_PATH);
 	if (!(prikeyFile.exists())) {
 	    throw new AttestationHubException("Private key unavailable for signinig the report");
