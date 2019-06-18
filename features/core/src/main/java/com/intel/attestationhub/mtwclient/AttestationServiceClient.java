@@ -174,14 +174,18 @@ public class AttestationServiceClient {
                 hostLocator.id = report.getHostId();
                 Host asHost = hostsClient.retrieve(hostLocator);
 
-                // retrieve saml record for host
-                ReportFilterCriteria samlCriteria = new ReportFilterCriteria();
-                samlCriteria.hostId = hostLocator.id.toString();
-                samlCriteria.latestPerHost = "true";
-                samlCriteria.limit = 1;
-                String saml = reportsClient.searchSamlReports(samlCriteria);
-                
-                populateMwHost(asHost, report, hostIdToMwHostMap, saml);
+                if (asHost != null) {
+                    // retrieve saml record for host
+                    ReportFilterCriteria samlCriteria = new ReportFilterCriteria();
+                    samlCriteria.hostId = hostLocator.id.toString();
+                    samlCriteria.latestPerHost = "true";
+                    samlCriteria.limit = 1;
+                    String saml = reportsClient.searchSamlReports(samlCriteria);
+
+                    if (saml != null) {
+                        populateMwHost(asHost, report, hostIdToMwHostMap, saml);
+                    }
+                }
             }
         }
 
