@@ -41,7 +41,7 @@ public class NovaRsClient {
 
     private PlacementClient placementClient;
 
-    // Contains the trait version(prefix of ISECL) of all the attributes encountered
+    // Contains the trait version(prefix of CUSTOM_ISECL) of all the attributes encountered
     private Set<String> customTraitsSuperSet = new HashSet<>();
 
     @VisibleForTesting
@@ -172,23 +172,23 @@ public class NovaRsClient {
                     }
                 }
             } else {
-                log.warn("Host with name {} is not trusted, removing all existing CIT tags", host.hostname);
+                log.warn("Host with name {} is not trusted, removing all existing ISECL tags", host.hostname);
             }
             log.debug("Traits for host with name {}: {} ", host.hostname, traitSet.toString());
         } catch (IOException e) {
-            log.error("Error generating CIT traits from trust report: {} .", host.trust_report, e);
+            log.error("Error generating ISECL traits from trust report: {} .", host.trust_report, e);
             throw new AttestationHubException("Getting data from attestation server failed", e);
         }
         return traitSet;
     }
 
     /**
-     * Associates the resource provider with the CIT traits specified. This method automatically removes the stale CIT
-     * traits, adds/updates the valid CIT traits while keeping the non CIT managed traits on the host as is.
+     * Associates the resource provider with the ISECL traits specified. This method automatically removes the stale ISECL
+     * traits, adds/updates the valid ISECL traits while keeping the non ISECL managed traits on the host as is.
      *
      * @param resourceProviderId the resource provider id
      * @param hostName the resource provider name
-     * @param latestCitTraits the latest set of CIT traits
+     * @param latestCitTraits the latest set of ISECL traits
      * @param retriesOnConflict number of times to retry the request in case a conflict is encountered.
      *
      * @throws AttestationHubException in case of any errors(other than 409 conflict, for which we retry) happen
@@ -205,7 +205,7 @@ public class NovaRsClient {
                             hostTraits.getGeneration(), updatedTraits));
                     log.debug("Updating traits for host {} succeeded with {} retries", hostName, retriesOnConflict - tries);
                 } else {
-                    log.debug("Skipping nova call since the host {} is already associated with the CIT traits",
+                    log.debug("Skipping nova call since the host {} is already associated with the ISECL traits",
                             hostName);
                 }
                 break;
@@ -215,7 +215,7 @@ public class NovaRsClient {
                 try {
                     Thread.sleep(Constants.CONFLICT_RETRY_DELAY_IN_MILLIS);
                 } catch (InterruptedException e) {
-                    log.error("Interrupted while waiting to retry mapping CIT traits to host {}", hostName);
+                    log.error("Interrupted while waiting to retry mapping ISECL traits to host {}", hostName);
                     throw new AttestationHubException("Sending data to controller failed", e);
                 }
             }
@@ -229,7 +229,7 @@ public class NovaRsClient {
     /**
      * Gets updated traits for the host only if they need to be updated. If no updates are needed, returns null.
      *
-     * Note: the updated traits will contain the full set of traits(including non-cit traits)
+     * Note: the updated traits will contain the full set of traits(including non-isecl traits)
      */
     private Set<String> getUpdatedTraits(Set<String> resourceProviderTraits, Set<String> citTraits) {
         Set<String> updatedTraits = null;

@@ -37,7 +37,7 @@ public class Constants {
     public static final String RESOURCE_PATH_RESOURCE_PROVIDERS = "/resource_providers/";
     public static final String RESOURCE_PATH_RESOURCE_PROVIDERS_NAME_QUERY = "/resource_providers?name=";
 
-    public static final String CIT_TRAIT_PREFIX = "ISECL";
+    public static final String CIT_TRAIT_PREFIX = "CUSTOM_ISECL";
     public static final String AT_PREFIX = "_AT_";
     public static final String HAS_PREFIX = "_HAS_";
     public static final String CIT_TRUSTED_TRAIT = CIT_TRAIT_PREFIX + "_TRUSTED";

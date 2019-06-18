@@ -173,7 +173,7 @@ public class AttestationServiceClient {
                 HostLocator hostLocator = new HostLocator();
                 hostLocator.id = report.getHostId();
                 Host asHost = hostsClient.retrieve(hostLocator);
-                
+
                 // retrieve saml record for host
                 ReportFilterCriteria samlCriteria = new ReportFilterCriteria();
                 samlCriteria.hostId = hostLocator.id.toString();
@@ -190,7 +190,7 @@ public class AttestationServiceClient {
     }
 
     public void updateHostsForSamlTimeout() throws AttestationHubException {
-        log.info("updating deleted status of hosts depending on the expiry of saml");
+        log.info("updating trust status of hosts depending on the expiry of saml");
         PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
         AhHostJpaController ahHostJpaController = persistenceServiceFactory.getHostController();
         Reports hostReports = MtwClientFactory
@@ -219,21 +219,21 @@ public class AttestationServiceClient {
                 Date issueDate = verifyTrustAssertion.getDate();
                 DateTime issueDateUTC = new DateTime(issueDate.getTime(), DateTimeZone.UTC);
 
-                log.info("Marking host : {} as deleted as the saml issue date is {} and expiring now which is {}",
+                log.info("Marking host : {} as untrusted as the saml issue date is {} and expiring now which is {}",
                         ahHost.getId(), issueDateUTC, currentDateTime);
 
-                ahHost.setDeleted(true);
+                ahHost.setTrusted(false);
                 try {
                     ahHostJpaController.edit(ahHost);
                 } catch (NonexistentEntityException e) {
-                    log.error("Unable to delete the host as host with id: {} does not exist in the DB ", ahHost.getId(),
+                    log.error("Unable to update the host as host with id: {} does not exist in the DB ", ahHost.getId(),
                             e);
                 } catch (Exception e) {
-                    log.error("Unable to delete the host as host with id: {}", ahHost.getId(), e);
+                    log.error("Unable to update the host with id: {}", ahHost.getId(), e);
                 }
             }
         }
-        log.info("Update of deleted status of hosts depending on the expiry of saml completed");
+        log.info("Update of trust status of hosts depending on the expiry of saml completed");
     }
 
     private TrustAssertion convertSamlToTrustAssertion(Reports reportsClient, String saml)

@@ -60,17 +60,17 @@ public class NovaRsClientTest {
 
     private static final String HOSTNAME1 = "hostname1";
 
-    private static final Set<String> HOST1_CIT_TAGS = Sets.newHashSet("ISECL_TRUSTED", "ISECL_AT_STATE_AZ",
-            "ISECL_AT_CITY_AUSTIN", "ISECL_AT_COUNTRY_US", "ISECL_AT_STATE_TX",
-            "ISECL_AT_CITY_HILLSBORO", "ISECL_AT_STATE_OR");
+    private static final Set<String> HOST1_CIT_TAGS = Sets.newHashSet("CUSTOM_ISECL_TRUSTED", "CUSTOM_ISECL_AT_STATE_AZ",
+            "CUSTOM_ISECL_AT_CITY_AUSTIN", "CUSTOM_ISECL_AT_COUNTRY_US", "CUSTOM_ISECL_AT_STATE_TX",
+            "CUSTOM_ISECL_AT_CITY_HILLSBORO", "CUSTOM_ISECL_AT_STATE_OR");
 
-    private static final Set<String> HOST1_CIT_UPDATED_TAGS = Sets.newHashSet("ISECL_TRUSTED",
-            "ISECL_AT_STATE_AZ", "ISECL_AT_CITY_SANTA_CLARA", "ISECL_AT_COUNTRY_US",
-            "ISECL_AT_STATE_TX", "ISECL_AT_STATE_OR");
+    private static final Set<String> HOST1_CIT_UPDATED_TAGS = Sets.newHashSet("CUSTOM_ISECL_TRUSTED",
+            "CUSTOM_ISECL_AT_STATE_AZ", "CUSTOM_ISECL_AT_CITY_SANTA_CLARA", "CUSTOM_ISECL_AT_COUNTRY_US",
+            "CUSTOM_ISECL_AT_STATE_TX", "CUSTOM_ISECL_AT_STATE_OR");
 
-    private static final Set<String> HOST2_CIT_TAGS = Sets.newHashSet("ISECL_AT_STATE_TN",
-            "ISECL_AT_CITY_HYDERABAD", "ISECL_AT_STATE_KA", "ISECL_AT_COUNTRY_IN", "ISECL_TRUSTED",
-            "ISECL_AT_CITY_BANGALORE", "ISECL_AT_STATE_AP");
+    private static final Set<String> HOST2_CIT_TAGS = Sets.newHashSet("CUSTOM_ISECL_AT_STATE_TN",
+            "CUSTOM_ISECL_AT_CITY_HYDERABAD", "CUSTOM_ISECL_AT_STATE_KA", "CUSTOM_ISECL_AT_COUNTRY_IN", "CUSTOM_ISECL_TRUSTED",
+            "CUSTOM_ISECL_AT_CITY_BANGALORE", "CUSTOM_ISECL_AT_STATE_AP");
 
     private static final Set<String> NEW_TRAITS_ON_OS = Sets.union(HOST1_CIT_TAGS, HOST2_CIT_TAGS);
 
@@ -454,10 +454,10 @@ public class NovaRsClientTest {
     public void testGenerateTraitsFromAssetTags_WithSpecialCharInTags_ExpectSuccess() throws AttestationHubException {
         String trustReportJson = TestUtils.loadJsonData(TRUST_FOLDER + "trusted_special_char_tags.json");
         HostDetails hostDetails = generateHostDetails(trustReportJson);
-        Set<String> expectedSet = Sets.newHashSet("ISECL_AT_COUNTRY___US", "ISECL_AT_STATE__O_R",
-                "ISECL_AT_STATE___TX", "ISECL_AT_STATE__A_Z", "ISECL_TRUSTED",
-                "ISECL_AT_CITY___AUS_TIN", "ISECL_AT_CITY_____HILLSBORO",
-                "ISECL_AT_FOO_BAR_ZZZ", "ISECL_AT_FOO__BAR_ZZZ", "ISECL_AT_FOO____BAR___Z__Z");
+        Set<String> expectedSet = Sets.newHashSet("CUSTOM_ISECL_AT_COUNTRY___US", "CUSTOM_ISECL_AT_STATE__O_R",
+                "CUSTOM_ISECL_AT_STATE___TX", "CUSTOM_ISECL_AT_STATE__A_Z", "CUSTOM_ISECL_TRUSTED",
+                "CUSTOM_ISECL_AT_CITY___AUS_TIN", "CUSTOM_ISECL_AT_CITY_____HILLSBORO",
+                "CUSTOM_ISECL_AT_FOO_BAR_ZZZ", "CUSTOM_ISECL_AT_FOO__BAR_ZZZ", "CUSTOM_ISECL_AT_FOO____BAR___Z__Z");
 
         Set<String> actualSet = this.novaClient.generateTraitsFromTrustReport(hostDetails);
 
@@ -468,7 +468,7 @@ public class NovaRsClientTest {
     public void testGenerateTraitsFromAssetTags_WithNoTags_ExpectSuccess() throws AttestationHubException {
         String trustReportJson = TestUtils.loadJsonData(TRUST_FOLDER + "trusted_no_tags.json");
         HostDetails hostDetails = generateHostDetails(trustReportJson);
-        Set<String> expectedSet = Sets.newHashSet("ISECL_TRUSTED");
+        Set<String> expectedSet = Sets.newHashSet("CUSTOM_ISECL_TRUSTED");
 
         Set<String> actualSet = this.novaClient.generateTraitsFromTrustReport(hostDetails);
 
