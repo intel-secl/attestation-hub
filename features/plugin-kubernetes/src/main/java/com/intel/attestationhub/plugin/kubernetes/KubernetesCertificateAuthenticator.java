@@ -119,7 +119,7 @@ public class KubernetesCertificateAuthenticator {
 		FileInputStream fisTruststore = null;
 		try {
 			fisTruststore = new FileInputStream(truststoreFile);
-			truststore.load(fisTruststore, tenant.getServerKeystorepass().toCharArray());
+			truststore.load(fisTruststore, tenant.getServerKeystorePass().toCharArray());
 		} catch (NoSuchAlgorithmException | CertificateException | IOException e) {
 			log.error("Error in reading or loading keystore", e);
 			throw new AttestationHubException("Error in reading or loading keystore", e);

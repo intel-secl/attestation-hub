@@ -16,8 +16,7 @@ public class TenantConfig {
 	private String clientKeystore;
 	private String clientKeystorePass;
 	private String serverKeystore;
-	private String serverKeystorepass;
-	private String tenantKeystoreConfig;
+	private String serverKeystorePass;
 	private String keystoneVersion;
 	private String openstackTenantName;
 	private String openstackScope;
@@ -136,20 +135,12 @@ public class TenantConfig {
 		this.serverKeystore = serverKeystore;
 	}
 
-	public String getServerKeystorepass() {
-		return serverKeystorepass;
+	public String getServerKeystorePass() {
+		return serverKeystorePass;
 	}
 
-	public void setServerKeystorepass(String serverKeystorepass) {
-		this.serverKeystorepass = serverKeystorepass;
-	}
-
-	public String getTenantKeystoreConfig() {
-		return tenantKeystoreConfig;
-	}
-
-	public void setTenantKeystoreConfig(String tenantKeystoreConfig) {
-		this.tenantKeystoreConfig = tenantKeystoreConfig;
+	public void setServerKeystorePass(String serverKeystorePass) {
+		this.serverKeystorePass = serverKeystorePass;
 	}
 
 }

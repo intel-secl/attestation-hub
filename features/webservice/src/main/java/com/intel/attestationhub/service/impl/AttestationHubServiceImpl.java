@@ -70,10 +70,20 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 		Map<String,List<Tenant.PluginProperty>> pluginCredentialsMap = new HashMap<>();
 
 		List<Plugin> plugins = tenant.getPlugins();
+
 		for (Plugin plugin : plugins) {
-			credentials.add(plugin.removeProperty("user.name"));
-			credentials.add(plugin.removeProperty("user.password"));
-			pluginCredentialsMap.put(plugin.getName(), credentials);
+			if(plugin.getName().equalsIgnoreCase("nova") && plugin.getProperty("user.name") != null && plugin.getProperty("user.password") !=null) {
+				credentials.add(plugin.removeProperty("user.name"));
+				credentials.add(plugin.removeProperty("user.password"));
+				pluginCredentialsMap.put(plugin.getName(), credentials);
+			}
+			if (plugin.getName().equalsIgnoreCase("kubernetes")
+		                && plugin.getProperty("kubernetes.client.keystore.password") != null
+                		&& plugin.getProperty("kubernetes.server.keystore.password") !=null) {
+		      	        	credentials.add(plugin.removeProperty("kubernetes.client.keystore.password"));
+                			credentials.add(plugin.removeProperty("kubernetes.server.keystore.password"));
+			                pluginCredentialsMap.put(plugin.getName(), credentials);
+		        }
 		}
 		return pluginCredentialsMap;
 	}
