@@ -51,8 +51,10 @@ public class TrustReportEncryptionKey extends AbstractSetupTask {
 	String priKeyFile = Folders.configuration() + File.separator 
 		+ Constants.PRIVATE_KEY_FILE;
 	
-	command = "openssl pkcs8 -topk8 -inform PEM -outform DER -in "+ tempFile +" -out "+ priKeyFile +"  -nocrypt > pkcs8_key";
+	command = "openssl pkcs8 -topk8 -inform PEM -outform DER -in "+ tempFile +" -out "+ priKeyFile +"  -nocrypt";
 	ExecUtil.executeQuoted("/bin/bash", "-c", command);
+	File f = new File(tempFile);
+	f.delete();
 
     }
 }
