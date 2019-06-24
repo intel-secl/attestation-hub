@@ -409,17 +409,6 @@ fi
  
 ATTESTATION_HUB_PORT_HTTP=${ATTESTATION_HUB_PORT_HTTP:-${JETTY_PORT:-80}}
 ATTESTATION_HUB_PORT_HTTPS=${ATTESTATION_HUB_PORT_HTTPS:-${JETTY_SECURE_PORT:-443}}
-# setup authbind to allow non-root director to listen on ports 80 and 443
-if [ -n "$ATTESTATION_HUB_USERNAME" ] && [ "$ATTESTATION_HUB_USERNAME" != "root" ] && [ -d /etc/authbind/byport ] && [ "$ATTESTATION_HUB_PORT_HTTP" -lt "1024" ]; then
-  touch /etc/authbind/byport/$ATTESTATION_HUB_PORT_HTTP
-  chmod 500 /etc/authbind/byport/$ATTESTATION_HUB_PORT_HTTP
-  chown $ATTESTATION_HUB_USERNAME /etc/authbind/byport/$ATTESTATION_HUB_PORT_HTTP
-fi
-if [ -n "$ATTESTATION_HUB_USERNAME" ] && [ "$ATTESTATION_HUB_USERNAME" != "root" ] && [ -d /etc/authbind/byport ] && [ "$ATTESTATION_HUB_PORT_HTTPS" -lt "1024" ]; then
-  touch /etc/authbind/byport/$ATTESTATION_HUB_PORT_HTTPS
-  chmod 500 /etc/authbind/byport/$ATTESTATION_HUB_PORT_HTTPS
-  chown $ATTESTATION_HUB_USERNAME /etc/authbind/byport/$ATTESTATION_HUB_PORT_HTTPS
-fi
 
 # delete existing java files, to prevent a situation where the installer copies
 # a newer file but the older file is also there

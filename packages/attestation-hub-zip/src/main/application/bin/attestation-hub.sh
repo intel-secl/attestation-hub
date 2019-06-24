@@ -196,19 +196,12 @@ attestation_hub_start() {
       return 0
     fi
 
-    # check if we need to use authbind or if we can start java directly
-    prog="$JAVA_CMD"
-    if [ -n "$ATTESTATION_HUB_USERNAME" ] && [ "$ATTESTATION_HUB_USERNAME" != "root" ] && [ $(whoami) != "root" ] && [ -n $(which authbind) ]; then
-      prog="authbind $JAVA_CMD"
-      JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true"
-    fi
-
     # the subshell allows the java process to have a reasonable current working
     # directory without affecting the user's working directory. 
     # the last background process pid $! must be stored from the subshell.
     (
       cd $ATTESTATION_HUB_HOME
-      $prog $JAVA_OPTS com.intel.mtwilson.launcher.console.Main jetty-start >>$ATTESTATION_HUB_APPLICATION_LOG_FILE 2>&1 &      
+      "$JAVA_CMD" $JAVA_OPTS com.intel.mtwilson.launcher.console.Main jetty-start >>$ATTESTATION_HUB_APPLICATION_LOG_FILE 2>&1 &
       echo $! > $ATTESTATION_HUB_PID_FILE
     )
     if attestation_hub_is_running; then
@@ -294,19 +287,12 @@ scheduler_start() {
       return 0
     fi
 
-    # check if we need to use authbind or if we can start java directly
-    prog="$JAVA_CMD"
-    if [ -n "$ATTESTATION_HUB_USERNAME" ] && [ "$ATTESTATION_HUB_USERNAME" != "root" ] && [ $(whoami) != "root" ] && [ -n $(which authbind) ]; then
-      prog="authbind $JAVA_CMD"
-      JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true"
-    fi
-
     # the subshell allows the java process to have a reasonable current working
     # directory without affecting the user's working directory. 
     # the last background process pid $! must be stored from the subshell.
     (
       cd $ATTESTATION_HUB_HOME
-      $prog $JAVA_OPTS com.intel.mtwilson.launcher.console.Main attestation-hub-scheduler >>$ATTESTATION_HUB_APPLICATION_LOG_FILE 2>&1 &      
+      "$JAVA_CMD" $JAVA_OPTS com.intel.mtwilson.launcher.console.Main attestation-hub-scheduler >>$ATTESTATION_HUB_APPLICATION_LOG_FILE 2>&1 &
       echo $! > $HUB_SCHEDULER_PID_FILE
     )
     if scheduler_is_running; then
