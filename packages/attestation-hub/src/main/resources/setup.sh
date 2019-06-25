@@ -297,9 +297,9 @@ fi
 #export DEBIAN_FRONTEND=noninteractive
 #echo libguestfs-tools libguestfs/update-appliance boolean true | debconf-set-selections
 
-# make sure unzip is installed
+# make sure unzip, openssl is installed
 if [ "$IS_RPM" != "true" ]; then
-	ATTESTATION_HUB_YUM_PACKAGES="unzip"
+	ATTESTATION_HUB_YUM_PACKAGES="unzip openssl"
 fi
 ATTESTATION_HUB_APT_PACKAGES="unzip"
 ATTESTATION_HUB_YAST_PACKAGES="unzip"
