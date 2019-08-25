@@ -269,17 +269,20 @@ public class PluginManager {
 	private String createSignedTrustReport(String trustReportWithAdditions) {
 		PrivateKey privateKey;
 		String signedTrustReport = null;
+		String jwtHeader = null;
 		try {
 			privateKey = loadPrivateKey();
 			if (privateKey == null) {
 				log.error("No privateKey for creating signed report");
 				return null;
 			}
-			Signature signature = Signature.getInstance("SHA256withRSA");
+			Signature signature = Signature.getInstance("SHA384withRSA");
 			signature.initSign(privateKey);
 			byte[] trustReportAsBytes = trustReportWithAdditions.getBytes();
 			signature.update(trustReportAsBytes);
-			signedTrustReport = Base64.getEncoder().encodeToString(signature.sign());
+			jwtHeader = "{\"alg\":\"RS384\"}";
+			signedTrustReport = Base64.getEncoder().encodeToString(jwtHeader.getBytes())+ "." + Base64.getEncoder().encodeToString(trustReportWithAdditions.getBytes())
+					    + "." +Base64.getEncoder().encodeToString(signature.sign());
 		}
 		catch (AttestationHubException e) {
 			log.error("No private key found for encrypting trust report", e);
