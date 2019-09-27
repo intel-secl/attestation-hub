@@ -8,6 +8,7 @@ package com.intel.attestationhub.mtwclient;
 import com.intel.attestationhub.api.MWHost;
 import com.intel.dcsg.cpg.extensions.Extensions;
 import com.intel.mtwilson.Folders;
+import com.intel.mtwilson.core.common.utils.AASTokenFetcher;
 import com.intel.mtwilson.flavor.client.jaxrs.Reports;
 import com.intel.mtwilson.flavor.rest.v2.model.ReportCollection;
 import com.intel.mtwilson.flavor.rest.v2.model.Report;
@@ -31,6 +32,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+
 import java.io.File;
 import java.net.ConnectException;
 import java.security.KeyManagementException;
@@ -51,6 +53,7 @@ public class AttestationServiceClient {
     private static Properties mtwProperties = new Properties();
     private static Properties mtwPropertiesForverification = new Properties();
     private static AttestationServiceClient attestationServiceClient = null;
+    private static String aasBearerToken;
 
 
     private AttestationServiceClient() throws AttestationHubException {
@@ -151,7 +154,7 @@ public class AttestationServiceClient {
         Map<String, MWHost> hostIdToMwHostMap = new HashMap<>();
         Reports reportsClient = MtwClientFactory.getHostReports(mtwProperties);
         Hosts hostsClient = MtwClientFactory.getHostsClient(mtwProperties);
-        
+
         ReportFilterCriteria criteria = new ReportFilterCriteria();
         criteria.fromDate = lastDateTimeFromLastRunFile;
         criteria.latestPerHost = "true";
@@ -296,11 +299,22 @@ public class AttestationServiceClient {
         String password = AttestationHubConfigUtil.get(Constants.MTWILSON_API_PASSWORD);
         String keystore = Folders.configuration() + File.separator + user + ".jks";
 
-        mtwProperties.setProperty(Constants.MTWILSON_API_PASSWORD, password);
+        if (aasBearerToken == null || aasBearerToken.isEmpty()) {
+            try {
+                aasBearerToken = new AASTokenFetcher().getAASToken(
+                        AttestationHubConfigUtil.get(Constants.AAS_API_URL),
+                        user,
+                        password);
+            } catch (Exception exc) {
+                log.error("Cannot fetch token from AAS: ", exc);
+                throw new AttestationHubException("Cannot fetch token from AAS: ", exc);
+            }
+        }
+
         mtwProperties.setProperty(Constants.MTWILSON_API_TLS, AttestationHubConfigUtil.get(Constants.MTWILSON_API_TLS));
         mtwProperties.setProperty(Constants.MTWILSON_API_URL, AttestationHubConfigUtil.get(Constants.MTWILSON_API_URL));
-        mtwProperties.setProperty(Constants.MTWILSON_API_USER,
-                AttestationHubConfigUtil.get(Constants.MTWILSON_API_USER));
+        mtwProperties.setProperty(Constants.MTWILSON_API_USER, AttestationHubConfigUtil.get(Constants.MTWILSON_API_USER));
+        mtwProperties.setProperty("bearer.token", aasBearerToken);
 
         // Verification settings
         mtwPropertiesForverification = new Properties(mtwProperties);
@@ -308,6 +322,7 @@ public class AttestationServiceClient {
         mtwPropertiesForverification.setProperty("mtwilson.api.keystore.password", password);
         mtwPropertiesForverification.setProperty("mtwilson.api.key.alias", user);
         mtwPropertiesForverification.setProperty("mtwilson.api.key.password", password);
+        mtwPropertiesForverification.setProperty("bearer.token", aasBearerToken);
 
     }
 }
