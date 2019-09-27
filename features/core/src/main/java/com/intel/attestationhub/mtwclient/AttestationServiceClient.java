@@ -33,6 +33,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import javax.ws.rs.NotAuthorizedException;
 import java.io.File;
 import java.net.ConnectException;
 import java.security.KeyManagementException;
@@ -70,6 +71,7 @@ public class AttestationServiceClient {
     }
 
     public Map<String, MWHost> fetchHostAttestations(List<Host> hosts) throws AttestationHubException {
+        int noOfConnections = 0;
         if (mtwProperties == null) {
             throw new AttestationHubException("Configuration parameters for MTW client are not initialized");
         }
@@ -84,7 +86,7 @@ public class AttestationServiceClient {
 
         for (Host host : hosts) {
             String hostId = host.getId().toString();
-            log.info("Retrieveing attestation for host: {}", hostId);
+            log.info("Retrieving attestation for host: {}", hostId);
             ReportFilterCriteria criteria = new ReportFilterCriteria();
             criteria.hostName = host.getHostName();
             criteria.limit = 1;
@@ -96,6 +98,9 @@ public class AttestationServiceClient {
             } catch (Exception e) {
                 log.error("Unable to get host attestations or saml report for host with ID={} and name={}", host.getId().toString(),
                         host.getHostName(), e);
+                if (e instanceof NotAuthorizedException) {
+                    updateTokenCache();
+                }
                 if (e instanceof ConnectException) {
                     throw new AttestationHubException("Cannot connect to attestation service", e);
                 }
@@ -126,6 +131,9 @@ public class AttestationServiceClient {
             objCollection = hostsService.search(criteria);
         } catch (Exception e) {
             log.error("Error while fetching hosts from Attestation Service as part of poller", e);
+            if (e instanceof NotAuthorizedException) {
+                updateTokenCache();
+            }
             if (e instanceof ConnectException) {
                 throw new AttestationHubException("Cannot connect to attestation service", e);
             }
@@ -163,6 +171,9 @@ public class AttestationServiceClient {
             reports = reportsClient.search(criteria);
         } catch (Exception e) {
             log.error("Unable to get host attestations or saml for from date : {}", lastDateTimeFromLastRunFile, e);
+            if (e instanceof NotAuthorizedException) {
+                updateTokenCache();
+            }
             if (e instanceof ConnectException) {
                 throw new AttestationHubException("Cannot connect to attestation service", e);
             }
@@ -300,15 +311,7 @@ public class AttestationServiceClient {
         String keystore = Folders.configuration() + File.separator + user + ".jks";
 
         if (aasBearerToken == null || aasBearerToken.isEmpty()) {
-            try {
-                aasBearerToken = new AASTokenFetcher().getAASToken(
-                        AttestationHubConfigUtil.get(Constants.AAS_API_URL),
-                        user,
-                        password);
-            } catch (Exception exc) {
-                log.error("Cannot fetch token from AAS: ", exc);
-                throw new AttestationHubException("Cannot fetch token from AAS: ", exc);
-            }
+            updateTokenCache();
         }
 
         mtwProperties.setProperty(Constants.MTWILSON_API_TLS, AttestationHubConfigUtil.get(Constants.MTWILSON_API_TLS));
@@ -324,5 +327,17 @@ public class AttestationServiceClient {
         mtwPropertiesForverification.setProperty("mtwilson.api.key.password", password);
         mtwPropertiesForverification.setProperty("bearer.token", aasBearerToken);
 
+    }
+
+    private void updateTokenCache () throws AttestationHubException{
+        try {
+            aasBearerToken = new AASTokenFetcher().getAASToken(
+                    AttestationHubConfigUtil.get(Constants.AAS_API_URL),
+                    AttestationHubConfigUtil.get(Constants.MTWILSON_API_USER),
+                    AttestationHubConfigUtil.get(Constants.MTWILSON_API_PASSWORD));
+        } catch (Exception exc) {
+            log.error("Cannot fetch token from AAS: ", exc);
+            throw new AttestationHubException("Cannot fetch token from AAS: ", exc);
+        }
     }
 }
