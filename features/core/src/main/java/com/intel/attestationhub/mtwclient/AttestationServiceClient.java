@@ -71,7 +71,6 @@ public class AttestationServiceClient {
     }
 
     public Map<String, MWHost> fetchHostAttestations(List<Host> hosts) throws AttestationHubException {
-        int noOfConnections = 0;
         if (mtwProperties == null) {
             throw new AttestationHubException("Configuration parameters for MTW client are not initialized");
         }
@@ -306,9 +305,9 @@ public class AttestationServiceClient {
     }
 
     private void populateAttestationServiceProperties() throws AttestationHubException {
-        String user = AttestationHubConfigUtil.get(Constants.MTWILSON_API_USER);
-        String password = AttestationHubConfigUtil.get(Constants.MTWILSON_API_PASSWORD);
-        String keystore = Folders.configuration() + File.separator + user + ".jks";
+        String password = AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_KEYSTORE_PASSWORD);
+        String keystore = Folders.configuration() + File.separator + "keystore.p12";
+        String truststore = Folders.configuration() + File.separator + "truststore.p12";
 
         if (aasBearerToken == null || aasBearerToken.isEmpty()) {
             updateTokenCache();
@@ -322,8 +321,10 @@ public class AttestationServiceClient {
         // Verification settings
         mtwPropertiesForverification = new Properties(mtwProperties);
         mtwPropertiesForverification.setProperty("mtwilson.api.keystore", keystore);
+        mtwPropertiesForverification.setProperty("mtwilson.api.truststore", truststore);
+        mtwPropertiesForverification.setProperty("mtwilson.api.truststore.password", "changeit");
         mtwPropertiesForverification.setProperty("mtwilson.api.keystore.password", password);
-        mtwPropertiesForverification.setProperty("mtwilson.api.key.alias", user);
+        mtwPropertiesForverification.setProperty("mtwilson.api.key.alias", "jetty");
         mtwPropertiesForverification.setProperty("mtwilson.api.key.password", password);
         mtwPropertiesForverification.setProperty("bearer.token", aasBearerToken);
 

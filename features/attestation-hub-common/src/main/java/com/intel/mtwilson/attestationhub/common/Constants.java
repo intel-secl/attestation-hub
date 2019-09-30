@@ -16,6 +16,7 @@ public class Constants {
     public static final String ATTESTATION_HUB_DATA_ENCRYPTION_KEY = "attestation-hub.dek";
     public static final String ATTESTATION_HUB_ADMIN_USERNAME = "attestation-hub.admin.username";
     public static final String ATTESTATION_HUB_ADMIN_PASSWORD = "attestation-hub.admin.password";
+    public static final String ATTESTATION_HUB_KEYSTORE_PASSWORD = "keystore.password";
 
     public final static String BEARER_TOKEN = "bearer.token";
     public final static String AAS_API_URL = "aas.api.url";
