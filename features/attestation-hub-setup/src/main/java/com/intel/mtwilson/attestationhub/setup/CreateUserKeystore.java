@@ -4,23 +4,19 @@
  */
 package com.intel.mtwilson.attestationhub.setup;
 
-import com.intel.dcsg.cpg.crypto.*;
-import com.intel.dcsg.cpg.io.FileResource;
-import com.intel.dcsg.cpg.tls.policy.TlsUtil;
+import com.intel.dcsg.cpg.tls.policy.TlsConnection;
+import com.intel.dcsg.cpg.tls.policy.impl.InsecureTlsPolicy;
+import com.intel.kms.setup.JettyTlsKeystore;
 import com.intel.mtwilson.Folders;
 import com.intel.mtwilson.attestationhub.common.AttestationHubConfigUtil;
 import com.intel.mtwilson.attestationhub.common.Constants;
-import com.intel.mtwilson.attestationhub.exception.AttestationHubException;
 import com.intel.mtwilson.client.jaxrs.CaCertificates;
-import com.intel.mtwilson.setup.AbstractSetupTask;
+import com.intel.mtwilson.core.common.utils.AASTokenFetcher;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.URL;
-import java.security.*;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
+import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.Properties;
 
@@ -28,104 +24,86 @@ import java.util.Properties;
  *
  * @author rawatar
  */
-public class CreateUserKeystore extends AbstractSetupTask {
+public class CreateUserKeystore extends JettyTlsKeystore {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CreateUserKeystore.class);
 
-    private static final String TLS_PROTOCOL = "TLSv1.2";
-
-    private String user;
-    private String password;
-    private String keystore;
-    private File folder;
-    private URL server;
-    private Properties properties;
+    private String url;
+    private final String trustStorePath = Folders.configuration()+"/truststore.";
 
     @Override
     protected void configure() throws Exception {
-        try {
-            server = new URL(AttestationHubConfigUtil.get(Constants.MTWILSON_API_URL));
-        } catch (MalformedURLException e) {
-            log.error("Error forming Attestation Service URL", e);
-            throw new AttestationHubException(e);
-        }
-        user = AttestationHubConfigUtil.get(Constants.MTWILSON_API_USER);
-        password = AttestationHubConfigUtil.get(Constants.MTWILSON_API_PASSWORD);
-        keystore = Folders.configuration() + File.separator + user + ".jks";
 
-        properties = new Properties();
-        folder = new File(Folders.configuration());
-        properties.setProperty("mtwilson.api.tls.policy.certificate.sha384",
-                AttestationHubConfigUtil.get(Constants.MTWILSON_API_TLS));
+        username = AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_ADMIN_USERNAME);
+        if (username == null || username.isEmpty()) {
+            configuration("Attestation Hub admin username is not set");
+        }
+
+        password = AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_ADMIN_PASSWORD);
+        if (password == null || password.isEmpty()) {
+            configuration("Attestation Hub admin password is not set");
+        }
+
+        url = AttestationHubConfigUtil.get(Constants.MTWILSON_API_URL);
+        if (url == null || url.isEmpty()) {
+            configuration("Mt Wilson URL is not set");
+        }
+
+        super.configure();
     }
 
     @Override
     protected void validate() throws Exception {
-        File keystoreFile = new File(folder.getAbsoluteFile() + File.separator + user + ".jks");
-        if( !keystoreFile.exists() ) {
-            validation("Keystore file was not created");
-            return;
-        }
+        super.validate();
     }
 
     @Override
     protected void execute() throws Exception {
-        File keystoreFile = new File(folder.getAbsoluteFile() + File.separator + user + ".jks");
-        FileResource resource = new FileResource(keystoreFile);
-        URL baseUrl = new URL(server.getProtocol() + "://" + server.getAuthority());
-        SimpleKeystore keystore;
-        try {
-            // create the keystore and a new credential
-            keystore = new SimpleKeystore(resource, password); // KeyManagementException
-            KeyPair keypair = RsaUtil.generateRsaKeyPair(RsaUtil.MINIMUM_RSA_KEY_SIZE); // NoSuchAlgorithmException
-            X509Certificate certificate = RsaUtil.generateX509Certificate(/*"CN="+*/user, keypair, RsaUtil.DEFAULT_RSA_KEY_EXPIRES_DAYS); // GeneralSecurityException
-            keystore.addKeyPairX509(keypair.getPrivate(), certificate, user, password); // KeyManagementException
-            keystore.save(); // KeyStoreException, IOException, CertificateException
-        }
-        catch(KeyManagementException | NoSuchAlgorithmException | KeyStoreException | CertificateException e) {
-            throw new CryptographyException("Cannot create keystore", e);
+        super.execute();
+
+        String extension = "p12";
+        if (KeyStore.getDefaultType().equalsIgnoreCase("JKS")) {
+            extension = "jks";
         }
 
-        log.debug("URL Protocol: {}", baseUrl.getProtocol());
-        if( "https".equals(baseUrl.getProtocol()) ) {
-            TlsUtil.addSslCertificatesToKeystore(keystore, baseUrl, TLS_PROTOCOL); //CryptographyException, IOException
-        }
+        String trustStoreFileName = trustStorePath+extension;
+
+        TlsConnection tlsConnection = new TlsConnection(new URL(url), new InsecureTlsPolicy());
+        Properties clientConfiguration = new Properties();
+        clientConfiguration.setProperty(Constants.BEARER_TOKEN, new AASTokenFetcher().getAASToken(aasApiUrl, username, password));
 
         try {
-            String[] aliases = keystore.aliases();
-            for(String alias : aliases) {
-                log.debug("Certificate: "+keystore.getX509Certificate(alias).getSubjectX500Principal().getName());
-            }
-        }
-        catch(KeyStoreException | NoSuchAlgorithmException | UnrecoverableEntryException | CertificateEncodingException e) {
-            log.debug("cannot display keystore: "+e.toString());
-        }
-
-        if( !properties.containsKey("mtwilson.api.url") && !properties.containsKey("mtwilson.api.baseurl") ) {
-            properties.setProperty("mtwilson.api.url", server.toExternalForm());
-        }
-
-        try {
-
-            CaCertificates certClient = new CaCertificates(properties);
+            CaCertificates certClient = new CaCertificates(clientConfiguration, tlsConnection);
             X509Certificate samlCertificate = certClient.retrieveCaCertificate("saml");
-
-            if (samlCertificate.getBasicConstraints() == -1) { // -1 indicates the cert is not a CA cert
-                log.debug("Adding SAML Certificate with alias {} from server {}", samlCertificate.getSubjectX500Principal().getName(), server.getHost());
-                keystore.addTrustedSamlCertificate(samlCertificate, samlCertificate.getSubjectX500Principal().getName());
-
-            } else {
-                log.debug("Adding SAML Certificate as CA cert with alias {} from server {}", samlCertificate.getSubjectX500Principal().getName(), server.getHost());
-                keystore.addTrustedCaCertificate(samlCertificate, samlCertificate.getSubjectX500Principal().getName());
-            }
+            storeCertificate(samlCertificate, "saml", trustStoreFileName);
         } catch (Exception ex) {
             log.error("Error during retrieval of certificates for writing to the key store.", ex);
         }
+    }
 
+    private void storeCertificate (X509Certificate certificate, String alias, String trustStoreFileName) throws Exception {
+        KeyStore keystore = loadTrustStore(trustStoreFileName);
+        FileOutputStream keystoreFOS = new FileOutputStream(trustStoreFileName);
         try {
-            keystore.save();
+            keystore.setCertificateEntry(alias, certificate);
+            keystore.store(keystoreFOS, "changeit".toCharArray());
+        } catch (Exception exc) {
+            throw new Exception("Error storing certificate in keystore", exc);
+        }finally {
+            keystoreFOS.close();
         }
-        catch(KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException e) {
-            throw new CryptographyException("Cannot save keystore to resource: "+e.toString(), e);
+    }
+
+    private KeyStore loadTrustStore(String trustStoreFileName) throws Exception{
+        FileInputStream keystoreFIS = new FileInputStream(trustStoreFileName);
+        KeyStore keyStore;
+        try {
+            keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(keystoreFIS, "changeit".toCharArray());
+        } catch (Exception exc) {
+            throw new Exception("Error loading trust store", exc);
+        } finally {
+            keystoreFIS.close();
         }
+        return keyStore;
     }
 }

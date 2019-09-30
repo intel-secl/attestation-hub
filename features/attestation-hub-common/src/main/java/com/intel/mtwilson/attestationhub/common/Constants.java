@@ -14,7 +14,12 @@ public class Constants {
     public static final String ATTESTATION_HUB_DB_PASSWORD = "attestation-hub.db.password";
     public static final String ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH = "tenant.configuration.path";
     public static final String ATTESTATION_HUB_DATA_ENCRYPTION_KEY = "attestation-hub.dek";
+    public static final String ATTESTATION_HUB_ADMIN_USERNAME = "attestation-hub.admin.username";
+    public static final String ATTESTATION_HUB_ADMIN_PASSWORD = "attestation-hub.admin.password";
 
+    public final static String BEARER_TOKEN = "bearer.token";
+    public final static String AAS_API_URL = "aas.api.url";
+    public final static String CMS_BASE_URL = "cms.base.url";
     public static final String MTWILSON_API_URL = "mtwilson.api.url";
     public static final String MTWILSON_API_USER = "mtwilson.api.username";
     public static final String MTWILSON_API_PASSWORD = "mtwilson.api.password";

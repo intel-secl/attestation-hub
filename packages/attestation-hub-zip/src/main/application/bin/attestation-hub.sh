@@ -95,10 +95,11 @@ chown "$ATTESTATION_HUB_USERNAME":"$ATTESTATION_HUB_USERNAME" "$ATTESTATION_HUB_
 chmod 600 "$ATTESTATION_HUB_APPLICATION_LOG_FILE"
 JAVA_REQUIRED_VERSION=${JAVA_REQUIRED_VERSION:-1.7}
 JAVA_OPTS=${JAVA_OPTS:-"-Dlogback.configurationFile=$ATTESTATION_HUB_CONFIGURATION/logback.xml -Dlog4j.configuration=file:$ATTESTATION_HUB_CONFIGURATION/log4j.properties"}
+JAVA_OPTS="${JAVA_OPTS} -Djava.net.preferIPv4Stack=true"
 
 ATTESTATION_HUB_SETUP_FIRST_TASKS=${ATTESTATION_HUB_SETUP_FIRST_TASKS:-"update-extensions-cache-file"}
 ATTESTATION_HUB_PRESETUP_TASKS="create-data-encryption-key"
-ATTESTATION_HUB_SETUP_TASKS=${ATTESTATION_HUB_SETUP_TASKS:-"password-vault jetty-tls-keystore shiro-ssl-port trust-report-encryption-key create-user-keystore"}
+ATTESTATION_HUB_SETUP_TASKS=${ATTESTATION_HUB_SETUP_TASKS:-"password-vault create-user-keystore shiro-ssl-port trust-report-encryption-key"}
 
 # the standard PID file location /var/run is typically owned by root;
 # if we are running as non-root and the standard location isn't writable 
@@ -163,6 +164,16 @@ attestation_hub_complete_setup() {
 
   attestation_hub_run config jetty.port $ATTESTATION_HUB_PORT_HTTP >/dev/null
   attestation_hub_run config jetty.secure.port $ATTESTATION_HUB_PORT_HTTPS >/dev/null
+
+  attestation_hub_run config "attestation-hub.admin.username" "$ATTESTATION_HUB_ADMIN_USERNAME" >/dev/null
+  attestation_hub_run config "attestation-hub.admin.password" "$ATTESTATION_HUB_ADMIN_PASSWORD" >/dev/null
+
+  #AAS configuration
+  attestation_hub_run config "aas.api.url" "$AAS_API_URL" >/dev/null
+  #CMS configuration
+  attestation_hub_run config "cms.base.url" "$CMS_BASE_URL" >/dev/null
+  #Get CMS CA Certificate
+  curl --insecure -X GET -H "Accept: application/x-pem-file" -w "%{http_code}" $CMS_BASE_URL/ca-certificates -o $ATTESTATION_HUB_CONFIGURATION/cms-ca.cert >/dev/null
 
   # Run complete setup
   attestation_hub_run setup $ATTESTATION_HUB_SETUP_FIRST_TASKS
