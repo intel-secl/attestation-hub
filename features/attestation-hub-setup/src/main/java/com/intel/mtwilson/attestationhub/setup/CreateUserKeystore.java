@@ -5,6 +5,8 @@
 package com.intel.mtwilson.attestationhub.setup;
 
 import com.intel.dcsg.cpg.tls.policy.TlsConnection;
+import com.intel.dcsg.cpg.tls.policy.TlsPolicy;
+import com.intel.dcsg.cpg.tls.policy.TlsPolicyBuilder;
 import com.intel.dcsg.cpg.tls.policy.impl.InsecureTlsPolicy;
 import com.intel.kms.setup.JettyTlsKeystore;
 import com.intel.mtwilson.Folders;
@@ -28,6 +30,7 @@ public class CreateUserKeystore extends JettyTlsKeystore {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CreateUserKeystore.class);
 
     private String url;
+    private String aasApiUrl;
     private final String trustStorePath = Folders.configuration()+"/truststore.";
 
     @Override
@@ -46,6 +49,11 @@ public class CreateUserKeystore extends JettyTlsKeystore {
         url = AttestationHubConfigUtil.get(Constants.MTWILSON_API_URL);
         if (url == null || url.isEmpty()) {
             configuration("Mt Wilson URL is not set");
+        }
+
+        aasApiUrl = AttestationHubConfigUtil.get(Constants.AAS_API_URL);
+        if (aasApiUrl == null || aasApiUrl.isEmpty()) {
+            configuration("AAS URL is not set");
         }
 
         super.configure();
@@ -67,11 +75,13 @@ public class CreateUserKeystore extends JettyTlsKeystore {
 
         String trustStoreFileName = trustStorePath+extension;
 
-        TlsConnection tlsConnection = new TlsConnection(new URL(url), new InsecureTlsPolicy());
+        TlsPolicy tlsPolicy = TlsPolicyBuilder.factory().strictWithKeystore(trustStoreFileName, "changeit").build();
         Properties clientConfiguration = new Properties();
-        clientConfiguration.setProperty(Constants.BEARER_TOKEN, new AASTokenFetcher().getAASToken(aasApiUrl, username, password));
+        TlsConnection tlsConnection = new TlsConnection(new URL(aasApiUrl), tlsPolicy);
+        clientConfiguration.setProperty(Constants.BEARER_TOKEN, new AASTokenFetcher().getAASToken(username, password, tlsConnection));
 
         try {
+            tlsConnection = new TlsConnection(new URL(url), tlsPolicy);
             CaCertificates certClient = new CaCertificates(clientConfiguration, tlsConnection);
             X509Certificate samlCertificate = certClient.retrieveCaCertificate("saml");
             storeCertificate(samlCertificate, String.format("%s(%s)", samlCertificate.getSubjectX500Principal().getName(), "saml"), trustStoreFileName);

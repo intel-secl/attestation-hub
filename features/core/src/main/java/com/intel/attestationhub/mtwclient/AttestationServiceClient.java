@@ -7,6 +7,9 @@ package com.intel.attestationhub.mtwclient;
 
 import com.intel.attestationhub.api.MWHost;
 import com.intel.dcsg.cpg.extensions.Extensions;
+import com.intel.dcsg.cpg.tls.policy.TlsConnection;
+import com.intel.dcsg.cpg.tls.policy.TlsPolicy;
+import com.intel.dcsg.cpg.tls.policy.TlsPolicyBuilder;
 import com.intel.mtwilson.Folders;
 import com.intel.mtwilson.core.common.utils.AASTokenFetcher;
 import com.intel.mtwilson.flavor.client.jaxrs.Reports;
@@ -36,6 +39,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import javax.ws.rs.NotAuthorizedException;
 import java.io.File;
 import java.net.ConnectException;
+import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -335,10 +339,14 @@ public class AttestationServiceClient {
 
     private void updateTokenCache () throws AttestationHubException{
         try {
+            String trustStoreFileName = Folders.configuration() + File.separator + "truststore.p12";
+            TlsPolicy tlsPolicy = TlsPolicyBuilder.factory().strictWithKeystore(trustStoreFileName, "changeit").build();        Properties clientConfiguration = new Properties();
+            TlsConnection tlsConnection = new TlsConnection(new URL(AttestationHubConfigUtil.get(Constants.AAS_API_URL)), tlsPolicy);
+
             aasBearerToken = new AASTokenFetcher().getAASToken(
-                    AttestationHubConfigUtil.get(Constants.AAS_API_URL),
                     AttestationHubConfigUtil.get(Constants.MTWILSON_API_USER),
-                    AttestationHubConfigUtil.get(Constants.MTWILSON_API_PASSWORD));
+                    AttestationHubConfigUtil.get(Constants.MTWILSON_API_PASSWORD),
+                    tlsConnection);
         } catch (Exception exc) {
             log.error("Cannot fetch token from AAS: ", exc);
             throw new AttestationHubException("Cannot fetch token from AAS: ", exc);
