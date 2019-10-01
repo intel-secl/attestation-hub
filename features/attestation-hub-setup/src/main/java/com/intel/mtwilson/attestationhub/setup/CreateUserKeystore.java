@@ -74,7 +74,7 @@ public class CreateUserKeystore extends JettyTlsKeystore {
         try {
             CaCertificates certClient = new CaCertificates(clientConfiguration, tlsConnection);
             X509Certificate samlCertificate = certClient.retrieveCaCertificate("saml");
-            storeCertificate(samlCertificate, "saml", trustStoreFileName);
+            storeCertificate(samlCertificate, String.format("%s(%s)", samlCertificate.getSubjectX500Principal().getName(), "saml"), trustStoreFileName);
         } catch (Exception ex) {
             log.error("Error during retrieval of certificates for writing to the key store.", ex);
         }
