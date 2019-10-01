@@ -99,6 +99,7 @@ public class AttestationServiceClient {
                         host.getHostName(), e);
                 if (e instanceof NotAuthorizedException) {
                     updateTokenCache();
+                    throw new AttestationHubException("Not authorized to connect to attestation service", e);
                 }
                 if (e instanceof ConnectException) {
                     throw new AttestationHubException("Cannot connect to attestation service", e);
@@ -132,6 +133,7 @@ public class AttestationServiceClient {
             log.error("Error while fetching hosts from Attestation Service as part of poller", e);
             if (e instanceof NotAuthorizedException) {
                 updateTokenCache();
+                throw new AttestationHubException("Not authorized to connect to attestation service", e);
             }
             if (e instanceof ConnectException) {
                 throw new AttestationHubException("Cannot connect to attestation service", e);
@@ -172,6 +174,7 @@ public class AttestationServiceClient {
             log.error("Unable to get host attestations or saml for from date : {}", lastDateTimeFromLastRunFile, e);
             if (e instanceof NotAuthorizedException) {
                 updateTokenCache();
+                throw new AttestationHubException("Not authorized to connect to attestation service", e);
             }
             if (e instanceof ConnectException) {
                 throw new AttestationHubException("Cannot connect to attestation service", e);
