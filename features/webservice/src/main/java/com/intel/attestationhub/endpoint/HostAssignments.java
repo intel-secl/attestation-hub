@@ -37,6 +37,7 @@ import com.intel.mtwilson.attestationhub.controller.exceptions.NonexistentEntity
 import com.intel.mtwilson.attestationhub.data.AhMapping;
 import com.intel.mtwilson.attestationhub.exception.AttestationHubException;
 import com.intel.mtwilson.launcher.ws.ext.V2;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 
 @V2
 @Path("/")
@@ -47,6 +48,7 @@ public class HostAssignments {
     @Path("/host-assignments")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermissions("host_assignments:create")
     public Response createMapping(Mapping mapping) {
 	if (!ValidationUtil.isValidWithRegex(mapping.tenant_id, RegexPatterns.UUID)) {
 	    ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ID);
@@ -89,6 +91,7 @@ public class HostAssignments {
     @GET
     @Path("host-assignments/{id:[0-9a-zA-Z_-]+ }")
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermissions("host_assignments:retrieve")
     public Response retrieveMapping(@PathParam("id") String id) {
 	if (!ValidationUtil.isValidWithRegex(id, RegexPatterns.UUID)) {
 	    ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ID);
@@ -132,6 +135,7 @@ public class HostAssignments {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("host-assignments/{id:[0-9a-zA-Z_-]+ }")
+    @RequiresPermissions("host_assignments:delete")
     public Response deleteMapping(@PathParam("id") String id) {
 	if (!ValidationUtil.isValidWithRegex(id, RegexPatterns.UUID)) {
 	    ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ID);
@@ -159,6 +163,7 @@ public class HostAssignments {
     @GET
     @Path("host-assignments")
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermissions("host_assignments:search")
     public Response searchMappingsBySearchCriteria(@BeanParam SearchCriteriaForMapping criteriaForMapping,
 	    @Context HttpServletRequest httpServletRequest) {
 	AttestationHubService attestationHubService = AttestationHubServiceImpl.getInstance();

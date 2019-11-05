@@ -35,6 +35,7 @@ import com.intel.dcsg.cpg.validation.ValidationUtil;
 import com.intel.mtwilson.attestationhub.controller.exceptions.NonexistentEntityException;
 import com.intel.mtwilson.attestationhub.exception.AttestationHubException;
 import com.intel.mtwilson.launcher.ws.ext.V2;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 
 @V2
 @Path("/tenants")
@@ -44,6 +45,7 @@ public class Tenants {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermissions("tenants:create")
     public Response createTenant(Tenant tenant) {
 	String validateResult = tenant.validate();
 	if (StringUtils.isNotBlank(validateResult)) {
@@ -66,6 +68,7 @@ public class Tenants {
     @GET
     @Path("/{id:[0-9a-zA-Z_-]+ }")
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermissions("tenants:retrieve")
     public Response retrieveTenant(@PathParam("id") String id) {
 	if (!ValidationUtil.isValidWithRegex(id, RegexPatterns.UUID)) {
 	    ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ID);
@@ -111,6 +114,7 @@ public class Tenants {
     @Path("/{id:[0-9a-zA-Z_-]+ }")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermissions("tenants:store")
     public Response updateTenant(@PathParam("id") String id, Tenant tenant) {
 	if (!ValidationUtil.isValidWithRegex(id, RegexPatterns.UUID)) {
 	    ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ID);
@@ -145,6 +149,7 @@ public class Tenants {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id:[0-9a-zA-Z_-]+ }")
+    @RequiresPermissions("tenants:delete")
     public Response deleteTenant(@PathParam("id") String id) {
 	if (!ValidationUtil.isValidWithRegex(id, RegexPatterns.UUID)) {
 	    ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_ID);
@@ -171,6 +176,7 @@ public class Tenants {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermissions("tenants:search")
     public Response searchTenantsBySearchCriteria(@BeanParam TenantFilterCriteria tenantFilterCriteria,
 	    @Context HttpServletRequest httpServletRequest) {
 	log.info("Searching for tenants with name : {}", tenantFilterCriteria.nameEqualTo);

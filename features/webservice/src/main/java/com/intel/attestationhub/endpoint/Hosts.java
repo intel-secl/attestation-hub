@@ -34,6 +34,7 @@ import com.intel.mtwilson.attestationhub.controller.exceptions.NonexistentEntity
 import com.intel.mtwilson.attestationhub.data.AhHost;
 import com.intel.mtwilson.attestationhub.exception.AttestationHubException;
 import com.intel.mtwilson.launcher.ws.ext.V2;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 
 @V2
 @Path("/hosts")
@@ -43,6 +44,7 @@ public class Hosts {
     @GET
     @Path("/{id:[0-9a-zA-z_-]+}")
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermissions("hosts:retrieve")
     public Response getHost(@PathParam("id") String id) {
 	// Validate the ID
 	if (!ValidationUtil.isValidWithRegex(id, RegexPatterns.UUID)) {
@@ -87,6 +89,7 @@ public class Hosts {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @RequiresPermissions("hosts:search")
     public Response searchHosts(@BeanParam HostFilterCriteria hostFilterCriteria,
 	    @Context HttpServletRequest httpServletRequest) {
 	log.info("searching for hosts with name : {}", hostFilterCriteria.nameEqualTo);

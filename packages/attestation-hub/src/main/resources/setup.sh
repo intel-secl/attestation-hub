@@ -313,8 +313,6 @@ install_packages "Installer requirements" "ATTESTATION_HUB"
 if [ $? -ne 0 ]; then echo_failure "Failed to install prerequisites through package installer"; exit -1; fi
 
 # 7. detect postgres, install if not installed
-export postgres_required_version=${POSTGRES_REQUIRED_VERSION:-9.4}
-
 postgres_write_connection_properties "$ATTESTATION_HUB_CONFIGURATION/attestation-hub.properties" attestation-hub.db
  
 postgres_installed=1
@@ -331,87 +329,7 @@ echo "$POSTGRES_HOSTNAME:$POSTGRES_PORTNUM:$POSTGRES_DATABASE:$POSTGRES_USERNAME
 echo "$PGPASS_HOSTNAME:$POSTGRES_PORTNUM:$POSTGRES_DATABASE:$POSTGRES_USERNAME:$POSTGRES_PASSWORD" >> ${ATTESTATION_HUB_HOME}/.pgpass
 if [ $(whoami) == "root" ]; then cp ${ATTESTATION_HUB_HOME}/.pgpass ~/.pgpass; fi
 
-if [ "$(whoami)" == "root" ]; then
-  # Copy the www.postgresql.org PGP public key so add_postgresql_install_packages can add it later if needed
-  if [ -d "/etc/apt" ]; then
-    mkdir -p /etc/apt/trusted.gpg.d
-    chmod 755 /etc/apt/trusted.gpg.d
-    if [ -e ACCC4CF8.asc ]; then
-      cp ACCC4CF8.asc "/etc/apt/trusted.gpg.d"
-    fi
-  fi
-  POSTGRES_SERVER_APT_PACKAGES="postgresql-9.4"
-   if  [ "$IS_RPM" != "true" ]; then
-	POSTGRES_SERVER_YUM_PACKAGES="postgresql94-server"
-	yes | add_postgresql_install_packages "POSTGRES_SERVER"
-  fi
-  echo "opt postgres value is:: $opt_postgres"
-  if [[ "$POSTGRES_HOSTNAME" == "127.0.0.1" || "$POSTGRES_HOSTNAME" == "localhost" || -n `echo "$(hostaddress_list)" | grep "$POSTGRES_HOSTNAME"` ]]; then
-    echo "Installing postgres server..."
-    # when we install postgres server on ubuntu it prompts us for root pw
-    # we preset it so we can send all output to the log
-    aptget_detect; dpkg_detect; yum_detect;
-    if [[ -n "$aptget" ]]; then
-      echo "postgresql app-pass password $POSTGRES_PASSWORD" | debconf-set-selections 
-    fi
-    postgres_installed=0 #postgres is being installed
-    # don't need to restart postgres server unless the install script says we need to (by returning zero)
-    postgres_server_install
-    # postgres server end
-  fi 
-  # postgres client install here
-  echo "Installing postgres client..."
-  if  [ "$IS_RPM" != "true" ]; then
-	postgres_install
-  fi
-  # do not need to restart postgres server after installing the client.
-  #postgres_restart >> $INSTALL_LOG_FILE
-  #sleep 10
-  echo "Installation of postgres client complete" 
-  # postgres client install end
-fi
-  
-if [ -z "$SKIP_DATABASE_INIT" ]; then
-    # postgres db init here
-	#echo "Creating logs for mtwilson"
-	#mkdir -p /opt/mtwilson/logs
-	postgres_create_database
-    if [ $? -ne 0 ]; then
-      echo_failure "Cannot create database"
-      exit 1
-    fi
-    #postgres_restart >> $INSTALL_LOG_FILE
-    #sleep 10
-    #export is_postgres_available postgres_connection_error
-    if [ -z "$is_postgres_available" ]; then
-      echo_warning "Run 'attestation-hub setup' after a database is available"; 
-    fi
-    # postgress db init end
-else
-  echo_warning "Skipping init of database"
-fi
 
-if [ $postgres_installed -eq 0 ]; then
-  postgres_server_detect
-  has_local_postgres_peer=`grep "^local.*all.*postgres.*peer" $postgres_pghb_conf`
-  if [ -z "$has_local_postgres_peer" ]; then
-    echo "Adding PostgreSQL local 'peer' authentication for 'postgres' user..."
-    sed -i '/^.*TYPE.*DATABASE.*USER.*ADDRESS.*METHOD/a local all postgres peer' $postgres_pghb_conf
-  fi
-  has_local_peer=`grep "^local.*all.*all.*peer" $postgres_pghb_conf`
-  if [ -n "$has_local_peer" ]; then
-    echo "Replacing PostgreSQL local 'peer' authentication with 'md5' authentication..."
-    sed -i 's/^local.*all.*all.*peer/local all all md5/' $postgres_pghb_conf
-  fi
-  if [ "$POSTGRESQL_KEEP_PGPASS" != "true" ]; then
-    if [ -f ${ATTESTATION_HUB_HOME}/.pgpass ]; then
-      echo "Removing .pgpass file to prevent insecure database password storage in plaintext..."
-      rm -f ${ATTESTATION_HUB_HOME}/.pgpass
-      if [ $(whoami) == "root" ]; then rm -f ~/.pgpass; fi
-    fi
-  fi
-fi
- 
 ATTESTATION_HUB_PORT_HTTP=${ATTESTATION_HUB_PORT_HTTP:-${JETTY_PORT:-80}}
 ATTESTATION_HUB_PORT_HTTPS=${ATTESTATION_HUB_PORT_HTTPS:-${JETTY_SECURE_PORT:-443}}
 
