@@ -39,7 +39,7 @@ public class Constants {
 		public static final String NULL = "null";
 		public static final String RESOURCE_VERSION = "resourceVersion";
 		public static final Integer ZERO = 0;
-		public static final String INSTANCE_TYPE = "JKS";
+		public static final String INSTANCE_TYPE = "PKCS12";
 		public static final String SLASH_COMMA = "\"";
 		public static final String EMPTY_STRING = "";
 		public static final String SPEC = "spec";

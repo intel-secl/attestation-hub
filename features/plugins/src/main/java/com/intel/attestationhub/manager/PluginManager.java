@@ -10,22 +10,17 @@
  */
 package com.intel.attestationhub.manager;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.security.*;
+import java.security.cert.CertificateException;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Base64;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.*;
 
 import com.intel.attestationhub.mapper.TenantMapper;
+import com.intel.dcsg.cpg.crypto.Sha1Digest;
 import com.intel.mtwilson.attestationhub.controller.AhTenantPluginCredentialJpaController;
 import com.intel.mtwilson.attestationhub.controller.exceptions.NonexistentEntityException;
 import com.intel.mtwilson.attestationhub.data.AhTenantPluginCredential;
@@ -52,6 +47,8 @@ import com.intel.mtwilson.attestationhub.data.AhMapping;
 import com.intel.mtwilson.attestationhub.data.AhTenant;
 import com.intel.mtwilson.attestationhub.exception.AttestationHubException;
 import com.intel.mtwilson.attestationhub.service.PersistenceServiceFactory;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemReader;
 
 /**
  * @author Vijay Prakash
@@ -60,6 +57,8 @@ public class PluginManager {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PluginManager.class);
     private static final String PRIVATE_KEY_PATH = Folders.configuration() + File.separator
 	    + Constants.PRIVATE_KEY_FILE;
+    private static final String PUBLIC_KEY_PATH = Folders.configuration() + File.separator
+		+ Constants.PUBLIC_KEY_FILE;
 
     private static PluginManager pluginManager = null;
 
@@ -160,8 +159,8 @@ public class PluginManager {
 	details.hostname = host.getHostName();
 
 	if (StringUtils.isBlank(trustTagsJson)) {
-		log.error("** No trust tags json available for host uuid: {} for generating a JWS", host.getId());
-		return details;
+	     log.error("** No trust tags json available for host uuid: {} for generating a JWS", host.getId());
+	     return details;
 	}
 
 	Map<String, List<String>> assetTags = new HashMap<>();
@@ -182,16 +181,16 @@ public class PluginManager {
 	}
 
 	if (StringUtils.isNotBlank(host.getHardwareFeatures())) {
-		try {
-			TypeReference<Map<String, String>> typeRef = new TypeReference<Map<String, String>>() {};
-			hardwareFeatures = objectMapper.readValue(host.getHardwareFeatures(), typeRef);
-		} catch (JsonParseException e) {
-			log.error("Error converting tags to JSON", e);
-		} catch (JsonMappingException e) {
-			log.error("Error converting tags to JSON", e);
-		} catch (IOException e) {
-			log.error("Error converting tags to JSON", e);
-		}
+	    try {
+	        TypeReference<Map<String, String>> typeRef = new TypeReference<Map<String, String>>() {};
+		hardwareFeatures = objectMapper.readValue(host.getHardwareFeatures(), typeRef);
+	    } catch (JsonParseException e) {
+		log.error("Error converting tags to JSON", e);
+	    } catch (JsonMappingException e) {
+		log.error("Error converting tags to JSON", e);
+	    } catch (IOException e) {
+		log.error("Error converting tags to JSON", e);
+	    }
 	}
 	String errorMsg = "Error parsing trust response";
 	try {
@@ -204,7 +203,7 @@ public class PluginManager {
 	    details.trust_report = trustReportWithAdditions;
 	    String signedTrustReport = createSignedTrustReport(trustReportWithAdditions);
 	    if (StringUtils.isNotBlank(signedTrustReport)) {
-		details.signed_trust_report = signedTrustReport;
+	        details.signed_trust_report = signedTrustReport;
 	    }
 	} catch (JsonParseException e) {
 	    log.error(errorMsg, e);
@@ -219,25 +218,24 @@ public class PluginManager {
     }
 
     private Plugin addCredentialToPlugin(AhTenant ahTenant, Plugin plugin) throws AttestationHubException {
-		log.debug("Adding credentials to plugin");
-    	String tenantId = ahTenant.getId();
+	log.debug("Adding credentials to plugin");
+	String tenantId = ahTenant.getId();
     	String pluginName = plugin.getName();
-		PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
-		AhTenantPluginCredentialJpaController tenantPluginCredentialController = persistenceServiceFactory.getTenantPluginCredentialController();
-		AhTenantPluginCredential ahTenantPluginCredential = tenantPluginCredentialController.findByTenantIdAndPluginName(tenantId, pluginName);
-		if (ahTenantPluginCredential == null) {
-			NonexistentEntityException nonexistentEntityException = new NonexistentEntityException(
-					"Tenant Plugin Credential with tenant id: " + tenantId + " and plugin name: " + pluginName + " does not exist");
-			throw new AttestationHubException(nonexistentEntityException);
-		}
-
-		List<Tenant.PluginProperty> properties = ahTenantPluginCredential.getCredential();
-		for (Tenant.PluginProperty property : properties) {
-			plugin.addProperty(property.getKey(), property.getValue());
-		}
-
-		return plugin;
+	PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
+	AhTenantPluginCredentialJpaController tenantPluginCredentialController = persistenceServiceFactory.getTenantPluginCredentialController();
+	AhTenantPluginCredential ahTenantPluginCredential = tenantPluginCredentialController.findByTenantIdAndPluginName(tenantId, pluginName);
+	if (ahTenantPluginCredential == null) {
+	    NonexistentEntityException nonexistentEntityException = new NonexistentEntityException(
+		"Tenant Plugin Credential with tenant id: " + tenantId + " and plugin name: " + pluginName + " does not exist");
+	    throw new AttestationHubException(nonexistentEntityException);
 	}
+	List<Tenant.PluginProperty> properties = ahTenantPluginCredential.getCredential();
+	for (Tenant.PluginProperty property : properties) {
+	    plugin.addProperty(property.getKey(), property.getValue());
+	}
+
+	return plugin;
+    }
 
     private void processDataToPlugins(AhTenant ahTenant, List<HostDetails> hostsData, List<Plugin> plugins) {
 	if (plugins == null || hostsData == null || ahTenant == null) {
@@ -266,49 +264,43 @@ public class PluginManager {
 
     }
     
-	private String createSignedTrustReport(String trustReportWithAdditions) {
-		PrivateKey privateKey;
-		String signedTrustReport = null;
-		String jwtHeader = null;
-		try {
-			privateKey = loadPrivateKey();
-			if (privateKey == null) {
-				log.error("No privateKey for creating signed report");
-				return null;
-			}
-			Signature signature = Signature.getInstance("SHA384withRSA");
-			signature.initSign(privateKey);
-			byte[] trustReportAsBytes = trustReportWithAdditions.getBytes();
-			signature.update(trustReportAsBytes);
-			jwtHeader = "{\"alg\":\"RS384\"}";
-			signedTrustReport = Base64.getEncoder().encodeToString(jwtHeader.getBytes())+ "." + Base64.getEncoder().encodeToString(trustReportWithAdditions.getBytes())
-					    + "." +Base64.getEncoder().encodeToString(signature.sign());
-		}
-		catch (AttestationHubException e) {
-			log.error("No private key found for encrypting trust report", e);
-		}
-		catch (NoSuchAlgorithmException exc) {
-			log.error ("Algorithm name is invalid or not supported", exc);
-		}
-		catch (InvalidKeyException exc) {
-			log.error("Invalid private key provided for signing", exc);
-		}
-		catch (SignatureException exc) {
-			log.error("Error signing trust report", exc);
-		}
-		catch (Exception exc) {
-			log.error ("Unknown exception occurred", exc);
-		}
-		log.info("JWS format of trust report: {}", signedTrustReport);
-		return  signedTrustReport;
+    private String createSignedTrustReport(String trustReportWithAdditions) {
+	PrivateKey privateKey;
+	String signedTrustReport = null;
+	Map<String, Object> headers = new HashMap<>();
+	ObjectMapper objectMapper = new ObjectMapper();
+	try {
+	    privateKey = loadPrivateKey();
+	    headers.put("alg","RS384");
+	    headers.put("typ","JWT");
+	    headers.put("kid",getKeyId());
+	    String jwtHeader = objectMapper.writeValueAsString(headers);
+	    if (privateKey == null) {
+	        log.error("No privateKey for creating signed report");
+		return null;
+	    }
+	    Signature signature = Signature.getInstance("SHA384withRSA");
+	    signature.initSign(privateKey);
+	    byte[] trustReportAsBytes = trustReportWithAdditions.getBytes();
+	    signature.update(trustReportAsBytes);
+	    signedTrustReport = Base64.getEncoder().encodeToString(jwtHeader.getBytes())+ "." + Base64.getEncoder().encodeToString(trustReportWithAdditions.getBytes())
+				    + "." +Base64.getEncoder().encodeToString(signature.sign());
 	}
+	catch (AttestationHubException e) {
+            log.error("No private key found for encrypting trust report", e);
+	}
+	catch (Exception exc) {
+	    log.error("Error while signing trust report", exc);
+	}
+	log.info("JWS format of trust report: {}", signedTrustReport);
+	return  signedTrustReport;
+    }
 
     private PrivateKey loadPrivateKey() throws AttestationHubException {
 	File prikeyFile = new File(PRIVATE_KEY_PATH);
 	if (!(prikeyFile.exists())) {
-	    throw new AttestationHubException("Private key unavailable for signinig the report");
+	    throw new AttestationHubException("Private key unavailable for signing the report");
 	}
-
 	FileInputStream fis = null;
 	try {
 	    fis = new FileInputStream(prikeyFile);
@@ -328,7 +320,7 @@ public class PluginManager {
 		fis.close();
 	    }
 	    if (dis != null) {
-		dis.close();
+	 	dis.close();
 	    }
 	} catch (IOException e) {
 	    log.error("Unable to close stream to private key file at {}", prikeyFile.getAbsolutePath(), e);
@@ -350,6 +342,50 @@ public class PluginManager {
 	    throw new AttestationHubException(e);
 	}
 	return generatePrivate;
+    }
+
+    private String getKeyId() throws AttestationHubException, IOException, CertificateException {
+	PublicKey pubkey = loadPublicKey();
+	pubkey.getEncoded();
+	String keyId = Sha1Digest.digestOf(pubkey.getEncoded()).toBase64();
+    	return keyId;
+    }
+
+    private PublicKey loadPublicKey() throws AttestationHubException, IOException {
+	File pubKeyFile = new File(PUBLIC_KEY_PATH);
+	if (!(pubKeyFile.exists())) {
+	    throw new AttestationHubException("Private key unavailable for signing the report");
+	}
+
+	PemObject pemObject = null;
+	PemReader pemReader = new PemReader(new InputStreamReader(
+	new FileInputStream(PUBLIC_KEY_PATH)));
+	try {
+	    pemObject = pemReader.readPemObject();
+	} catch (IOException e) {
+	    log.error("Error", e);
+	} finally {
+	    pemReader.close();
+	}
+
+	byte[] keyBytes = pemObject.getContent();
+	X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(keyBytes);
+
+	KeyFactory kf = null;
+	try {
+	    kf = KeyFactory.getInstance("RSA");
+	} catch (NoSuchAlgorithmException e) {
+	    log.error("Error", e);
+	    throw new AttestationHubException(e);
+	}
+	PublicKey generatePublic = null;
+	try {
+	    generatePublic = (RSAPublicKey) kf.generatePublic(pubKeySpec);
+	} catch (InvalidKeySpecException e) {
+	    log.error("Error", e);
+	    throw new AttestationHubException(e);
+	}
+	return generatePublic;
     }
 
 }
