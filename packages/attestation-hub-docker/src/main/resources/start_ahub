@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Check if VErification service is already configured
+# Check if Attestation hub is running
 function check_ahub_status() {
     if [ "`attestation-hub status`" != "Attestation Hub is running" ]; then
         return 0
