@@ -20,24 +20,28 @@ import com.intel.mtwilson.util.ResourceFinder;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
+import com.intel.mtwilson.setup.AbstractSetupTask;
+
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  *
  * @author rawatar
  */
-public class CreateUserKeystore extends JettyTlsKeystore {
+public class CreateUserKeystore extends AbstractSetupTask {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CreateUserKeystore.class);
 
     private String url;
+    private String username;
+    private String password;
     private String aasApiUrl;
+    private KeyStore trustStore;
+    private File trustStoreFile;
     private final String trustStorePath = Folders.configuration()+"/truststore.";
     private final String caCertPath = Folders.configuration() + File.separator + "cms-ca.cert";
 
@@ -56,34 +60,45 @@ public class CreateUserKeystore extends JettyTlsKeystore {
 
         url = AttestationHubConfigUtil.get(Constants.MTWILSON_API_URL);
         if (url == null || url.isEmpty()) {
-            configuration("Mt Wilson URL is not set");
+            configuration("MtWilson API URL is not set");
         }
 
         aasApiUrl = AttestationHubConfigUtil.get(Constants.AAS_API_URL);
         if (aasApiUrl == null || aasApiUrl.isEmpty()) {
-            configuration("AAS URL is not set");
+            configuration("AAS API URL is not set");
         }
-
-        super.configure();
-    }
-
-    @Override
-    protected void validate() throws Exception {
-        super.validate();
-    }
-
-    @Override
-    protected void execute() throws Exception {
-        super.execute();
 
         String extension = "p12";
         if (KeyStore.getDefaultType().equalsIgnoreCase("JKS")) {
             extension = "jks";
         }
 
-        String trustStoreFileName = trustStorePath+extension;
+        String trustStoreFileName = trustStorePath + extension;
+        trustStoreFile = new File(trustStoreFileName);
+        trustStore = loadTrustStore();
+    }
 
-        TlsPolicy tlsPolicy = TlsPolicyBuilder.factory().strictWithKeystore(trustStoreFileName, "changeit").build();
+    @Override
+    protected void validate() throws Exception {
+
+        List<String> aliases = Collections.list(trustStore.aliases());
+        String tag = String.format("(%s)", "saml");
+        Iterator<String> it = aliases.iterator();
+        while (it.hasNext()) {
+            String alias = it.next();
+            if (!alias.toLowerCase().endsWith(tag)) {
+                it.remove();
+            }
+        }
+        if (aliases.size() == 0) {
+            validation("Missing MtWilson Saml certificate");
+        }
+    }
+
+    @Override
+    protected void execute() throws Exception {
+
+        TlsPolicy tlsPolicy = TlsPolicyBuilder.factory().strictWithKeystore(trustStoreFile, "changeit").build();
         Properties clientConfiguration = new Properties();
         TlsConnection tlsConnection = new TlsConnection(new URL(aasApiUrl), tlsPolicy);
         clientConfiguration.setProperty(Constants.BEARER_TOKEN, new AASTokenFetcher().getAASToken(username, password, tlsConnection));
@@ -98,7 +113,7 @@ public class CreateUserKeystore extends JettyTlsKeystore {
 
             X509Certificate samlCertificate = samlCertificateChain.get(0);
             verifySamlCertChain(samlCertificateChain, samlCertificate);
-            storeCertificate(samlCertificate, String.format("%s(%s)", samlCertificate.getSubjectX500Principal().getName(), "saml"), trustStoreFileName);
+            storeCertificate(samlCertificate, String.format("%s(%s)", samlCertificate.getSubjectX500Principal().getName(), "saml"));
         } catch(GeneralSecurityException e) {
             log.error("Error verifying signature: ", e);
         } catch(Exception ex) {
@@ -117,12 +132,11 @@ public class CreateUserKeystore extends JettyTlsKeystore {
         ShiroUtil.verifyCertificateChain(samlCertificate, rootCas, intermediateCas);
     }
 
-    private void storeCertificate (X509Certificate certificate, String alias, String trustStoreFileName) throws Exception {
-        KeyStore keystore = loadTrustStore(trustStoreFileName);
-        FileOutputStream keystoreFOS = new FileOutputStream(trustStoreFileName);
+    private void storeCertificate (X509Certificate certificate, String alias) throws Exception {
+        FileOutputStream keystoreFOS = new FileOutputStream(trustStoreFile);
         try {
-            keystore.setCertificateEntry(alias, certificate);
-            keystore.store(keystoreFOS, "changeit".toCharArray());
+            trustStore.setCertificateEntry(alias, certificate);
+            trustStore.store(keystoreFOS, "changeit".toCharArray());
         } catch (Exception exc) {
             throw new Exception("Error storing certificate in keystore", exc);
         }finally {
@@ -130,8 +144,8 @@ public class CreateUserKeystore extends JettyTlsKeystore {
         }
     }
 
-    private KeyStore loadTrustStore(String trustStoreFileName) throws Exception{
-        FileInputStream keystoreFIS = new FileInputStream(trustStoreFileName);
+    private KeyStore loadTrustStore() throws Exception{
+        FileInputStream keystoreFIS = new FileInputStream(trustStoreFile);
         KeyStore keyStore;
         try {
             keyStore = KeyStore.getInstance(KeyStore.getDefaultType());

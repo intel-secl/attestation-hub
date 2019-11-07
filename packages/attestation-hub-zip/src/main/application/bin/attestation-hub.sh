@@ -99,7 +99,7 @@ JAVA_OPTS="${JAVA_OPTS} -Djava.net.preferIPv4Stack=true"
 
 ATTESTATION_HUB_SETUP_FIRST_TASKS=${ATTESTATION_HUB_SETUP_FIRST_TASKS:-"update-extensions-cache-file"}
 ATTESTATION_HUB_PRESETUP_TASKS="create-data-encryption-key"
-ATTESTATION_HUB_SETUP_TASKS=${ATTESTATION_HUB_SETUP_TASKS:-"password-vault create-user-keystore shiro-ssl-port trust-report-encryption-key"}
+ATTESTATION_HUB_SETUP_TASKS=${ATTESTATION_HUB_SETUP_TASKS:-"password-vault jetty-tls-keystore shiro-ssl-port trust-report-encryption-key create-user-keystore"}
 
 # the standard PID file location /var/run is typically owned by root;
 # if we are running as non-root and the standard location isn't writable 
