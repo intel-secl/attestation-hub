@@ -172,8 +172,7 @@ attestation_hub_complete_setup() {
   attestation_hub_run config "aas.api.url" "$AAS_API_URL" >/dev/null
   #CMS configuration
   attestation_hub_run config "cms.base.url" "$CMS_BASE_URL" >/dev/null
-  #Get CMS CA Certificate
-  curl --insecure -X GET -H "Accept: application/x-pem-file" -w "%{http_code}" $CMS_BASE_URL/ca-certificates -o $ATTESTATION_HUB_CONFIGURATION/cms-ca.cert >/dev/null
+  attestation_hub_run config "cms.tls.cert.sha384" "$CMS_TLS_CERT_SHA384" >/dev/null
 
   # Run complete setup
   attestation_hub_run setup $ATTESTATION_HUB_SETUP_FIRST_TASKS
