@@ -36,13 +36,11 @@ services:
       volumes:
          - ahub-config-volume:/opt/attestation-hub/configuration
          - ahub-logs-volume:/opt/attestation-hub/logs
-         - ahub-tenant-config-volume:/opt/tenant-config
 
 volumes:
    ahub-pgdata-volume:
    ahub-config-volume:
    ahub-logs-volume:
-   ahub-tenant-config-volume:
 
 secrets:
    attestation-hub_env:

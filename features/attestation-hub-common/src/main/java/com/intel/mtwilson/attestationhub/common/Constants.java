@@ -12,7 +12,6 @@ public class Constants {
     public static final String ATTESTATION_HUB_DB_URL = "attestation-hub.db.url";
     public static final String ATTESTATION_HUB_DB_DRIVER = "attestation-hub.db.driver";
     public static final String ATTESTATION_HUB_DB_PASSWORD = "attestation-hub.db.password";
-    public static final String ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH = "tenant.configuration.path";
     public static final String ATTESTATION_HUB_DATA_ENCRYPTION_KEY = "attestation-hub.dek";
     public static final String ATTESTATION_HUB_ADMIN_USERNAME = "attestation-hub.admin.username";
     public static final String ATTESTATION_HUB_ADMIN_PASSWORD = "attestation-hub.admin.password";

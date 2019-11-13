@@ -35,7 +35,6 @@ export LOG_SIZE=${LOG_SIZE:-1G}
 export LOG_OLD=${LOG_OLD:-12}
 export ATTESTATION_HUB_PORT_HTTP=${ATTESTATION_HUB_PORT_HTTP:-19082}
 export ATTESTATION_HUB_PORT_HTTPS=${ATTESTATION_HUB_PORT_HTTPS:-19445}
-export ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH=${ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH:-/opt/tenantconfig}
 export ATTESTATION_HUB_POLL_INTERVAL=${ATTESTATION_HUB_POLL_INTERVAL:-2}
 export ATTESTATION_HUB_DB_USERNAME=${ATTESTATION_HUB_DB_USERNAME:-root}
 export ATTESTATION_HUB_DB_NAME=${ATTESTATION_HUB_DB_NAME:-attestation_hub_pu}
@@ -260,9 +259,6 @@ update_property_in_file "mtwilson.api.password" "$ATTESTATION_HUB_PROPERTIES_FIL
 prompt_with_default MTWILSON_TLS "Mtwilson TLS:" "$MTWILSON_TLS"
 update_property_in_file "mtwilson.api.tls.policy.certificate.sha384" "$ATTESTATION_HUB_PROPERTIES_FILE" "$MTWILSON_TLS"
 
-prompt_with_default ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH "Tenant Configurations Path:" "$ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH"
-update_property_in_file "tenant.configuration.path" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH"
-
 prompt_with_default ATTESTATION_HUB_POLL_INTERVAL "Attestation Hub Poll Interval:" "$ATTESTATION_HUB_POLL_INTERVAL"
 update_property_in_file "attestation-hub.poll.interval" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_POLL_INTERVAL"
 
@@ -273,7 +269,6 @@ update_property_in_file "jetty.tls.cert.ip" "$ATTESTATION_HUB_PROPERTIES_FILE" "
 update_property_in_file "jetty.tls.cert.dns" "$ATTESTATION_HUB_PROPERTIES_FILE" "$JETTY_TLS_CERT_DNS"
 
 
-mkdir -p $ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH
 #------------------- promts end
 
 #------------------- packages installation starts

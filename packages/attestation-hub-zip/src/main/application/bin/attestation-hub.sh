@@ -343,8 +343,6 @@ if [ "$2" = "--purge" ]; then
 	attestation-hub export-config --in=/opt/attestation-hub/configuration/attestation-hub.properties --out=/opt/attestation-hub/configuration/attestation-hub.properties
 
 	ATTESTATION_HUB_PROPERTIES_FILE=${ATTESTATION_HUB_PROPERTIES_FILE:-"/opt/attestation-hub/configuration/attestation-hub.properties"}
-	ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH=`cat ${ATTESTATION_HUB_PROPERTIES_FILE} | grep 'tenant.configuration.path' | cut -d'=' -f2`
-	
 	
 	ATTESTATION_HUB_DB_NAME=`cat ${ATTESTATION_HUB_PROPERTIES_FILE} | grep 'attestation-hub.db.name' | cut -d'=' -f2`
 	ATTESTATION_HUB_DB_USER=`cat ${ATTESTATION_HUB_PROPERTIES_FILE} | grep 'attestation-hub.db.username' | cut -d'=' -f2`
@@ -353,7 +351,6 @@ if [ "$2" = "--purge" ]; then
 	sudo -u postgres psql postgres -c "DROP USER ${ATTESTATION_HUB_DB_USER}" > /dev/null 2>&1
 
 	echo "Drop database ${ATTESTATION_HUB_DB_NAME}"
-	rm -rf $ATTESTATION_HUB_TENANT_CONFIGURATIONS_PATH
 
 fi
 

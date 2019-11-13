@@ -82,7 +82,6 @@ Running the container
     |:-------------:|:-------------------------:|:----------------------------------:|
     | Volume        | ahub_config-volume        | /opt/attestation-hub/configuration |
     | Volume        | ahub-logs-volume          | /opt/attestation-hub/logs          |
-    | Volume        | ahub-tenant-config-volume | /opt/tenantconfig                  |
 
     Volumes would be automatically created by docker-compose. 
 
