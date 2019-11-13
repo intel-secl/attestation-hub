@@ -39,10 +39,11 @@ public class CreateUserKeystore extends AbstractSetupTask {
     private String url;
     private String username;
     private String password;
-    private String aasApiUrl;
+    private String bearerToken;
     private KeyStore trustStore;
     private File trustStoreFile;
     private final String trustStorePath = Folders.configuration()+"/truststore.";
+    private static final String BEARER_TOKEN = "BEARER_TOKEN";
     private final String caCertPath = Folders.configuration() + File.separator + "cms-ca.cert";
 
     @Override
@@ -58,14 +59,14 @@ public class CreateUserKeystore extends AbstractSetupTask {
             configuration("Attestation Hub admin password is not set");
         }
 
+        bearerToken = System.getenv(BEARER_TOKEN);
+        if (bearerToken == null || bearerToken.isEmpty()){
+            configuration("BEARER_TOKEN cannot be empty");
+        }
+
         url = AttestationHubConfigUtil.get(Constants.MTWILSON_API_URL);
         if (url == null || url.isEmpty()) {
             configuration("MtWilson API URL is not set");
-        }
-
-        aasApiUrl = AttestationHubConfigUtil.get(Constants.AAS_API_URL);
-        if (aasApiUrl == null || aasApiUrl.isEmpty()) {
-            configuration("AAS API URL is not set");
         }
 
         String extension = "p12";
@@ -100,11 +101,9 @@ public class CreateUserKeystore extends AbstractSetupTask {
 
         TlsPolicy tlsPolicy = TlsPolicyBuilder.factory().strictWithKeystore(trustStoreFile, "changeit").build();
         Properties clientConfiguration = new Properties();
-        TlsConnection tlsConnection = new TlsConnection(new URL(aasApiUrl), tlsPolicy);
-        clientConfiguration.setProperty(Constants.BEARER_TOKEN, new AASTokenFetcher().getAASToken(username, password, tlsConnection));
-
+        clientConfiguration.setProperty(Constants.BEARER_TOKEN, bearerToken);
         try {
-            tlsConnection = new TlsConnection(new URL(url), tlsPolicy);
+            TlsConnection tlsConnection = new TlsConnection(new URL(url), tlsPolicy);
             CaCertificates certClient = new CaCertificates(clientConfiguration, tlsConnection);
             CaCertificateFilterCriteria criteria = new CaCertificateFilterCriteria();
             criteria.domain = "saml";

@@ -27,7 +27,7 @@ public class AttestationHubScheduler extends AbstractCommand {
         int millisInMinute = 60 * 1000;
         String pollIntervalStr = AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_POLL_INTERVAL);
         if (StringUtils.isBlank(pollIntervalStr)) {
-            log.info("Defaulting poll interval to 10 mins");
+            log.info("Defaulting poll interval to {} mins", defaultPollInterval);
             pollIntervalStr = String.valueOf(defaultPollInterval);
         }
         try {
