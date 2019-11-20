@@ -108,11 +108,7 @@ if [ ! -f $ATTESTATION_HUB_CONFIGURATION/.setup_done ]; then
 
    # Run attestation-hub setup to complete the process
    attestation-hub setup
-
-   # Create the admin user provided by the user
-   if [ -n "$AHUB_USER_NAME" ] && [ -n "$AHUB_USER_PASSWORD" ]; then
-      attestation-hub password $AHUB_USER_NAME $AHUB_USER_PASSWORD --permissions *:*
-   fi
+   
 fi
 
 attestation-hub restart

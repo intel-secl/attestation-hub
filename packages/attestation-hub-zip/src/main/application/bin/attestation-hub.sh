@@ -369,7 +369,6 @@ userdel attestation-hub > /dev/null 2>&1
 print_help() {
     echo "Usage: $0 start|stop|restart|status|uninstall|uninstall --purge|version"
     echo "Usage: $0 setup [--force|--noexec] [task1 task2 ...]"
-    echo "Usage: $0 password [username] [password] --permissions [domain1:action1]"
     echo "Usage: $0 export-config <outfile|--in=infile|--out=outfile|--stdout> [--env-password=PASSWORD_VAR]"
     echo "Usage: $0 config [key] [--delete|newValue]"
     echo "Available setup tasks:"
