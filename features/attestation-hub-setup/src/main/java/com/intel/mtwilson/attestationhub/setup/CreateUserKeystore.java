@@ -127,8 +127,10 @@ public class CreateUserKeystore extends AbstractSetupTask {
         ArrayList<Certificate> rootCas = new ArrayList<>();
         InputStream rootCert = new FileInputStream(ResourceFinder.getFile(caCertPath));
         rootCas.addAll(X509Util.decodePemCertificates(IOUtils.toString(rootCert)));
+        rootCert.close();
 
         ShiroUtil.verifyCertificateChain(samlCertificate, rootCas, intermediateCas);
+
     }
 
     private void storeCertificate (X509Certificate certificate, String alias) throws Exception {
