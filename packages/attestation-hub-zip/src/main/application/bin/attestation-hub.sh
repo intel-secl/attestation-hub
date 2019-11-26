@@ -338,33 +338,18 @@ attestation_hub_uninstall() {
 	scheduler_stop
 	remove_startup_script attestation-hub
 
+    if [ "$2" = "--purge" ]; then
+	   rm -rf $ATTESTATION_HUB_HOME
+    else
+       rm -rf $ATTESTATION_HUB_BIN $ATTESTATION_HUB_JAVA $ATTESTATION_HUB_HOME/features
+    fi
 
-if [ "$2" = "--purge" ]; then
-	attestation-hub export-config --in=/opt/attestation-hub/configuration/attestation-hub.properties --out=/opt/attestation-hub/configuration/attestation-hub.properties
-
-	ATTESTATION_HUB_PROPERTIES_FILE=${ATTESTATION_HUB_PROPERTIES_FILE:-"/opt/attestation-hub/configuration/attestation-hub.properties"}
-	
-	ATTESTATION_HUB_DB_NAME=`cat ${ATTESTATION_HUB_PROPERTIES_FILE} | grep 'attestation-hub.db.name' | cut -d'=' -f2`
-	ATTESTATION_HUB_DB_USER=`cat ${ATTESTATION_HUB_PROPERTIES_FILE} | grep 'attestation-hub.db.username' | cut -d'=' -f2`
-
-	sudo -u postgres psql postgres -c "DROP DATABASE ${ATTESTATION_HUB_DB_NAME}" > /dev/null 2>&1
-	sudo -u postgres psql postgres -c "DROP USER ${ATTESTATION_HUB_DB_USER}" > /dev/null 2>&1
-
-	echo "Drop database ${ATTESTATION_HUB_DB_NAME}"
-
-fi
-
-rm -f /usr/local/bin/attestation-hub
-rm -f /usr/bin/attestation-hub
-rm -rf /opt/attestation-hub
-rm -rf /etc/logrotate.d/attestation-hub
-groupdel attestation-hub > /dev/null 2>&1
-userdel attestation-hub > /dev/null 2>&1
-
-
-
-		
-  }
+    rm -f /usr/local/bin/attestation-hub
+    rm -f /usr/bin/attestation-hub
+    rm -rf /etc/logrotate.d/attestation-hub
+    groupdel attestation-hub > /dev/null 2>&1
+    userdel attestation-hub > /dev/null 2>&1
+}
 
 print_help() {
     echo "Usage: $0 start|stop|restart|status|uninstall|uninstall --purge|version"
