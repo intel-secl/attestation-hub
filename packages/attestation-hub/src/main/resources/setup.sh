@@ -265,8 +265,14 @@ update_property_in_file "attestation-hub.poll.interval" "$ATTESTATION_HUB_PROPER
 update_property_in_file "attestation-hub.saml.timeout" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_SAML_TIMEOUT"
 
 # Jetty TLS configuration
-update_property_in_file "jetty.tls.cert.ip" "$ATTESTATION_HUB_PROPERTIES_FILE" "$JETTY_TLS_CERT_IP"
-update_property_in_file "jetty.tls.cert.dns" "$ATTESTATION_HUB_PROPERTIES_FILE" "$JETTY_TLS_CERT_DNS"
+
+if [ -n "$AH_TLS_CERT_IP" ]; then
+    update_property_in_file "jetty.tls.cert.ip" "$ATTESTATION_HUB_PROPERTIES_FILE" "$AH_TLS_CERT_IP"
+fi
+
+if [ -n "$AH_TLS_CERT_DNS" ]; then
+    update_property_in_file "jetty.tls.cert.dns" "$ATTESTATION_HUB_PROPERTIES_FILE" "$AH_TLS_CERT_DNS"
+fi
 
 
 #------------------- promts end
