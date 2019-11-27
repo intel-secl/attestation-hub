@@ -42,6 +42,7 @@ export ATTESTATION_HUB_DB_HOSTNAME=${ATTESTATION_HUB_DB_HOSTNAME:-localhost}
 export ATTESTATION_HUB_DB_PORTNUM=${ATTESTATION_HUB_DB_PORTNUM:-5432}
 export ATTESTATION_HUB_DB_DRIVER=${ATTESTATION_HUB_DB_DRIVER:-org.postgresql.Driver}
 export MTWILSON_SERVER_PORT=${MTWILSON_SERVER_PORT:-8443}
+export ATTESTATION_HUB_NOSETUP=${$ATTESTATION_HUB_NOSETUP:-false}
 export POSTGRESQL_KEEP_PGPASS=${POSTGRESQL_KEEP_PGPASS:-true}
 
 # the env directory is not configurable; it is defined as ATTESTATION_HUB_HOME/env and
@@ -367,11 +368,10 @@ disable_tcp_timestamps
 # 11. look for ATTESTATION_HUB_PASSWORD environment variable; if not present print help message and exit:
 #     Attestation Hub requires a master password
 #     losing the master password will result in data loss
-# setup the attestation-hub, unless the NOSETUP variable is defined
-if [ -z "$ATTESTATION_HUB_NOSETUP" ]; then
-
+# setup the attestation-hub, unless the NOSETUP variable is set to true
+if [ "$ATTESTATION_HUB_NOSETUP" = "false" ]; then
   attestation-hub setup
-  # delete the temporary setup environment variables file
+# delete the temporary setup environment variables file
   rm -f $ATTESTATION_HUB_ENV/attestation-hub-setup
 fi
 rm -f ~/.pgpass
