@@ -246,18 +246,10 @@ prompt_with_default MTWILSON_SERVER "Mtwilson Server:" "$MTWILSON_SERVER"
 update_property_in_file "mtwilson.server" "$ATTESTATION_HUB_PROPERTIES_FILE" "$MTWILSON_SERVER"
 prompt_with_default MTWILSON_SERVER_PORT "Mtwilson Server Port:" "$MTWILSON_SERVER_PORT"
 update_property_in_file "mtwilson.server.port" "$ATTESTATION_HUB_PROPERTIES_FILE" "$MTWILSON_SERVER_PORT"
-prompt_with_default MTWILSON_USERNAME "Mtwilson Username:" "$MTWILSON_USERNAME"
-update_property_in_file "mtwilson.username" "$ATTESTATION_HUB_PROPERTIES_FILE" "$MTWILSON_USERNAME"
-prompt_with_default_password MTWILSON_PASSWORD "Mtwilson Password:" "$MTWILSON_PASSWORD"
-update_property_in_file "mtwilson.password" "$ATTESTATION_HUB_PROPERTIES_FILE" "$MTWILSON_PASSWORD"
 
 export MTWILSON_API_URL=https://${MTWILSON_SERVER}:${MTWILSON_SERVER_PORT}/mtwilson/v2
 prompt_with_default MTWILSON_API_URL "Mtwilson API Url:" "$MTWILSON_API_URL"
 update_property_in_file "mtwilson.api.url" "$ATTESTATION_HUB_PROPERTIES_FILE" "$MTWILSON_API_URL"
-update_property_in_file "mtwilson.api.username" "$ATTESTATION_HUB_PROPERTIES_FILE" "$MTWILSON_USERNAME"
-update_property_in_file "mtwilson.api.password" "$ATTESTATION_HUB_PROPERTIES_FILE" "$MTWILSON_PASSWORD"
-prompt_with_default MTWILSON_TLS "Mtwilson TLS:" "$MTWILSON_TLS"
-update_property_in_file "mtwilson.api.tls.policy.certificate.sha384" "$ATTESTATION_HUB_PROPERTIES_FILE" "$MTWILSON_TLS"
 
 prompt_with_default ATTESTATION_HUB_POLL_INTERVAL "Attestation Hub Poll Interval:" "$ATTESTATION_HUB_POLL_INTERVAL"
 update_property_in_file "attestation-hub.poll.interval" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_POLL_INTERVAL"

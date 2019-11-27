@@ -18,12 +18,9 @@ public class Constants {
     public static final String ATTESTATION_HUB_KEYSTORE_PASSWORD = "keystore.password";
 
     public final static String BEARER_TOKEN = "bearer.token";
+    public final static String TRUSTSTORE_PASSWORD = "changeit";
     public final static String AAS_API_URL = "aas.api.url";
-    public final static String CMS_BASE_URL = "cms.base.url";
     public static final String MTWILSON_API_URL = "mtwilson.api.url";
-    public static final String MTWILSON_API_USER = "mtwilson.api.username";
-    public static final String MTWILSON_API_PASSWORD = "mtwilson.api.password";
-    public static final String MTWILSON_API_TLS = "mtwilson.api.tls.policy.certificate.sha384";
     public static final String ATTESTATION_HUB_POLL_INTERVAL = "attestation-hub.poll.interval";
     public static final String ATTESTATION_HUB_SAML_TIMEOUT = "attestation-hub.saml.timeout";
     public static final String CREATE = "create";

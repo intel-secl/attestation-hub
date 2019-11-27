@@ -29,6 +29,8 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
+import static com.intel.mtwilson.attestationhub.common.Constants.TRUSTSTORE_PASSWORD;
+
 /**
  *
  * @author rawatar
@@ -99,7 +101,7 @@ public class CreateUserKeystore extends AbstractSetupTask {
     @Override
     protected void execute() throws Exception {
 
-        TlsPolicy tlsPolicy = TlsPolicyBuilder.factory().strictWithKeystore(trustStoreFile, "changeit").build();
+        TlsPolicy tlsPolicy = TlsPolicyBuilder.factory().strictWithKeystore(trustStoreFile, TRUSTSTORE_PASSWORD).build();
         Properties clientConfiguration = new Properties();
         clientConfiguration.setProperty(Constants.BEARER_TOKEN, bearerToken);
         try {
@@ -137,7 +139,7 @@ public class CreateUserKeystore extends AbstractSetupTask {
         FileOutputStream keystoreFOS = new FileOutputStream(trustStoreFile);
         try {
             trustStore.setCertificateEntry(alias, certificate);
-            trustStore.store(keystoreFOS, "changeit".toCharArray());
+            trustStore.store(keystoreFOS, TRUSTSTORE_PASSWORD.toCharArray());
         } catch (Exception exc) {
             throw new Exception("Error storing certificate in keystore", exc);
         }finally {
@@ -150,7 +152,7 @@ public class CreateUserKeystore extends AbstractSetupTask {
         KeyStore keyStore;
         try {
             keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            keyStore.load(keystoreFIS, "changeit".toCharArray());
+            keyStore.load(keystoreFIS, TRUSTSTORE_PASSWORD.toCharArray());
         } catch (Exception exc) {
             throw new Exception("Error loading trust store", exc);
         } finally {

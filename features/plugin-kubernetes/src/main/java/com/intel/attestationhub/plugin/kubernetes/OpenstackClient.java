@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -20,6 +21,12 @@ import java.util.Properties;
 import java.util.Set;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.core.MediaType;
+
+import com.intel.dcsg.cpg.tls.policy.TlsConnection;
+import com.intel.dcsg.cpg.tls.policy.TlsPolicy;
+import com.intel.dcsg.cpg.tls.policy.TlsPolicyBuilder;
+import com.intel.mtwilson.Folders;
+import com.intel.mtwilson.core.common.utils.AASTokenFetcher;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -48,6 +55,8 @@ import com.intel.mtwilson.attestationhub.common.AttestationHubConfigUtil;
 import com.intel.mtwilson.attestationhub.common.Constants;
 import com.intel.mtwilson.attestationhub.exception.AttestationHubException;
 
+import static com.intel.mtwilson.attestationhub.common.Constants.TRUSTSTORE_PASSWORD;
+
 /**
  * @author abhishekx.negi@intel.com
  * 
@@ -59,8 +68,6 @@ import com.intel.mtwilson.attestationhub.exception.AttestationHubException;
 public class OpenstackClient {
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpenstackClient.class);
 	// Getting mtwilson configuration from existing class
-	private String mtwilsonUser = AttestationHubConfigUtil.get(Constants.MTWILSON_API_USER);
-	private String mtwilsonPass = AttestationHubConfigUtil.get(Constants.MTWILSON_API_PASSWORD);
 	TenantConfig tenant = TenantConfig.getTenantConfigObj();
 	private NovaApi novaApi;
 
@@ -313,9 +320,6 @@ public class OpenstackClient {
 	 * 
 	 * @param vmTrust
 	 *            trust status of VM
-	 *
-	 * @param vmIp
-	 *            IP address of VM
 	 * 
 	 * @param validTo
 	 *            Timestamp of signed trust report. For VM it is same as of its
@@ -390,10 +394,22 @@ public class OpenstackClient {
 	 * 
 	 */
 	private JsonElement getVmTrustStatus(String hostName, String vmInstanceId) throws AttestationHubException {
-		String encoding = Base64.getEncoder().encodeToString((mtwilsonUser + ":" + mtwilsonPass).getBytes());
+		String trustStoreFileName = Folders.configuration() + File.separator + "truststore.p12";
+		String aasBearerToken = null;
+		try {
+			TlsPolicy tlsPolicy = TlsPolicyBuilder.factory().strictWithKeystore(trustStoreFileName, TRUSTSTORE_PASSWORD).build();
+
+			TlsConnection tlsConnection = new TlsConnection(new URL(AttestationHubConfigUtil.get(Constants.AAS_API_URL)), tlsPolicy);
+			aasBearerToken = new AASTokenFetcher().getAASToken(
+					AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_ADMIN_USERNAME),
+					AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_ADMIN_PASSWORD),
+					tlsConnection);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		HttpPost httppost = new HttpPost(
 				AttestationHubConfigUtil.get(Constants.MTWILSON_API_URL) + Plugin.MTWILSON_URI);
-		httppost.setHeader("Authorization", "Basic " + encoding);
+		httppost.setHeader("Authorization", "Bearer " + aasBearerToken);
 		String json = "{\"host_name\":\"" + hostName + "\",\"vm_instance_id\":\"" + vmInstanceId
 				+ "\",\"include_host_report\":false}";
 		try {
@@ -446,9 +462,9 @@ public class OpenstackClient {
 
 	private SSLContext getSSLContext() throws AttestationHubException {
 		try (FileInputStream instream = new FileInputStream(
-				new File(Plugin.MTWILSON_CONFIG_DIR + mtwilsonUser + ".jks"))) {
+				new File(Plugin.MTWILSON_CONFIG_DIR + "truststore.p12"))) {
 			KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-			trustStore.load(instream, mtwilsonPass.toCharArray());
+			trustStore.load(instream, TRUSTSTORE_PASSWORD.toCharArray());
 			return SSLContexts.custom().loadTrustMaterial(trustStore).build();
 		} catch (Exception e) {
 			log.error("Error: Method getSSLContext failed with exception ", e);

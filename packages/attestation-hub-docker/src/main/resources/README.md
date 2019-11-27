@@ -102,12 +102,9 @@ Running the container
         MTWILSON_IP_ADDRESS=<Verification Service IP>
         MTWILSON_HOSTNAME=<ISecL Server Hostname or IP Address if the service is running on a host.>
                           # If running on a container, name it "verification-service"
-        MTWILSON_USERNAME=<Verification Service User>
-        MTWILSON_PASSWORD=<Verification Service Password>
-        MTWILSON_TLS_CERT_SHA384=<Verification Service TLS SHA384>
 
-        AHUB_USER_NAME=<Username>
-        AHUB_USER_PASSWORD=<Password>
+        ATTESTATION_HUB_ADMIN_USERNAME=<Username>
+        ATTESTATION_HUB_ADMIN_PASSWORD=<Password>
 	```
      A helper script (get_tls_sha384) is provided along with the package. This script
      would retrieve the tls sha384 from the server. Please source the above env file
