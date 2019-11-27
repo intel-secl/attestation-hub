@@ -13,8 +13,8 @@ public class Constants {
     public static final String ATTESTATION_HUB_DB_DRIVER = "attestation-hub.db.driver";
     public static final String ATTESTATION_HUB_DB_PASSWORD = "attestation-hub.db.password";
     public static final String ATTESTATION_HUB_DATA_ENCRYPTION_KEY = "attestation-hub.dek";
-    public static final String ATTESTATION_HUB_ADMIN_USERNAME = "attestation-hub.admin.username";
-    public static final String ATTESTATION_HUB_ADMIN_PASSWORD = "attestation-hub.admin.password";
+    public static final String ATTESTATION_HUB_SERVICE_USERNAME = "ah.service.username";
+    public static final String ATTESTATION_HUB_SERVICE_PASSWORD = "ah.service.password";
     public static final String ATTESTATION_HUB_KEYSTORE_PASSWORD = "keystore.password";
 
     public final static String BEARER_TOKEN = "bearer.token";

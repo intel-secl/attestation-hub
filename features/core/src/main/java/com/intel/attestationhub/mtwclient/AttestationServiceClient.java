@@ -337,8 +337,8 @@ public class AttestationServiceClient {
             TlsConnection tlsConnection = new TlsConnection(new URL(AttestationHubConfigUtil.get(Constants.AAS_API_URL)), tlsPolicy);
 
             aasBearerToken = new AASTokenFetcher().getAASToken(
-                    AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_ADMIN_USERNAME),
-                    AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_ADMIN_PASSWORD),
+                    AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_SERVICE_USERNAME),
+                    AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_SERVICE_PASSWORD),
                     tlsConnection);
         } catch (Exception exc) {
             log.error("Cannot fetch token from AAS: ", exc);

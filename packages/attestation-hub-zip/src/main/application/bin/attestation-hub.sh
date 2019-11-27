@@ -165,8 +165,8 @@ attestation_hub_complete_setup() {
   attestation_hub_run config jetty.port $ATTESTATION_HUB_PORT_HTTP >/dev/null
   attestation_hub_run config jetty.secure.port $ATTESTATION_HUB_PORT_HTTPS >/dev/null
 
-  attestation_hub_run config "attestation-hub.admin.username" "$ATTESTATION_HUB_ADMIN_USERNAME" >/dev/null
-  attestation_hub_run config "attestation-hub.admin.password" "$ATTESTATION_HUB_ADMIN_PASSWORD" >/dev/null
+  attestation_hub_run config "ah.service.username" "$AH_SERVICE_USERNAME" >/dev/null
+  attestation_hub_run config "ah.service.password" "$AH_SERVICE_PASSWORD" >/dev/null
 
   #AAS configuration
   attestation_hub_run config "aas.api.url" "$AAS_API_URL" >/dev/null

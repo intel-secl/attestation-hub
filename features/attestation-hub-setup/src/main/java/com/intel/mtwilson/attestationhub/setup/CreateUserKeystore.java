@@ -8,12 +8,10 @@ import com.intel.dcsg.cpg.tls.policy.TlsConnection;
 import com.intel.dcsg.cpg.tls.policy.TlsPolicy;
 import com.intel.dcsg.cpg.tls.policy.TlsPolicyBuilder;
 import com.intel.dcsg.cpg.x509.X509Util;
-import com.intel.kms.setup.JettyTlsKeystore;
 import com.intel.mtwilson.Folders;
 import com.intel.mtwilson.attestationhub.common.AttestationHubConfigUtil;
 import com.intel.mtwilson.attestationhub.common.Constants;
 import com.intel.mtwilson.client.jaxrs.CaCertificates;
-import com.intel.mtwilson.core.common.utils.AASTokenFetcher;
 import com.intel.mtwilson.privacyca.v2.model.CaCertificateFilterCriteria;
 import com.intel.mtwilson.shiro.ShiroUtil;
 import com.intel.mtwilson.util.ResourceFinder;
@@ -51,12 +49,12 @@ public class CreateUserKeystore extends AbstractSetupTask {
     @Override
     protected void configure() throws Exception {
 
-        username = AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_ADMIN_USERNAME);
+        username = AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_SERVICE_USERNAME);
         if (username == null || username.isEmpty()) {
             configuration("Attestation Hub admin username is not set");
         }
 
-        password = AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_ADMIN_PASSWORD);
+        password = AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_SERVICE_PASSWORD);
         if (password == null || password.isEmpty()) {
             configuration("Attestation Hub admin password is not set");
         }

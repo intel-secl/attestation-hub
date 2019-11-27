@@ -13,7 +13,6 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.KeyStore;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -401,8 +400,8 @@ public class OpenstackClient {
 
 			TlsConnection tlsConnection = new TlsConnection(new URL(AttestationHubConfigUtil.get(Constants.AAS_API_URL)), tlsPolicy);
 			aasBearerToken = new AASTokenFetcher().getAASToken(
-					AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_ADMIN_USERNAME),
-					AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_ADMIN_PASSWORD),
+					AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_SERVICE_USERNAME),
+					AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_SERVICE_PASSWORD),
 					tlsConnection);
 		} catch (Exception e) {
 			e.printStackTrace();

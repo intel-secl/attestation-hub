@@ -42,7 +42,7 @@ export ATTESTATION_HUB_DB_HOSTNAME=${ATTESTATION_HUB_DB_HOSTNAME:-localhost}
 export ATTESTATION_HUB_DB_PORTNUM=${ATTESTATION_HUB_DB_PORTNUM:-5432}
 export ATTESTATION_HUB_DB_DRIVER=${ATTESTATION_HUB_DB_DRIVER:-org.postgresql.Driver}
 export MTWILSON_SERVER_PORT=${MTWILSON_SERVER_PORT:-8443}
-export ATTESTATION_HUB_NOSETUP=${$ATTESTATION_HUB_NOSETUP:-false}
+export ATTESTATION_HUB_NOSETUP=${ATTESTATION_HUB_NOSETUP:-false}
 export POSTGRESQL_KEEP_PGPASS=${POSTGRESQL_KEEP_PGPASS:-true}
 
 # the env directory is not configurable; it is defined as ATTESTATION_HUB_HOME/env and
@@ -401,5 +401,5 @@ fi
 
 # 13. attestation-hub start
 # start the server, unless the NOSETUP variable is defined
-if [ -z "$ATTESTATION_HUB_NOSETUP" ]; then attestation-hub start; fi
+if [ "$ATTESTATION_HUB_NOSETUP" = "false" ]; then attestation-hub start; fi
 echo_success "Installation complete"
