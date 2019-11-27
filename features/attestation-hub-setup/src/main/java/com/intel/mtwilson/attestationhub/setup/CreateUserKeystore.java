@@ -44,7 +44,7 @@ public class CreateUserKeystore extends AbstractSetupTask {
     private File trustStoreFile;
     private final String trustStorePath = Folders.configuration()+"/truststore.";
     private static final String BEARER_TOKEN = "BEARER_TOKEN";
-    private final String caCertPath = Folders.configuration() + File.separator + "cms-ca.cert";
+    private final String caCertPath = Folders.configuration() + File.separator + "cms-ca-cert.pem";
 
     @Override
     protected void configure() throws Exception {
