@@ -23,11 +23,17 @@ NAME=attestation-hub
 # the home directory must be defined before we load any environment or
 # configuration files; it is explicitly passed through the sudo command
 export ATTESTATION_HUB_HOME=${ATTESTATION_HUB_HOME:-/opt/attestation-hub}
+export ATTESTATION_HUB_BIN=${ATTESTATION_HUB_BIN:-$ATTESTATION_HUB_HOME/bin}
 
 # the env directory is not configurable; it is defined as ATTESTATION_HUB_HOME/env and
 # the administrator may use a symlink if necessary to place it anywhere else
 export ATTESTATION_HUB_ENV=$ATTESTATION_HUB_HOME/env
 attestation_hub_load_env() {
+  # the cd into ATTESTATION_HUB_HOME prevents this message from appearing when this
+  # command is run as the `attestation-hub` user from a private directory e.g. /root:
+  # find: Failed to restore initial working directory: /root: Permission denied
+  cd $ATTESTATION_HUB_HOME
+
   local env_files="$@"
   local env_file_exports
   for env_file in $env_files; do
@@ -47,12 +53,13 @@ fi
 
 ### THIS NEEDS TO BE UPDATED LATER, MUST NOT REQUIRE USER TO RUN APPLICATION AS ROOT -rksavino
 
-## if non-root execution is specified, and we are currently root, start over; the DIRECTOR_SUDO variable limits this to one attempt
-## we make an exception for the uninstall command, which may require root access to delete users and certain directories
-#if [ -n "$DIRECTOR_USERNAME" ] && [ "$DIRECTOR_USERNAME" != "root" ] && [ $(whoami) == "root" ] && [ -z "$DIRECTOR_SUDO" ] && [ "$1" != "uninstall" ]; then
-#  sudo -u $DIRECTOR_USERNAME DIRECTOR_USERNAME=$DIRECTOR_USERNAME DIRECTOR_HOME=$DIRECTOR_HOME DIRECTOR_PASSWORD=$DIRECTOR_PASSWORD DIRECTOR_SUDO=true director $*
-#  exit $?
-#fi
+# if non-root execution is specified, and we are currently root, start over; the ATTESTATION_HUB_SUDO variable limits this to one attempt
+# we make an exception for the uninstall command, which may require root access to delete users and certain directories
+if [ -n "$ATTESTATION_HUB_USERNAME" ] && [ "$ATTESTATION_HUB_USERNAME" != "root" ] && [ $(whoami) == "root" ] && [ -z "$ATTESTATION_HUB_SUDO" ] && [ "$1" != "uninstall" ]; then
+  export ATTESTATION_HUB_SUDO=true
+  sudo -u $ATTESTATION_HUB_USERNAME -H -E $ATTESTATION_HUB_BIN/attestation-hub $*
+  exit $?
+fi
 
 ###################################################################################################
 

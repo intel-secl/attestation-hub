@@ -350,7 +350,10 @@ chmod 755 $ATTESTATION_HUB_HOME/bin/*
 EXISTING_ATTESTATION_HUB_COMMAND=`which attestation-hub`
 if [ -z "$EXISTING_ATTESTATION_HUB_COMMAND" ]; then
   ln -s $ATTESTATION_HUB_HOME/bin/attestation-hub.sh /usr/local/bin/attestation-hub
-  ln -s $ATTESTATION_HUB_HOME/bin/attestation-hub.sh /usr/bin/attestation-hub
+  #ln -s $ATTESTATION_HUB_HOME/bin/attestation-hub.sh /usr/bin/attestation-hub
+fi
+if [[ ! -h $ATTESTATION_HUB_BIN/attestation-hub ]]; then
+  ln -s $ATTESTATION_HUB_BIN/attestation-hub.sh $ATTESTATION_HUB_BIN/attestation-hub
 fi
 
 # 10. add attestation-hub to startup services
