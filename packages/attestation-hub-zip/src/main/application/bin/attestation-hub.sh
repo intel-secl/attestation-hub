@@ -190,8 +190,7 @@ attestation_hub_complete_setup() {
   attestation_hub_run import-config --in=$ATTESTATION_HUB_CONFIGURATION/attestation-hub.properties --out=$ATTESTATION_HUB_CONFIGURATION/attestation-hub.properties
 
   attestation_hub_run setup apply-database-patches
-  chown -R $ATTESTATION_HUB_USERNAME:$ATTESTATION_HUB_USERNAME $ATTESTATION_HUB_HOME
-  
+
 }
 
 # arguments are optional, if provided they are the names of the tasks to run, in order
