@@ -356,19 +356,24 @@ public class PluginManager {
 	if (!(pubKeyFile.exists())) {
 	    throw new AttestationHubException("Private key unavailable for signing the report");
 	}
-
+	FileInputStream pubKeyIS = new FileInputStream(PUBLIC_KEY_PATH);
 	PemObject pemObject = null;
-	PemReader pemReader = new PemReader(new InputStreamReader(
-	new FileInputStream(PUBLIC_KEY_PATH)));
+	PemReader pemReader = new PemReader(new InputStreamReader(pubKeyIS));
 	try {
 	    pemObject = pemReader.readPemObject();
 	} catch (IOException e) {
 	    log.error("Error", e);
 	} finally {
-	    pemReader.close();
+		pubKeyIS.close();
+		pemReader.close();
 	}
 
-	byte[] keyBytes = pemObject.getContent();
+	byte[] keyBytes;
+	if (pemObject == null) {
+		log.error("Error reading public key from file: {}", PUBLIC_KEY_PATH);
+		throw new AttestationHubException("Error reading public key");
+	}
+	keyBytes = pemObject.getContent();
 	X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(keyBytes);
 
 	KeyFactory kf = null;
