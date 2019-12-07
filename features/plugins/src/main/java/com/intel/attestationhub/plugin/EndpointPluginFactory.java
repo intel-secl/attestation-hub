@@ -27,8 +27,15 @@ public class EndpointPluginFactory {
 	    log.error("No provider configured for plugin");
 	    return null;
 	}
-
-	EndpointPlugin endpointPlugin = Plugins.findByAttribute(EndpointPlugin.class, "class.name", providerClass);
+	EndpointPlugin endpointPlugin = null;
+	Class delegateClass = null;
+	try {
+		delegateClass = Class.forName(providerClass);
+		endpointPlugin = (EndpointPlugin) delegateClass.newInstance();
+	} catch (ReflectiveOperationException e) {
+		log.error("Plugin: {} not found due to: {}", providerClass, e.getMessage());
+		return null;
+	}
 	return endpointPlugin;
     }
 }
