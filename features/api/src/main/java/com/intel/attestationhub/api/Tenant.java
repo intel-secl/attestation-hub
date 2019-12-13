@@ -174,40 +174,49 @@ public class Tenant {
 	boolean errorMessageNameRegexAdded = false;
 	boolean errorMessagekeyAdded =false;
 	boolean errorMessageValueAdded =false;
+	boolean invalidPluginProperty = false;	
 
 	if (plugins == null || plugins.size() == 0) {
 	    errors.add("Plugin information is mandatory");
 	}else{
 		
-	for(Plugin plugin : plugins){
-		if (!errorMessageEmptyNameAdded && StringUtils.isBlank(plugin.getName())) {
-		    errors.add("Plugin Name cannot be empty");
+	    for(Plugin plugin : plugins){
+                if (!errorMessageEmptyNameAdded && StringUtils.isBlank(plugin.getName())) {
+	            errors.add("Plugin Name cannot be empty");
+	            errorMessageEmptyNameAdded=true;
+	        }
+	        if(!errorMessageNameRegexAdded  && !ValidationUtil.isValidWithRegex(plugin.getName(), Constants.NAME_REGEX)){
+		    errors.add("Plugin name can only contain alphanumeric and special characters (. _ -)");
 		    errorMessageEmptyNameAdded=true;
+                }
+	        List<PluginProperty> properties = plugin.getProperties();
+	        for (PluginProperty property : properties) {
+		    if (!errorMessagekeyAdded && StringUtils.isBlank(property.getKey())){
+	                errors.add("Plugin property key cannot be empty");
+		        errorMessagekeyAdded=true;
+		    }
+		    if (!errorMessageValueAdded && StringUtils.isBlank(property.getValue())){
+                        errors.add("Plugin property value cannot be empty");
+                        errorMessageValueAdded=true;
+                    }
+		    if(!errorMessagekeyAdded  && !ValidationUtil.isValidWithRegex(property.getKey(), Constants.NAME_REGEX)){
+		        errors.add("Plugin property key can only contain alphanumeric and special characters (. _ -)");
+		        errorMessagekeyAdded=true;
+		    }
+		    if(!errorMessageValueAdded  && ValidationUtil.isValidWithRegex(property.getValue(), Constants.XSS_REGEX)){
+                        errors.add("Invalid plugin property value");
+		        errorMessageValueAdded=true;
+		    }
+ 		    if(errorMessageEmptyNameAdded || errorMessageNameRegexAdded || errorMessagekeyAdded || errorMessageValueAdded ){
+			invalidPluginProperty = true;
+	                break;
+                    }
+
+	        }
+		if(invalidPluginProperty){
+		    break;
 		}
-		if(!errorMessageNameRegexAdded  && !ValidationUtil.isValidWithRegex(plugin.getName(), Constants.NAME_REGEX))
-		{
-			errors.add("Plugin name can only contain alphanumeric and special characters (. _ -)");
-			errorMessageEmptyNameAdded=true;
-		}
-		List<PluginProperty> properties = plugin.getProperties();
-		for (PluginProperty property : properties) {
-			if(!errorMessagekeyAdded  && !ValidationUtil.isValidWithRegex(property.getKey(), Constants.NAME_REGEX))
-			{
-				errors.add("Plugin property key can only contain alphanumeric and special characters (. _ -)");
-				errorMessagekeyAdded=true;
-			}
-			if(!errorMessageValueAdded  && ValidationUtil.isValidWithRegex(property.getValue(), Constants.XSS_REGEX))
-			{
-				errors.add("Invalid plugin property value");
-				errorMessageValueAdded=true;
-			}
-			
-		}
-		
-		if(errorMessageEmptyNameAdded && errorMessageNameRegexAdded && errorMessagekeyAdded && errorMessageValueAdded ){
-			break;
-		}
-	}
+	    }
 	}
 		
 	return StringUtils.join(errors, ",");
