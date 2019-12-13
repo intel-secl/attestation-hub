@@ -94,7 +94,7 @@ public class Hosts {
 	    @Context HttpServletRequest httpServletRequest) {
 	log.info("searching for hosts with name : {}", hostFilterCriteria.nameEqualTo);
 	AttestationHubService attestationHubService = AttestationHubServiceImpl.getInstance();	
-	if (StringUtils.isBlank(httpServletRequest.getQueryString())) {
+	if (StringUtils.isBlank(httpServletRequest.getQueryString()) || !hostFilterCriteria.filter) {
 	    return getHosts();
 	}
 	

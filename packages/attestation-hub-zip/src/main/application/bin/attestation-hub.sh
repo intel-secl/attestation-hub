@@ -77,10 +77,6 @@ export ATTESTATION_HUB_BIN=${ATTESTATION_HUB_BIN:-$ATTESTATION_HUB_HOME/bin}
 export ATTESTATION_HUB_REPOSITORY=${ATTESTATION_HUB_REPOSITORY:-$ATTESTATION_HUB_HOME/repository}
 export ATTESTATION_HUB_LOGS=${ATTESTATION_HUB_LOGS:-$ATTESTATION_HUB_HOME/logs}
 
-# needed for if certain methods are called from attestation-hub.sh like java_detect, etc.
-ATTESTATION_HUB_INSTALL_LOG_FILE=${ATTESTATION_HUB_INSTALL_LOG_FILE:-"$ATTESTATION_HUB_LOGS/attestation-hub_install.log"}
-export INSTALL_LOG_FILE="$ATTESTATION_HUB_INSTALL_LOG_FILE"
-
 ###################################################################################################
 
 # load linux utility

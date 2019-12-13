@@ -182,7 +182,7 @@ public class Tenants {
 	log.info("Searching for tenants with name : {}", tenantFilterCriteria.nameEqualTo);
 	AttestationHubService attestationHubService = AttestationHubServiceImpl.getInstance();
 
-	if (StringUtils.isBlank(httpServletRequest.getQueryString())) {
+	if (StringUtils.isBlank(httpServletRequest.getQueryString()) || !tenantFilterCriteria.filter) {
 	    return retrieveAllTenants();
 	}
 	String validate = tenantFilterCriteria.validate();
