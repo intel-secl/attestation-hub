@@ -351,12 +351,9 @@ fi
 # 10. add attestation-hub to startup services
 # RHEL 7.6 needs PID file for systemd startup service 
 # The location is identified as below in attestation-hub.sh
-ATTESTATION_HUB_PID_FILE=${ATTESTATION_HUB_PID_FILE:-/var/run/attestation-hub.pid}
-HUB_SCHEDULER_PID_FILE=${HUB_SCHEDULER_PID_FILE:-/var/run/hubscheduler.pid}
-if [ ! -w "$ATTESTATION_HUB_PID_FILE" ] && [ ! -w $(dirname "$ATTESTATION_HUB_PID_FILE") ]; then
-  ATTESTATION_HUB_PID_FILE=$ATTESTATION_HUB_REPOSITORY/attestation-hub.pid
-fi
-register_startup_script $ATTESTATION_HUB_HOME/bin/attestation-hub.sh attestation-hub $ATTESTATION_HUB_PID_FILE
+ATTESTATION_HUB_PID_FILE=$ATTESTATION_HUB_HOME/attestation-hub.pid
+
+register_startup_script $ATTESTATION_HUB_BIN/attestation-hub attestation-hub $ATTESTATION_HUB_PID_FILE
 
 disable_tcp_timestamps
 

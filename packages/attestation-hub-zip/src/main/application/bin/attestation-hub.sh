@@ -101,20 +101,14 @@ JAVA_OPTS=${JAVA_OPTS:-"-Dlogback.configurationFile=$ATTESTATION_HUB_CONFIGURATI
 JAVA_OPTS="${JAVA_OPTS} -Djava.net.preferIPv4Stack=true"
 
 ATTESTATION_HUB_SETUP_FIRST_TASKS=${ATTESTATION_HUB_SETUP_FIRST_TASKS:-"update-extensions-cache-file"}
-ATTESTATION_HUB_PRESETUP_TASKS="create-data-encryption-key"
-ATTESTATION_HUB_SETUP_TASKS=${ATTESTATION_HUB_SETUP_TASKS:-"password-vault jetty-tls-keystore shiro-ssl-port trust-report-encryption-key create-user-keystore"}
+ATTESTATION_HUB_PRESETUP_TASKS="create-data-encryption-key trust-report-encryption-key"
+ATTESTATION_HUB_SETUP_TASKS=${ATTESTATION_HUB_SETUP_TASKS:-"password-vault jetty-tls-keystore shiro-ssl-port create-user-keystore"}
 
 # the standard PID file location /var/run is typically owned by root;
 # if we are running as non-root and the standard location isn't writable 
 # then we need a different place
-ATTESTATION_HUB_PID_FILE=${ATTESTATION_HUB_PID_FILE:-/var/run/attestation-hub.pid}
-HUB_SCHEDULER_PID_FILE=${HUB_SCHEDULER_PID_FILE:-/var/run/hubscheduler.pid}
-if [ ! -w "$ATTESTATION_HUB_PID_FILE" ] && [ ! -w $(dirname "$ATTESTATION_HUB_PID_FILE") ]; then
-  ATTESTATION_HUB_PID_FILE=$ATTESTATION_HUB_REPOSITORY/attestation-hub.pid
-fi
-if [ ! -w "$HUB_SCHEDULER_PID_FILE" ] && [ ! -w $(dirname "$HUB_SCHEDULER_PID_FILE") ]; then
-  HUB_SCHEDULER_PID_FILE=$ATTESTATION_HUB_REPOSITORY/hubscheduler.pid
-fi
+ATTESTATION_HUB_PID_FILE=$ATTESTATION_HUB_HOME/attestation-hub.pid
+HUB_SCHEDULER_PID_FILE=$ATTESTATION_HUB_HOME/hubscheduler.pid
 
 ###################################################################################################
 
