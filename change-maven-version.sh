@@ -54,6 +54,8 @@ sed -i 's/\(<version>\).*\(<\/version>\)/\1'${version}'\2/g' features/plugins-ap
 if [ $? -ne 0 ]; then echo "Failed to change version in \"features/plugins-api/feature.xml\"" >&2; exit 3; fi
 sed -i 's/\(<version>\).*\(<\/version>\)/\1'${version}'\2/g' features/webservice/feature.xml
 if [ $? -ne 0 ]; then echo "Failed to change version in \"features/webservice/feature.xml\"" >&2; exit 3; fi
+sed -i 's/\(<version>\).*\(<\/version>\)/\1'${version}'\2/g' features/plugin-kubernetes/dependency-reduced-pom.xml
+if [ $? -ne 0 ]; then echo "Failed to change version in \"features/plugin-kubernetes/dependency-reduced-pom.xml\"" >&2; exit 3; fi
 (cd packages && $changeVersionCommand)
 if [ $? -ne 0 ]; then echo "Failed to change maven version on \"packages\" folder" >&2; exit 3; fi
 (cd packages && $changeParentVersionCommand)
