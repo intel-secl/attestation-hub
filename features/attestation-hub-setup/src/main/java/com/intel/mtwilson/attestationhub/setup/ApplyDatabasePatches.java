@@ -45,6 +45,8 @@ public class ApplyDatabasePatches extends AbstractSetupTask {
     private static String databaseDriver;
     private static String databaseUsername;
     private static String databasePassword;
+    private static String databaseSSLMode;
+    private static String databaseSSLRootCert;
     private static String databaseUrl;
     private static String databaseVendor;
     private static Connection connection;
@@ -62,6 +64,8 @@ public class ApplyDatabasePatches extends AbstractSetupTask {
             databaseUrl = loadedConfiguration.get(Constants.ATTESTATION_HUB_DB_URL);
             databaseUsername = loadedConfiguration.get(Constants.ATTESTATION_HUB_DB_USERNAME);
             databasePassword = loadedConfiguration.get(Constants.ATTESTATION_HUB_DB_PASSWORD);
+            databaseSSLMode = loadedConfiguration.get(Constants.ATTESTATION_HUB_DB_SSLMODE);
+            databaseSSLRootCert = loadedConfiguration.get(Constants.ATTESTATION_HUB_DB_SSLROOTCERT);
             databaseVendor = "postgresql";
         } catch (IOException e1) {
             log.error("Failed to fetch database properties from {}", Constants.ATTESTATION_HUB_PROPRRTIES_FILE_NAME,
@@ -444,6 +448,8 @@ public class ApplyDatabasePatches extends AbstractSetupTask {
         Properties info = new Properties();
         info.put("user", databaseUsername);
         info.put("password", databasePassword);
+        info.put("sslmode", databaseSSLMode);
+        info.put("sslrootcert", databaseSSLRootCert);
 
         if (connection != null && !connection.isClosed()) {
             return connection;

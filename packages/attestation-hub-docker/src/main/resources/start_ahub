@@ -38,11 +38,26 @@ export JAVA_HOME=$(dirname $JAVA_CMD | xargs dirname | xargs dirname)
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+if [ "$ATTESTATION_HUB_DB_SSLMODE" == "verify-ca" ] || [ "$ATTESTATION_HUB_DB_SSLMODE" == "verify-full" ]; then
+    if [ -z "$ATTESTATION_HUB_DB_SSLROOTCERT" ]; then
+        echo_failure "Database server certificate file not specified"
+        exit 1
+    else
+        if [ ! -f "$ATTESTATION_HUB_DB_SSLROOTCERT" ]; then
+            echo_failure "Database server certificate file does not exist"
+            exit 1
+        fi
+    fi
+fi
+
 # Start mtwilson and check if it works. Mtwilson status does not reflect the right status
 # So, sleep 5 seconds (workaround)
 # mtwilson start && sleep 5
 
 ATTESTATION_HUB_CONFIGURATION=/opt/attestation-hub/configuration
+
+ATTESTATION_HUB_DB_SERVERCERT=$ATTESTATION_HUB_CONFIGURATION/ahubdbcert.crt
+cp "$ATTESTATION_HUB_DB_SSLROOTCERT" "$ATTESTATION_HUB_DB_SERVERCERT"
 
 if [ ! -f $ATTESTATION_HUB_CONFIGURATION/.setup_done ]; then
 
@@ -82,6 +97,11 @@ if [ ! -f $ATTESTATION_HUB_CONFIGURATION/.setup_done ]; then
    attestation-hub config attestation-hub.db.portnum  5432 > /dev/null
    attestation-hub config attestation-hub.db.username $POSTGRES_USER > /dev/null
    attestation-hub config attestation-hub.db.password $POSTGRES_PASSWORD > /dev/null
+   attestation-hub config attestation-hub.db.sslmode $ATTESTATION_HUB_DB_SSLMODE > /dev/null
+   if [ -f "$ATTESTATION_HUB_DB_SERVERCERT" ]; then
+       export POSTGRES_SSLROOTCERT=${ATTESTATION_HUB_DB_SERVERCERT}
+       attestation-hub config attestation-hub.db.sslrootcert $ATTESTATION_HUB_DB_SSLROOTCERT > /dev/null
+   fi
    attestation-hub config attestation-hub.db.url  jdbc\:postgresql\://$DATABASE_HOSTNAME\:5432/$POSTGRES_DB > /dev/null
 
    # Verification Service configuration
