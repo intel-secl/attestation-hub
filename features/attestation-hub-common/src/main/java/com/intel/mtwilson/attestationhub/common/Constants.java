@@ -8,7 +8,7 @@ package com.intel.mtwilson.attestationhub.common;
 public class Constants {
     public static final String ATTESTATION_HUB_PROPRRTIES_FILE_NAME = "attestation-hub.properties";
     public static final String ATTESTATION_HUB_DATABASE_NAME = "attestation_hub_pu";
-    public static final String ATTESTATION_HUB_DB_USERNAME = "attestation-hub.db.username";
+    public static final String ATTESTATION_HUB_DB_USERNAME = "attestation-hub.db.user";
     public static final String ATTESTATION_HUB_DB_URL = "attestation-hub.db.url";
     public static final String ATTESTATION_HUB_DB_DRIVER = "attestation-hub.db.driver";
     public static final String ATTESTATION_HUB_DB_PASSWORD = "attestation-hub.db.password";

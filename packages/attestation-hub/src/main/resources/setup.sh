@@ -229,10 +229,10 @@ prompt_with_default ATTESTATION_HUB_DB_NAME "Attestation-Hub db name:" "$ATTESTA
 update_property_in_file "attestation-hub.db.name" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_DB_NAME"
 
 prompt_with_default ATTESTATION_HUB_DB_HOSTNAME "Attestation-Hub db Hostname:" "$ATTESTATION_HUB_DB_HOSTNAME"
-update_property_in_file "attestation-hub.db.hostname" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_DB_HOSTNAME"
+update_property_in_file "attestation-hub.db.host" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_DB_HOSTNAME"
 
 prompt_with_default ATTESTATION_HUB_DB_PORTNUM "Attestation-Hub db Portno:" "$ATTESTATION_HUB_DB_PORTNUM"
-update_property_in_file "attestation-hub.db.portnum" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_DB_PORTNUM"
+update_property_in_file "attestation-hub.db.port" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_DB_PORTNUM"
 
 prompt_with_default ATTESTATION_HUB_DB_SSLMODE "Attestation-Hub db SSLMode:" "$ATTESTATION_HUB_DB_SSLMODE"
 update_property_in_file "attestation-hub.db.sslmode" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_DB_SSLMODE"
@@ -242,7 +242,7 @@ if [ -f "$ATTESTATION_HUB_DB_SERVERCERT" ]; then
     update_property_in_file "attestation-hub.db.sslrootcert" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_DB_SERVERCERT"
 fi
 
-update_property_in_file "attestation-hub.db.username" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_DB_USERNAME"
+update_property_in_file "attestation-hub.db.user" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_DB_USERNAME"
 
 update_property_in_file "attestation-hub.db.password" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_DB_PASSWORD"
 

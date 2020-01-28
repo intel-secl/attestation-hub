@@ -93,9 +93,9 @@ if [ ! -f $ATTESTATION_HUB_CONFIGURATION/.setup_done ]; then
    # Database configuration
    attestation-hub config attestation-hub.db.name $POSTGRES_DB > /dev/null
    attestation-hub config attestation-hub.db.schema $POSTGRES_DB > /dev/null
-   attestation-hub config attestation-hub.db.hostname $DATABASE_HOSTNAME > /dev/null
-   attestation-hub config attestation-hub.db.portnum  5432 > /dev/null
-   attestation-hub config attestation-hub.db.username $POSTGRES_USER > /dev/null
+   attestation-hub config attestation-hub.db.host $DATABASE_HOSTNAME > /dev/null
+   attestation-hub config attestation-hub.db.port  5432 > /dev/null
+   attestation-hub config attestation-hub.db.user $POSTGRES_USER > /dev/null
    attestation-hub config attestation-hub.db.password $POSTGRES_PASSWORD > /dev/null
    attestation-hub config attestation-hub.db.sslmode $ATTESTATION_HUB_DB_SSLMODE > /dev/null
    if [ -f "$ATTESTATION_HUB_DB_SERVERCERT" ]; then
