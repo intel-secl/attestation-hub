@@ -388,9 +388,12 @@ disable_tcp_timestamps
 # setup the attestation-hub, unless the NOSETUP variable is set to true
 if [ "$ATTESTATION_HUB_NOSETUP" = "false" ]; then
   attestation-hub setup
-# delete the temporary setup environment variables file
-  rm -f $ATTESTATION_HUB_ENV/attestation-hub-setup
+else
+  echo_warning "ATTESTATION_HUB_NOSETUP variable is set. Skipping setup..."
 fi
+
+# delete the temporary setup environment variables file
+rm -f $ATTESTATION_HUB_ENV/attestation-hub-setup
 rm -f ~/.pgpass
 
 # ensure the attestation-hub owns all the content created during setup
@@ -418,5 +421,9 @@ fi
 
 # 13. attestation-hub start
 # start the server, unless the NOSETUP variable is defined
-if [ "$ATTESTATION_HUB_NOSETUP" = "false" ]; then attestation-hub start; fi
+if [ "$ATTESTATION_HUB_NOSETUP" = "false" ]; then
+  attestation-hub start
+else
+  echo_info "Run attestation-hub setup and start server."
+fi
 echo_success "Installation complete"
