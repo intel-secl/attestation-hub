@@ -315,19 +315,18 @@ public class AttestationServiceClient {
     private void populateAttestationServiceProperties() throws AttestationHubException {
         String truststore = Folders.configuration() + File.separator + "truststore.p12";
 
-        if (aasBearerToken == null || aasBearerToken.isEmpty()) {
-            updateTokenCache();
-        }
-
         mtwProperties.setProperty("mtwilson.api.tls.policy.certificate.keystore.file", truststore);
         mtwProperties.setProperty("mtwilson.api.tls.policy.certificate.keystore.password", TRUSTSTORE_PASSWORD);
         mtwProperties.setProperty(Constants.MTWILSON_API_URL, AttestationHubConfigUtil.get(Constants.MTWILSON_API_URL));
-        mtwProperties.setProperty("bearer.token", aasBearerToken);
 
         // Verification settings
         mtwPropertiesForverification = new Properties(mtwProperties);
         mtwPropertiesForverification.setProperty("mtwilson.api.truststore", truststore);
         mtwPropertiesForverification.setProperty("mtwilson.api.truststore.password", TRUSTSTORE_PASSWORD);
+
+        if (aasBearerToken == null || aasBearerToken.isEmpty()) {
+            updateTokenCache();
+        }
     }
 
     private void updateTokenCache () throws AttestationHubException{
@@ -340,6 +339,8 @@ public class AttestationServiceClient {
                     AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_SERVICE_USERNAME),
                     AttestationHubConfigUtil.get(Constants.ATTESTATION_HUB_SERVICE_PASSWORD),
                     tlsConnection);
+            mtwProperties.setProperty("bearer.token", aasBearerToken);
+            mtwPropertiesForverification.setProperty("bearer.token", aasBearerToken);
         } catch (Exception exc) {
             log.error("Cannot fetch token from AAS: ", exc);
             throw new AttestationHubException("Cannot fetch token from AAS: ", exc);
