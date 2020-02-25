@@ -118,7 +118,7 @@ public class AttestationServicePollerJob {
         } catch (AttestationHubException e) {
             log.error("Poller.execute: Error fetching host attestations created since {} from MTW",
                     lastDateTimeFromLastRunFile, e);
-            if (e.getMessage().indexOf("java.net.ConnectException: Connection refused") != 1) {
+            if (e.getMessage().indexOf("java.net.ConnectException: Connection refused") != -1) {
                 waitForAttestationServiceAndRetry();
             }
             logPollerRunComplete();
@@ -142,7 +142,7 @@ public class AttestationServicePollerJob {
             }
         } catch (AttestationHubException e) {
             log.error("AttestationServicePollerJob.execute - Error fetching hosts from MTW", e);
-            if (e.getMessage().indexOf("java.net.ConnectException: Connection refused") != 1 || e.getMessage().indexOf("javax.ws.rs.NotAuthorizedException: HTTP 401 Unauthorized") != 1) {
+            if (e.getMessage().indexOf("java.net.ConnectException: Connection refused") != -1) {
                 waitForAttestationServiceAndRetry();
             }
             logPollerRunComplete();
@@ -158,7 +158,7 @@ public class AttestationServicePollerJob {
             hostAttestationsMap = attestationServiceClient.fetchHostAttestations(allHosts);
         } catch (AttestationHubException e) {
             log.error("Poller.execute: Error fetching SAMLS for hosts from MTW", e);
-            if (e.getMessage().indexOf("java.net.ConnectException: Connection refused") != 1 || e.getMessage().indexOf("javax.ws.rs.NotAuthorizedException: HTTP 401 Unauthorized") != 1) {
+            if (e.getMessage().indexOf("java.net.ConnectException: Connection refused") != -1) {
                 waitForAttestationServiceAndRetry();
             }
             logPollerRunComplete();
