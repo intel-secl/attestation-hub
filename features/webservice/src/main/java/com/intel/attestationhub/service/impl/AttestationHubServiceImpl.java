@@ -63,9 +63,9 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 		return true;
 	}
 
-	// Removing plugin credentials before storing tenant to database
-	private  Map<String,List<Tenant.PluginProperty>> removeCredentialFromTenant(Tenant tenant) {
-		log.debug("Removing credentials from tenant");
+	// Extract plugin credentials from tenant configuration
+	private  Map<String,List<Tenant.PluginProperty>> extractCredentialFromTenant(Tenant tenant) {
+		log.debug("Extracting credentials from tenant configuration");
 		List<Tenant.PluginProperty> credentials = new ArrayList<>();
 		Map<String,List<Tenant.PluginProperty>> pluginCredentialsMap = new HashMap<>();
 
@@ -73,19 +73,40 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 
 		for (Plugin plugin : plugins) {
 			if(plugin.getName().equalsIgnoreCase("nova") && plugin.getProperty("user.name") != null && plugin.getProperty("user.password") !=null) {
-				credentials.add(plugin.removeProperty("user.name"));
-				credentials.add(plugin.removeProperty("user.password"));
+				credentials.add(plugin.getProperty("user.name"));
+				credentials.add(plugin.getProperty("user.password"));
 				pluginCredentialsMap.put(plugin.getName(), credentials);
 			}
 			if (plugin.getName().equalsIgnoreCase("kubernetes")
 		                && plugin.getProperty("kubernetes.client.keystore.password") != null
                 		&& plugin.getProperty("kubernetes.server.keystore.password") !=null) {
-		      	        	credentials.add(plugin.removeProperty("kubernetes.client.keystore.password"));
-                			credentials.add(plugin.removeProperty("kubernetes.server.keystore.password"));
+		      	        	credentials.add(plugin.getProperty("kubernetes.client.keystore.password"));
+                			credentials.add(plugin.getProperty("kubernetes.server.keystore.password"));
 			                pluginCredentialsMap.put(plugin.getName(), credentials);
 		        }
 		}
 		return pluginCredentialsMap;
+	}
+
+	// Removing plugin credentials before storing tenant to database
+	private  void removeCredentialFromTenant(Tenant tenant) {
+		log.debug("Removing credentials from tenant");
+
+		List<Plugin> plugins = tenant.getPlugins();
+
+		for (Plugin plugin : plugins) {
+			if(plugin.getName().equalsIgnoreCase("nova") && plugin.getProperty("user.name") != null &&
+					plugin.getProperty("user.password") !=null) {
+				plugin.removeProperty("user.name");
+				plugin.removeProperty("user.password");
+			}
+			if (plugin.getName().equalsIgnoreCase("kubernetes")
+					&& plugin.getProperty("kubernetes.client.keystore.password") != null
+					&& plugin.getProperty("kubernetes.server.keystore.password") !=null) {
+				plugin.removeProperty("kubernetes.client.keystore.password");
+				plugin.removeProperty("kubernetes.server.keystore.password");
+			}
+		}
 	}
 
 	private void createTenantPluginCredential(AhTenant ahTenant, Map<String,List<PluginProperty>> pluginCredentialsMap) throws AttestationHubException {
@@ -136,7 +157,8 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 	String newTenantId = null;
 	PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
 	AhTenantJpaController tenantController = persistenceServiceFactory.getTenantController();
-	Map<String,List<Tenant.PluginProperty>> pluginCredentialsMap = removeCredentialFromTenant(tenant);
+	Map<String,List<Tenant.PluginProperty>> pluginCredentialsMap = extractCredentialFromTenant(tenant);
+	removeCredentialFromTenant(tenant);
 	AhTenant ahTenant = TenantMapper.mapApiToJpa(tenant);
 	try {
 		if (dataEncryptionKeyConfigured()) {
@@ -202,7 +224,8 @@ public class AttestationHubServiceImpl implements AttestationHubService {
     public Tenant updateTenant(Tenant tenant) throws AttestationHubException {
 	PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
 	AhTenantJpaController tenantController = persistenceServiceFactory.getTenantController();
-	Map<String,List<Tenant.PluginProperty>> pluginCredentialsMap = removeCredentialFromTenant(tenant);
+	Map<String,List<Tenant.PluginProperty>> pluginCredentialsMap = extractCredentialFromTenant(tenant);
+	removeCredentialFromTenant(tenant);
 	AhTenant ahTenant = TenantMapper.mapApiToJpa(tenant);
 	try {
 	    AhTenant existingTenant = tenantController.findAhTenant(tenant.getId());

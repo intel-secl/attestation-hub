@@ -25,6 +25,9 @@ NAME=attestation-hub
 export ATTESTATION_HUB_HOME=${ATTESTATION_HUB_HOME:-/opt/attestation-hub}
 export ATTESTATION_HUB_BIN=${ATTESTATION_HUB_BIN:-$ATTESTATION_HUB_HOME/bin}
 
+# ensure that our commands can be found
+export PATH=$ATTESTATION_HUB_BIN:$PATH
+
 # the env directory is not configurable; it is defined as ATTESTATION_HUB_HOME/env and
 # the administrator may use a symlink if necessary to place it anywhere else
 export ATTESTATION_HUB_ENV=$ATTESTATION_HUB_HOME/env
@@ -90,6 +93,15 @@ fi
 if [ -z "$ATTESTATION_HUB_PASSWORD" ] && [ -f $ATTESTATION_HUB_CONFIGURATION/.attestation-hub_password ]; then
   export ATTESTATION_HUB_PASSWORD=$(cat $ATTESTATION_HUB_CONFIGURATION/.attestation-hub_password)
 fi
+
+if [[ "$@" != *"export-config"* ]]; then
+  load_conf "$ATTESTATION_HUB_CONFIGURATION/attestation-hub.properties" attestation-hub 2>&1 >/dev/null
+  if [ $? -ne 0 ]; then
+    if [ $? -eq 2 ]; then echo_failure -e "Incorrect encryption password. Please verify \"ATTESTATION_HUB_PASSWORD\" variable is set correctly."; fi
+    exit -1
+  fi
+fi
+load_defaults 2>&1 >/dev/null
 
 # all other variables with defaults
 ATTESTATION_HUB_APPLICATION_LOG_FILE=${ATTESTATION_HUB_APPLICATION_LOG_FILE:-$ATTESTATION_HUB_LOGS/attestation-hub.log}
@@ -348,7 +360,7 @@ attestation_hub_uninstall() {
 }
 
 print_help() {
-    echo "Usage: $0 start|stop|restart|status|uninstall|uninstall --purge|version"
+    echo "Usage: $0 start|stop|restart|status|erase-data|uninstall|uninstall --purge|version"
     echo "Usage: $0 setup [--force|--noexec] [task1 task2 ...]"
     echo "Usage: $0 export-config <outfile|--in=infile|--out=outfile|--stdout> [--env-password=PASSWORD_VAR]"
     echo "Usage: $0 config [key] [--delete|newValue]"
@@ -397,6 +409,10 @@ case "$1" in
     else
       attestation_hub_complete_setup
     fi
+    ;;
+  erase-data)
+    db_tables=(ah_host ah_mapping ah_tenant ah_tenant_plugin_credential)
+    erase_data ${db_tables[*]}
     ;;
   uninstall)
     attestation_hub_stop

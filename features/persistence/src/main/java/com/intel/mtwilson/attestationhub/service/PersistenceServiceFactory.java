@@ -46,6 +46,8 @@ public class PersistenceServiceFactory {
 		    loadedConfiguration.get(Constants.ATTESTATION_HUB_DB_USERNAME));
 	    jpaProperties.put("javax.persistence.jdbc.password",
 		    loadedConfiguration.get(Constants.ATTESTATION_HUB_DB_PASSWORD));
+		jpaProperties.put("javax.persistence.jdbc.sslmode", loadedConfiguration.get(Constants.ATTESTATION_HUB_DB_SSLMODE));
+		jpaProperties.put("javax.persistence.jdbc.sslrootcert", loadedConfiguration.get(Constants.ATTESTATION_HUB_DB_SSLROOTCERT));
 
 	} catch (IOException e1) {
 	    log.error("Failed to fetch database properties from {}", Constants.ATTESTATION_HUB_PROPRRTIES_FILE_NAME,

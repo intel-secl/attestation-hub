@@ -42,7 +42,7 @@ public class KubernetesCertificateAuthenticator {
 	 * 
 	 * Sample input while tenant registration { "name": "kubernetes",
 	 * "properties": [{ "key": "api.endpoint", "value":
-	 * "https://10.105.166.70:6443" }, { "key": "tenant.name", "value":
+	 * "https://k8s.master.com:6443" }, { "key": "tenant.name", "value":
 	 * "14_feb_test" }, { "key": "plugin.provider", "value":
 	 * "com.intel.attestationhub.plugin.kubernetes.KubernetesPluginImpl" }, {
 	 * "key": "kubernetes.client.keystore", "value":
