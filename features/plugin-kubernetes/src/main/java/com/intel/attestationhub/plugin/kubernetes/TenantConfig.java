@@ -23,7 +23,7 @@ public class TenantConfig {
 	private String openstackUsername;
 	private String openstackPass;
 	private String openstackURI;
-	private String vmWorkerEnabled;
+	private boolean vmWorkerDisabled;
 
 	private static TenantConfig tenantConfig = null;
 
@@ -87,12 +87,12 @@ public class TenantConfig {
 		this.openstackScope = openstackScope;
 	}
 
-	public String isVmWorkerEnabled() {
-		return vmWorkerEnabled;
+	public boolean isVmWorkerDisabled() {
+		return vmWorkerDisabled;
 	}
 
-	public void setVmWorkerEnabled(String vmWorkerEnabled) {
-		this.vmWorkerEnabled = vmWorkerEnabled;
+	public void setVmWorkerDisabled(boolean vmWorkerDisabled) {
+		this.vmWorkerDisabled = vmWorkerDisabled;
 	}
 
 	public String getPluginApiEndpoint() {

@@ -582,7 +582,7 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 
     @Override
     public List<AhHost> getHosts() throws AttestationHubException {
-	log.info("Getting all availabe hosts on attestation hub");
+	log.info("Getting all available hosts on attestation hub");
 	PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
 	AhHostJpaController ahHostJpaController = persistenceServiceFactory.getHostController();
 	List<AhHost> ahHosts = ahHostJpaController.findAhHostEntities();

@@ -23,7 +23,7 @@ public class Constants {
 		public static final String OPENSTACK_SCOPE = "openstack.scope";
 		public static final String OPENSTACK_USERNAME = "openstack.username";
 		public static final String OPENSTACK_PASS = "openstack.pass";
-		public static final String VM_WORKER_ENABLED = "vm.worker.enabled";
+		public static final String VM_WORKER_DISABLED = "vm.worker.disabled";
 		public static final String OPENSTACK_URI = "openstack.uri";
 
 	}
@@ -32,6 +32,7 @@ public class Constants {
 		public static final String URL_TYPE = "API";
 		public static final String URL_HOSTATTRIBUTES = "hostattributes";
 		public static final String PATH = "/apis/crd.isecl.intel.com/v1beta1/namespaces/default/";
+		public static final String NODE_DETAILS_PATH = "/api/v1/nodes";
 		public static final String SLASH = "/";
 		public static final String METADATA = "metadata";
 		public static final String NAME = "name";
@@ -45,17 +46,9 @@ public class Constants {
 		public static final String SPEC = "spec";
 		public static final String HOSTLIST = "hostList";
 		public static final String HOSTNAME = "hostName";
-		public static final String PROVIDER = "openstack-nova";
-		public static final String STRING_TRUE = "true";
-		public static final String STRING_FALSE = "false";
 		public static final String TRUSTED = "trusted";
 		public static final String SIGNED_TRUST_REPORT = "signedTrustReport";
 		public static final String VALID_TO = "validTo";
-		public static final String VM_ACTIVE = "ACTIVE";
-		public static final String TRUST_STATUS = "trust_status";
-		public static final String MTWILSON_CONFIG_DIR = "/opt/attestation-hub/configuration/";
-		public static final String MTWILSON_URI = "/vm-attestations";
-		public static final String STRING_HYPHEN = "-";
 	}
 	
 	public static class Report {

@@ -67,8 +67,8 @@ public class KubernetesConfig {
 			                case Tenant.TENANT_NAME:
                         			tenantConfig.setTenantName(PluginProperty.getValue());
                         			break;
-		                        case Tenant.VM_WORKER_ENABLED:
-                    				tenantConfig.setVmWorkerEnabled(PluginProperty.getValue());
+		                        case Tenant.VM_WORKER_DISABLED:
+                    				tenantConfig.setVmWorkerDisabled(Boolean.parseBoolean(PluginProperty.getValue()));
 			                        break;
 			                case Tenant.KEYSTONE_VERSION:
                         			tenantConfig.setKeystoneVersion(PluginProperty.getValue());
@@ -112,18 +112,6 @@ public class KubernetesConfig {
 	                ) {
 				log.error("Error: Invalid tenant configuration");
 				throw new AttestationHubException("Error: Invalid tenant configuration");
-			}
-			// If VM worker enabled then checking required openstack configuration
-			if (Constants.Plugin.STRING_TRUE.equals(tenantConfig.isVmWorkerEnabled())) {
-				if (StringUtils.isBlank(tenantConfig.getKeystoneVersion())
-						|| StringUtils.isBlank(tenantConfig.getOpenstackTenantName())
-						|| StringUtils.isBlank(tenantConfig.getOpenstackScope())
-						|| StringUtils.isBlank(tenantConfig.getOpenstackUsername())
-						|| StringUtils.isBlank(tenantConfig.getOpenstackPass())
-						|| StringUtils.isBlank(tenantConfig.getOpenstackURI())) {
-					log.error("Error: Missing openstack or tenant parameters");
-					throw new AttestationHubException("Error: Missing openstack or tenant parameters");
-				}
 			}
 			return new KubernetesClient();
 		} catch (Exception e) {

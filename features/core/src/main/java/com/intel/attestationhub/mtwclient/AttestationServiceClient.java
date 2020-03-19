@@ -326,7 +326,7 @@ public class AttestationServiceClient {
         updateTokenCache();
     }
 
-    private void updateTokenCache () throws AttestationHubException{
+    public void updateTokenCache () throws AttestationHubException{
         try {
             String trustStoreFileName = Folders.configuration() + File.separator + "truststore.p12";
             TlsPolicy tlsPolicy = TlsPolicyBuilder.factory().strictWithKeystore(trustStoreFileName, TRUSTSTORE_PASSWORD).build();

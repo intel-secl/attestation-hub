@@ -46,7 +46,6 @@ public class KubernetesConnector {
 	protected HttpResponse get(CloseableHttpClient httpClient, URI uri) throws AttestationHubException {
 		HttpResponse response = null;
 		HttpGet getRequest = new HttpGet(uri);
-	
 		try {
 			response = httpClient.execute(getRequest);
 		} catch (IOException e) {
