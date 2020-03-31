@@ -6,6 +6,7 @@
 package com.intel.attestationhub.quartz;
 
 import com.intel.attestationhub.api.MWHost;
+import com.intel.attestationhub.manager.PluginManager;
 import com.intel.attestationhub.mtwclient.AttestationServiceClient;
 import com.intel.attestationhub.service.AttestationHubService;
 import com.intel.attestationhub.service.impl.AttestationHubServiceImpl;
@@ -18,7 +19,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import javax.ws.rs.NotAuthorizedException;
 import java.io.*;
 import java.util.Date;
 import java.util.List;
@@ -118,7 +118,7 @@ public class AttestationServicePollerJob {
         } catch (AttestationHubException e) {
             log.error("Poller.execute: Error fetching host attestations created since {} from MTW",
                     lastDateTimeFromLastRunFile, e);
-            if (e.getMessage().indexOf("java.net.ConnectException: Connection refused") != -1) {
+            if (e.getMessage().contains("java.net.ConnectException: Connection refused")) {
                 waitForAttestationServiceAndRetry();
             }
             logPollerRunComplete();
@@ -142,7 +142,7 @@ public class AttestationServicePollerJob {
             }
         } catch (AttestationHubException e) {
             log.error("AttestationServicePollerJob.execute - Error fetching hosts from MTW", e);
-            if (e.getMessage().indexOf("java.net.ConnectException: Connection refused") != -1) {
+            if (e.getMessage().contains("java.net.ConnectException: Connection refused")) {
                 waitForAttestationServiceAndRetry();
             }
             logPollerRunComplete();
@@ -158,7 +158,7 @@ public class AttestationServicePollerJob {
             hostAttestationsMap = attestationServiceClient.fetchHostAttestations(allHosts);
         } catch (AttestationHubException e) {
             log.error("Poller.execute: Error fetching SAMLS for hosts from MTW", e);
-            if (e.getMessage().indexOf("java.net.ConnectException: Connection refused") != -1) {
+            if (e.getMessage().contains("java.net.ConnectException: Connection refused")) {
                 waitForAttestationServiceAndRetry();
             }
             logPollerRunComplete();
@@ -172,12 +172,14 @@ public class AttestationServicePollerJob {
 
         if (isRetry) {
             // MTW has failed again. Mark all the hosts as inactive
-            log.info("Since exception occurred again, marking all the hosts as deleted");
+            log.info("Since exception occurred again, marking the hosts with expired report as untrusted and deleted");
             AttestationHubService attestationHubService = AttestationHubServiceImpl.getInstance();
             try {
-                attestationHubService.markAllHostsAsDeleted();
+                attestationHubService.markExpiredHostsAsUntrusted();
+                PluginManager.getInstance().synchAttestationInfo();
+                attestationHubService.markExpiredHostsAsDeleted();
             } catch (AttestationHubException e) {
-                log.error("Unable to mark the hosts as deleted", e);
+                log.error("Error marking hosts untrusted/deleted", e);
             }
             isRetry = false;
         } else {

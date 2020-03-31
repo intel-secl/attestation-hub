@@ -304,7 +304,8 @@ public class KubernetesClient {
 						String hostCopy = hostJsonObj.toString();
 						JsonObject vmJsonObj = parser.parse(hostCopy).getAsJsonObject();
 						JsonObject reportJsonObj = getEncryptionData(bareMetalName, parser.parse(vmTrust.toString()),
-								parser.parse(vmInstanceID), vmJsonObj.get(Plugin.VALID_TO), assetTagMap);
+								parser.parse(nodeNameSystemUUIDMap.get(vmInstanceID)), vmJsonObj.get(Plugin.VALID_TO),
+								assetTagMap);
 						vmJsonObj.add(Plugin.TRUSTED, parser.parse(vmTrust.toString()));
 						vmJsonObj.add(Plugin.HOSTNAME, parser.parse(nodeNameSystemUUIDMap.get(vmInstanceID)));
 						JsonReader reader = new JsonReader(new StringReader(getSignedTrustReport(reportJsonObj).trim()));
@@ -484,10 +485,10 @@ public class KubernetesClient {
 	 * @param assetTagMap
 	 * @return json object to be encrypted
 	 */
-	private JsonObject getEncryptionData(String bareMetalName, JsonElement vmTrust, JsonElement vmUUID
+	private JsonObject getEncryptionData(String bareMetalName, JsonElement vmTrust, JsonElement nodeName
 			, JsonElement validTo, Map<String, JsonElement> assetTagMap) {
 		JsonObject reportJsonObj = new JsonObject();
-		reportJsonObj.add(Constants.Report.HOSTNAME, vmUUID);
+		reportJsonObj.add(Constants.Report.HOSTNAME, nodeName);
 		reportJsonObj.add(Constants.Report.ASSET_TAGS, assetTagMap.get(bareMetalName));
 		reportJsonObj.add(Constants.Report.VALID_TO, validTo);
 		reportJsonObj.add(Plugin.TRUSTED, vmTrust);

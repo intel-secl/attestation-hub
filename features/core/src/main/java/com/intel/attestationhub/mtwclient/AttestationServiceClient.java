@@ -37,8 +37,8 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.ProcessingException;
 import java.io.File;
-import java.net.ConnectException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -107,8 +107,8 @@ public class AttestationServiceClient {
                     updateTokenCache();
                     throw new AttestationHubException("Not authorized to connect to attestation service", e);
                 }
-                if (e instanceof ConnectException) {
-                    throw new AttestationHubException("Cannot connect to attestation service", e);
+                if (e instanceof ProcessingException) {
+                    throw new AttestationHubException("Cannot connect to attestation service" + e);
                 }
                 continue;
             }
@@ -141,8 +141,8 @@ public class AttestationServiceClient {
                 updateTokenCache();
                 throw new AttestationHubException("Not authorized to connect to attestation service", e);
             }
-            if (e instanceof ConnectException) {
-                throw new AttestationHubException("Cannot connect to attestation service", e);
+            if (e instanceof ProcessingException) {
+                throw new AttestationHubException("Cannot connect to attestation service" + e);
             }
             throw new AttestationHubException(e);
         }
@@ -182,8 +182,8 @@ public class AttestationServiceClient {
                 updateTokenCache();
                 throw new AttestationHubException("Not authorized to connect to attestation service", e);
             }
-            if (e instanceof ConnectException) {
-                throw new AttestationHubException("Cannot connect to attestation service", e);
+            if (e instanceof ProcessingException) {
+                throw new AttestationHubException("Cannot connect to attestation service" + e);
             }
             return null;
         }
