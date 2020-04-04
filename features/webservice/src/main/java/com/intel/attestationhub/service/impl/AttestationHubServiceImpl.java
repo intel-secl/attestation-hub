@@ -81,9 +81,9 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 				pluginCredentialsMap.put(plugin.getName(), credentials);
 			}
 			if (plugin.getName().equalsIgnoreCase("kubernetes")
-		                && plugin.getProperty("kubernetes.client.keystore.password") != null
+		                && plugin.getProperty("kubernetes.api.bearer.token") != null
                 		&& plugin.getProperty("kubernetes.server.keystore.password") !=null) {
-		      	        	credentials.add(plugin.getProperty("kubernetes.client.keystore.password"));
+		      	        	credentials.add(plugin.getProperty("kubernetes.api.bearer.token"));
                 			credentials.add(plugin.getProperty("kubernetes.server.keystore.password"));
 			                pluginCredentialsMap.put(plugin.getName(), credentials);
 		        }
@@ -104,9 +104,9 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 				plugin.removeProperty("user.password");
 			}
 			if (plugin.getName().equalsIgnoreCase("kubernetes")
-					&& plugin.getProperty("kubernetes.client.keystore.password") != null
+					&& plugin.getProperty("kubernetes.api.bearer.token") != null
 					&& plugin.getProperty("kubernetes.server.keystore.password") !=null) {
-				plugin.removeProperty("kubernetes.client.keystore.password");
+				plugin.removeProperty("kubernetes.api.bearer.token");
 				plugin.removeProperty("kubernetes.server.keystore.password");
 			}
 		}

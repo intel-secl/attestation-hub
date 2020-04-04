@@ -13,8 +13,6 @@ public class Constants {
 
 		public static final String API_ENDPOINT = "api.endpoint";
 		public static final String TENANT_NAME = "tenant.name";
-		public static final String KUBERNETES_API_CLIENT_KEYSTORE = "kubernetes.client.keystore";
-		public static final String KUBERNETES_API_CLIENT_KEYSTORE_PASSWORD = "kubernetes.client.keystore.password";
 		public static final String KUBERNETES_API_SERVER_KEYSTORE = "kubernetes.server.keystore";
 		public static final String KUBERNETES_API_SERVER_KEYSTORE_PASSWORD = "kubernetes.server.keystore.password";
 		public static final String TENANT_KUBERNETES_KEYSTORE_CONFIG = "tenant.kubernetes.keystore.config";
@@ -25,6 +23,7 @@ public class Constants {
 		public static final String OPENSTACK_PASS = "openstack.pass";
 		public static final String VM_WORKER_DISABLED = "vm.worker.disabled";
 		public static final String OPENSTACK_URI = "openstack.uri";
+		public static final String KUBERNETES_API_BEARER_TOKEN = "kubernetes.api.bearer.token";
 
 	}
 

@@ -46,6 +46,7 @@ public class KubernetesConnector {
 	protected HttpResponse get(CloseableHttpClient httpClient, URI uri) throws AttestationHubException {
 		HttpResponse response = null;
 		HttpGet getRequest = new HttpGet(uri);
+		getRequest.addHeader(HttpHeaders.AUTHORIZATION, "bearer " + TenantConfig.getTenantConfigObj().getBearerToken());
 		try {
 			response = httpClient.execute(getRequest);
 		} catch (IOException e) {
@@ -92,7 +93,8 @@ public class KubernetesConnector {
 			throw new AttestationHubException("Error: Unable to encode String into HttpEntity ", e);
 		}
 		postRequest.setEntity(entity);
-		postRequest.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+		postRequest.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+		postRequest.addHeader(HttpHeaders.AUTHORIZATION, "bearer "+ TenantConfig.getTenantConfigObj().getBearerToken());
 		HttpResponse response = null;
 		try {
 			response = httpClient.execute(postRequest);
@@ -139,7 +141,8 @@ public class KubernetesConnector {
 			throw new AttestationHubException("Error: Unable to encode String into HttpEntity ", e);
 		}
 		putRequest.setEntity(entity);
-		putRequest.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+		putRequest.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+		putRequest.addHeader(HttpHeaders.AUTHORIZATION, "bearer " + TenantConfig.getTenantConfigObj().getBearerToken());
 		HttpResponse response = null;
 		try {
 			response = httpClient.execute(putRequest);

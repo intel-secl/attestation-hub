@@ -88,12 +88,9 @@ public class KubernetesConfig {
 			                case Tenant.OPENSTACK_URI:
                 			        tenantConfig.setOpenstackURI(PluginProperty.getValue());
 			                        break;
-                    			case Tenant.KUBERNETES_API_CLIENT_KEYSTORE:
-			                        tenantConfig.setClientKeystore(PluginProperty.getValue());
-                        			break;
-			                case Tenant.KUBERNETES_API_CLIENT_KEYSTORE_PASSWORD:
-			                        tenantConfig.setClientKeystorePass(PluginProperty.getValue());
-                       				break;
+					         case Tenant.KUBERNETES_API_BEARER_TOKEN:
+									tenantConfig.setBearerToken(PluginProperty.getValue());
+									break;
 			                case Tenant.KUBERNETES_API_SERVER_KEYSTORE:
                         			tenantConfig.setServerKeystore(PluginProperty.getValue());
 			                        break;
@@ -105,8 +102,7 @@ public class KubernetesConfig {
 			}
 			if (StringUtils.isBlank(tenantConfig.getTenantName())
 					|| StringUtils.isBlank(tenantConfig.getPluginApiEndpoint())
-					|| StringUtils.isBlank(tenantConfig.getClientKeystore())
-			                || StringUtils.isBlank(tenantConfig.getClientKeystorePass())
+					|| StringUtils.isBlank(tenantConfig.getBearerToken())
 			                || StringUtils.isBlank(tenantConfig.getServerKeystore())
 		                        || StringUtils.isBlank(tenantConfig.getServerKeystorePass())
 	                ) {

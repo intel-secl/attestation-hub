@@ -13,8 +13,7 @@ public class TenantConfig {
 
 	private String pluginApiEndpoint;
 	private String tenantName;
-	private String clientKeystore;
-	private String clientKeystorePass;
+	private String bearerToken;
 	private String serverKeystore;
 	private String serverKeystorePass;
 	private String keystoneVersion;
@@ -111,20 +110,12 @@ public class TenantConfig {
 		this.tenantName = tenantName;
 	}
 
-	public String getClientKeystore() {
-		return clientKeystore;
+	public String getBearerToken() {
+		return bearerToken;
 	}
 
-	public void setClientKeystore(String clientKeystore) {
-		this.clientKeystore = clientKeystore;
-	}
-
-	public String getClientKeystorePass() {
-		return clientKeystorePass;
-	}
-
-	public void setClientKeystorePass(String clientKeystorePass) {
-		this.clientKeystorePass = clientKeystorePass;
+	public void setBearerToken(String bearerToken) {
+		this.bearerToken = bearerToken;
 	}
 
 	public String getServerKeystore() {
