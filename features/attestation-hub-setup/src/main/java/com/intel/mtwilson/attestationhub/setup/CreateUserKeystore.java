@@ -45,7 +45,6 @@ public class CreateUserKeystore extends AbstractSetupTask {
     private final String trustStorePath = Folders.configuration()+"/truststore.";
     private static final String BEARER_TOKEN = "BEARER_TOKEN";
     private final String caCertPath = Folders.configuration() + File.separator + "cms-ca-cert.pem";
-    private final String PRIVACY_CA_CERT_TYPE = "privacy";
 
     @Override
     protected void configure() throws Exception {
@@ -86,19 +85,15 @@ public class CreateUserKeystore extends AbstractSetupTask {
         List<String> aliases = Collections.list(trustStore.aliases());
         String samlTag = String.format("(%s)", "saml");
         int samlCertCount = 0;
-        String privacyCATag = String.format("(%s)", "privacyca");
-        int privacyCACertCount = 0;
         Iterator<String> it = aliases.iterator();
         while (it.hasNext()) {
             String alias = it.next();
-            if (alias.toLowerCase().endsWith(samlTag))
-                samlCertCount += 1;
-            else if (alias.toLowerCase().endsWith(privacyCATag))
-                privacyCACertCount += 1;
+            if (!alias.toLowerCase().endsWith(samlTag)) {
+                it.remove(); }
         }
-
-        if (samlCertCount == 0 || privacyCACertCount == 0) {
-            validation("Missing MtWilson Saml/PrivacyCA certificate");
+        
+        if (aliases.size() == 0) {
+            validation("Missing MtWilson Saml certificate");
         }
     }
 
@@ -119,9 +114,6 @@ public class CreateUserKeystore extends AbstractSetupTask {
             X509Certificate samlCertificate = samlCertificateChain.get(0);
             verifySamlCertChain(samlCertificateChain, samlCertificate);
             storeCertificate(samlCertificate, String.format("%s(%s)", samlCertificate.getSubjectX500Principal().getName(), "saml"));
-
-            X509Certificate privacyCACert = certClient.retrieveCaCertificate(PRIVACY_CA_CERT_TYPE);
-            storeCertificate(privacyCACert, String.format("%s(%s)", privacyCACert.getSubjectX500Principal().getName(), "privacyca"));
 
         } catch(GeneralSecurityException e) {
             log.error("Error verifying signature: ", e);

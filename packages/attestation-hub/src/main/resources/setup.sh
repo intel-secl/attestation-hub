@@ -45,7 +45,6 @@ export ATTESTATION_HUB_DB_DRIVER=${ATTESTATION_HUB_DB_DRIVER:-org.postgresql.Dri
 export MTWILSON_SERVER_PORT=${MTWILSON_SERVER_PORT:-8443}
 export ATTESTATION_HUB_NOSETUP=${ATTESTATION_HUB_NOSETUP:-false}
 export POSTGRESQL_KEEP_PGPASS=${POSTGRESQL_KEEP_PGPASS:-true}
-export WLS_API_URL=${WLS_API_URL}
 
 # the env directory is not configurable; it is defined as ATTESTATION_HUB_HOME/env and
 # the administrator may use a symlink if necessary to place it anywhere else
@@ -269,8 +268,6 @@ update_property_in_file "mtwilson.server.port" "$ATTESTATION_HUB_PROPERTIES_FILE
 export MTWILSON_API_URL=https://${MTWILSON_SERVER}:${MTWILSON_SERVER_PORT}/mtwilson/v2
 prompt_with_default MTWILSON_API_URL "Mtwilson API Url:" "$MTWILSON_API_URL"
 update_property_in_file "mtwilson.api.url" "$ATTESTATION_HUB_PROPERTIES_FILE" "$MTWILSON_API_URL"
-
-update_property_in_file "wls.api.url" "$ATTESTATION_HUB_PROPERTIES_FILE" "$WLS_API_URL"
 
 prompt_with_default ATTESTATION_HUB_POLL_INTERVAL "Attestation Hub Poll Interval:" "$ATTESTATION_HUB_POLL_INTERVAL"
 update_property_in_file "attestation-hub.poll.interval" "$ATTESTATION_HUB_PROPERTIES_FILE" "$ATTESTATION_HUB_POLL_INTERVAL"

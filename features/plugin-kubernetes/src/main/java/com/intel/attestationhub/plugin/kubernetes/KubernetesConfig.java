@@ -4,11 +4,8 @@
  */
 package com.intel.attestationhub.plugin.kubernetes;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
 import com.intel.attestationhub.api.Tenant.Plugin;
 import com.intel.attestationhub.api.Tenant.PluginProperty;
@@ -67,9 +64,6 @@ public class KubernetesConfig {
 			                case Tenant.TENANT_NAME:
                         			tenantConfig.setTenantName(PluginProperty.getValue());
                         			break;
-		                        case Tenant.VM_WORKER_DISABLED:
-                    				tenantConfig.setVmWorkerDisabled(Boolean.parseBoolean(PluginProperty.getValue()));
-			                        break;
 			                case Tenant.KEYSTONE_VERSION:
                         			tenantConfig.setKeystoneVersion(PluginProperty.getValue());
 			                        break;

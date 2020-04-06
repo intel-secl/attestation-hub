@@ -21,7 +21,6 @@ public class Constants {
 		public static final String OPENSTACK_SCOPE = "openstack.scope";
 		public static final String OPENSTACK_USERNAME = "openstack.username";
 		public static final String OPENSTACK_PASS = "openstack.pass";
-		public static final String VM_WORKER_DISABLED = "vm.worker.disabled";
 		public static final String OPENSTACK_URI = "openstack.uri";
 		public static final String KUBERNETES_API_BEARER_TOKEN = "kubernetes.api.bearer.token";
 
@@ -31,7 +30,6 @@ public class Constants {
 		public static final String URL_TYPE = "API";
 		public static final String URL_HOSTATTRIBUTES = "hostattributes";
 		public static final String PATH = "/apis/crd.isecl.intel.com/v1beta1/namespaces/default/";
-		public static final String NODE_DETAILS_PATH = "/api/v1/nodes";
 		public static final String SLASH = "/";
 		public static final String METADATA = "metadata";
 		public static final String NAME = "name";

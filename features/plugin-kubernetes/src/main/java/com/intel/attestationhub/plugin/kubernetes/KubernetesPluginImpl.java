@@ -6,7 +6,6 @@ package com.intel.attestationhub.plugin.kubernetes;
 
 import java.util.List;
 
-import com.google.gson.JsonObject;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.gson.Gson;
@@ -65,13 +64,7 @@ public class KubernetesPluginImpl implements EndpointPlugin {
 		}
 		validatePublishData(data);
 		KubernetesClient kubernetesClient = new KubernetesConfig().build(plugin);
-		if (TenantConfig.getTenantConfigObj().isVmWorkerDisabled()) {
-			kubernetesClient.sendDataToEndpoint(new CRDManager().generateCrd(data));
-		} else {
-			List<String> bmCrdObjList=new CRDManager().generateCrd(data);
-			kubernetesClient.sendDataToEndpoint(new KubernetesClient().buildVMData(bmCrdObjList,data.hostDetailsList,
-					kubernetesClient.getWorkerNodeDetails()));
-		}
+		kubernetesClient.sendDataToEndpoint(new CRDManager().generateCrd(data));
 	}
 
 	/**
