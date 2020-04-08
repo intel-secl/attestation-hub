@@ -10,7 +10,7 @@
     <parent>
         <groupId>com.intel.mtwilson.maven</groupId>
         <artifactId>mtwilson-maven-package-makeself</artifactId>
-	<version>5.0-SNAPSHOT</version>
+	<version>5.2-SNAPSHOT</version>
         <relativePath/>
     </parent>
     
@@ -145,10 +145,10 @@
                             <postinstallScriptlet>
                                 <script>export IS_RPM=true;
                                     cd /etc/sh;
-                                    chmod +x attestation-hub-5.0-SNAPSHOT.bin;
+                                    chmod +x attestation-hub-5.2-SNAPSHOT.bin;
                                     sleep 1;
                                     pwd;
-                                    ./attestation-hub-5.0-SNAPSHOT.bin</script>
+                                    ./attestation-hub-5.2-SNAPSHOT.bin</script>
                                 <fileEncoding>utf-8</fileEncoding>
                             </postinstallScriptlet>
                         </configuration>
