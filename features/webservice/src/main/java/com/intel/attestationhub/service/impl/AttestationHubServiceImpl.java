@@ -711,4 +711,37 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 			}
 		}
 	}
+
+	@Override
+	public void markHostAsDeleted(AhHost ahHost) {
+		PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
+		AhHostJpaController ahHostJpaController = persistenceServiceFactory.getHostController();
+    	ahHost.setDeleted(true);
+		try {
+			ahHostJpaController.edit(ahHost);
+		} catch (NonexistentEntityException e) {
+			String msg = "No host with id " + ahHost.getId() + " found while trying to mark the host as deleted";
+			log.error(msg, e);
+		} catch (Exception e) {
+			String msg = "Error updating host as deleted: " + ahHost.getId();
+			log.error(msg, e);
+		}
+
+	}
+
+	@Override
+	public void markHostAsUntrusted(AhHost ahHost) {
+		PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
+		AhHostJpaController ahHostJpaController = persistenceServiceFactory.getHostController();
+		ahHost.setTrusted(false);
+		try {
+			ahHostJpaController.edit(ahHost);
+		} catch (NonexistentEntityException e) {
+			String msg = "No host with id " + ahHost.getId() + " found while trying to mark the host untrusted";
+			log.error(msg, e);
+		} catch (Exception e) {
+			String msg = "Error updating host as untrusted: " + ahHost.getId();
+			log.error(msg, e);
+		}
+	}
 }
