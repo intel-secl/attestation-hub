@@ -45,14 +45,6 @@ public class KubernetesCRDUtil {
 	 *            URI to be hit
 	 * @param payload
 	 *            Formatted input of the CRD object
-	 * @param clientKeystore
-	 *            Client keystore
-	 * @param clientKeystorePass
-	 *            Client keystore pass
-	 * @param serverKeystore
-	 *            Server keystore
-	 * @param serverKeystorePass
-	 *            Server keystore pass
 	 */
 	protected void publishCrdToK8s(URI uri, String payload) throws AttestationHubException {
 		KubernetesConnector connector = new KubernetesConnector();
@@ -146,8 +138,6 @@ public class KubernetesCRDUtil {
 	 * 
 	 * @param uri
 	 *            URI to be hit
-	 * @param payload
-	 *            Formatted input of the CRD object
 	 * @param connector
 	 *            KubernetesConnector class object
 	 * @param httpClient

@@ -13,8 +13,6 @@ public class Constants {
 
 		public static final String API_ENDPOINT = "api.endpoint";
 		public static final String TENANT_NAME = "tenant.name";
-		public static final String KUBERNETES_API_CLIENT_KEYSTORE = "kubernetes.client.keystore";
-		public static final String KUBERNETES_API_CLIENT_KEYSTORE_PASSWORD = "kubernetes.client.keystore.password";
 		public static final String KUBERNETES_API_SERVER_KEYSTORE = "kubernetes.server.keystore";
 		public static final String KUBERNETES_API_SERVER_KEYSTORE_PASSWORD = "kubernetes.server.keystore.password";
 		public static final String TENANT_KUBERNETES_KEYSTORE_CONFIG = "tenant.kubernetes.keystore.config";
@@ -23,8 +21,8 @@ public class Constants {
 		public static final String OPENSTACK_SCOPE = "openstack.scope";
 		public static final String OPENSTACK_USERNAME = "openstack.username";
 		public static final String OPENSTACK_PASS = "openstack.pass";
-		public static final String VM_WORKER_ENABLED = "vm.worker.enabled";
 		public static final String OPENSTACK_URI = "openstack.uri";
+		public static final String KUBERNETES_API_BEARER_TOKEN = "kubernetes.api.bearer.token";
 
 	}
 
@@ -45,17 +43,9 @@ public class Constants {
 		public static final String SPEC = "spec";
 		public static final String HOSTLIST = "hostList";
 		public static final String HOSTNAME = "hostName";
-		public static final String PROVIDER = "openstack-nova";
-		public static final String STRING_TRUE = "true";
-		public static final String STRING_FALSE = "false";
 		public static final String TRUSTED = "trusted";
 		public static final String SIGNED_TRUST_REPORT = "signedTrustReport";
 		public static final String VALID_TO = "validTo";
-		public static final String VM_ACTIVE = "ACTIVE";
-		public static final String TRUST_STATUS = "trust_status";
-		public static final String MTWILSON_CONFIG_DIR = "/opt/attestation-hub/configuration/";
-		public static final String MTWILSON_URI = "/vm-attestations";
-		public static final String STRING_HYPHEN = "-";
 	}
 	
 	public static class Report {

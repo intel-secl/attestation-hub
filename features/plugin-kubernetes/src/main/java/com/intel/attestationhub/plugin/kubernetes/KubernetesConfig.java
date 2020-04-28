@@ -4,11 +4,8 @@
  */
 package com.intel.attestationhub.plugin.kubernetes;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
 import com.intel.attestationhub.api.Tenant.Plugin;
 import com.intel.attestationhub.api.Tenant.PluginProperty;
@@ -67,9 +64,6 @@ public class KubernetesConfig {
 			                case Tenant.TENANT_NAME:
                         			tenantConfig.setTenantName(PluginProperty.getValue());
                         			break;
-		                        case Tenant.VM_WORKER_ENABLED:
-                    				tenantConfig.setVmWorkerEnabled(PluginProperty.getValue());
-			                        break;
 			                case Tenant.KEYSTONE_VERSION:
                         			tenantConfig.setKeystoneVersion(PluginProperty.getValue());
 			                        break;
@@ -88,12 +82,9 @@ public class KubernetesConfig {
 			                case Tenant.OPENSTACK_URI:
                 			        tenantConfig.setOpenstackURI(PluginProperty.getValue());
 			                        break;
-                    			case Tenant.KUBERNETES_API_CLIENT_KEYSTORE:
-			                        tenantConfig.setClientKeystore(PluginProperty.getValue());
-                        			break;
-			                case Tenant.KUBERNETES_API_CLIENT_KEYSTORE_PASSWORD:
-			                        tenantConfig.setClientKeystorePass(PluginProperty.getValue());
-                       				break;
+					         case Tenant.KUBERNETES_API_BEARER_TOKEN:
+									tenantConfig.setBearerToken(PluginProperty.getValue());
+									break;
 			                case Tenant.KUBERNETES_API_SERVER_KEYSTORE:
                         			tenantConfig.setServerKeystore(PluginProperty.getValue());
 			                        break;
@@ -105,25 +96,12 @@ public class KubernetesConfig {
 			}
 			if (StringUtils.isBlank(tenantConfig.getTenantName())
 					|| StringUtils.isBlank(tenantConfig.getPluginApiEndpoint())
-					|| StringUtils.isBlank(tenantConfig.getClientKeystore())
-			                || StringUtils.isBlank(tenantConfig.getClientKeystorePass())
+					|| StringUtils.isBlank(tenantConfig.getBearerToken())
 			                || StringUtils.isBlank(tenantConfig.getServerKeystore())
 		                        || StringUtils.isBlank(tenantConfig.getServerKeystorePass())
 	                ) {
 				log.error("Error: Invalid tenant configuration");
 				throw new AttestationHubException("Error: Invalid tenant configuration");
-			}
-			// If VM worker enabled then checking required openstack configuration
-			if (Constants.Plugin.STRING_TRUE.equals(tenantConfig.isVmWorkerEnabled())) {
-				if (StringUtils.isBlank(tenantConfig.getKeystoneVersion())
-						|| StringUtils.isBlank(tenantConfig.getOpenstackTenantName())
-						|| StringUtils.isBlank(tenantConfig.getOpenstackScope())
-						|| StringUtils.isBlank(tenantConfig.getOpenstackUsername())
-						|| StringUtils.isBlank(tenantConfig.getOpenstackPass())
-						|| StringUtils.isBlank(tenantConfig.getOpenstackURI())) {
-					log.error("Error: Missing openstack or tenant parameters");
-					throw new AttestationHubException("Error: Missing openstack or tenant parameters");
-				}
 			}
 			return new KubernetesClient();
 		} catch (Exception e) {

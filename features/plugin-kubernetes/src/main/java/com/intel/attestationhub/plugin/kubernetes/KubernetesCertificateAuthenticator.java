@@ -44,10 +44,8 @@ public class KubernetesCertificateAuthenticator {
 	 * "properties": [{ "key": "api.endpoint", "value":
 	 * "https://k8s.master.com:6443" }, { "key": "tenant.name", "value":
 	 * "14_feb_test" }, { "key": "plugin.provider", "value":
-	 * "com.intel.attestationhub.plugin.kubernetes.KubernetesPluginImpl" }, {
-	 * "key": "kubernetes.client.keystore", "value":
-	 * "/opt/attestation-hub/configuration/athub12_k8s_client.jks" }, { "key":
-	 * "kubernetes.client.keystore.password", "value":
+	 * "com.intel.attestationhub.plugin.kubernetes.KubernetesPluginImpl" },{ "key":
+	 * "kubernetes.api.bearer.token", "value":
 	 * "6O0UKQbBOviU9qjE8yvCdghT3pbslA1AilCbHBvGBCgwmim9qsk4RqAnmC6uyEFb" }, {
 	 * "key": "kubernetes.server.keystore", "value":
 	 * "/opt/attestation-hub/configuration/athub12_k8s_trust.jks" }, { "key":
@@ -70,10 +68,6 @@ public class KubernetesCertificateAuthenticator {
 	 * @exception: AttestationHubException
 	 *                 with the message, "Error in initiating SSLContext" }
 	 * 
-	 * @param clientKeystore
-	 *            the path where the client keystore is stored on the machine
-	 * @param clientKeystorePass
-	 *            password for the client keystore
 	 * @param serverKeystore
 	 *            the path where the server keystore is stored on the machine
 	 * @param serverKeystorePass
@@ -83,31 +77,6 @@ public class KubernetesCertificateAuthenticator {
 	 * 
 	 */
 	protected CloseableHttpClient getHttpClient() throws AttestationHubException {
-		KeyStore keystore = null;
-		try {
-			keystore = KeyStore.getInstance(Plugin.INSTANCE_TYPE);
-		} catch (KeyStoreException e) {
-			log.error("Error in getting keystore instance", e);
-			throw new AttestationHubException("Error in getting keystore instance", e);
-		}
-		File keystoreFile = new File(tenant.getClientKeystore());
-		FileInputStream fisKeystore = null;
-		try {
-			fisKeystore = new FileInputStream(keystoreFile);
-			keystore.load(fisKeystore, tenant.getClientKeystorePass().toCharArray());
-		} catch (NoSuchAlgorithmException | CertificateException | IOException e) {
-			log.error("Error in reading or loading keystore", e);
-			throw new AttestationHubException("Error in reading or loading keystore", e);
-		} finally {
-			if (fisKeystore != null) {
-				try {
-					fisKeystore.close();
-				} catch (IOException e) {
-					log.error("Error in closing keystore file", e);
-					throw new AttestationHubException("Error in closing keystore file", e);
-				}
-			}
-		}
 		KeyStore truststore = null;
 		try {
 			truststore = KeyStore.getInstance(Plugin.INSTANCE_TYPE);
@@ -135,9 +104,8 @@ public class KubernetesCertificateAuthenticator {
 		}
 		SSLContext sslcontext = null;
 		try {
-			sslcontext = SSLContexts.custom().loadTrustMaterial(truststore)
-					.loadKeyMaterial(keystore, tenant.getClientKeystorePass().toCharArray()).build();
-		} catch (KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
+			sslcontext = SSLContexts.custom().loadTrustMaterial(truststore).build();
+		} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
 			log.error("Error in initiating SSLContext", e);
 			throw new AttestationHubException("Error in initiating SSLContext", e);
 		}

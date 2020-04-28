@@ -83,14 +83,15 @@ public class CreateUserKeystore extends AbstractSetupTask {
     protected void validate() throws Exception {
 
         List<String> aliases = Collections.list(trustStore.aliases());
-        String tag = String.format("(%s)", "saml");
+        String samlTag = String.format("(%s)", "saml");
+        int samlCertCount = 0;
         Iterator<String> it = aliases.iterator();
         while (it.hasNext()) {
             String alias = it.next();
-            if (!alias.toLowerCase().endsWith(tag)) {
-                it.remove();
-            }
+            if (!alias.toLowerCase().endsWith(samlTag)) {
+                it.remove(); }
         }
+        
         if (aliases.size() == 0) {
             validation("Missing MtWilson Saml certificate");
         }
@@ -113,6 +114,7 @@ public class CreateUserKeystore extends AbstractSetupTask {
             X509Certificate samlCertificate = samlCertificateChain.get(0);
             verifySamlCertChain(samlCertificateChain, samlCertificate);
             storeCertificate(samlCertificate, String.format("%s(%s)", samlCertificate.getSubjectX500Principal().getName(), "saml"));
+
         } catch(GeneralSecurityException e) {
             log.error("Error verifying signature: ", e);
         } catch(Exception ex) {

@@ -44,6 +44,9 @@ import com.intel.mtwilson.attestationhub.data.AhMapping;
 import com.intel.mtwilson.attestationhub.data.AhTenant;
 import com.intel.mtwilson.attestationhub.exception.AttestationHubException;
 import com.intel.mtwilson.attestationhub.service.PersistenceServiceFactory;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 public class AttestationHubServiceImpl implements AttestationHubService {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AttestationHubServiceImpl.class);
@@ -78,9 +81,9 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 				pluginCredentialsMap.put(plugin.getName(), credentials);
 			}
 			if (plugin.getName().equalsIgnoreCase("kubernetes")
-		                && plugin.getProperty("kubernetes.client.keystore.password") != null
+		                && plugin.getProperty("kubernetes.api.bearer.token") != null
                 		&& plugin.getProperty("kubernetes.server.keystore.password") !=null) {
-		      	        	credentials.add(plugin.getProperty("kubernetes.client.keystore.password"));
+		      	        	credentials.add(plugin.getProperty("kubernetes.api.bearer.token"));
                 			credentials.add(plugin.getProperty("kubernetes.server.keystore.password"));
 			                pluginCredentialsMap.put(plugin.getName(), credentials);
 		        }
@@ -101,9 +104,9 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 				plugin.removeProperty("user.password");
 			}
 			if (plugin.getName().equalsIgnoreCase("kubernetes")
-					&& plugin.getProperty("kubernetes.client.keystore.password") != null
+					&& plugin.getProperty("kubernetes.api.bearer.token") != null
 					&& plugin.getProperty("kubernetes.server.keystore.password") !=null) {
-				plugin.removeProperty("kubernetes.client.keystore.password");
+				plugin.removeProperty("kubernetes.api.bearer.token");
 				plugin.removeProperty("kubernetes.server.keystore.password");
 			}
 		}
@@ -582,7 +585,7 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 
     @Override
     public List<AhHost> getHosts() throws AttestationHubException {
-	log.info("Getting all availabe hosts on attestation hub");
+	log.info("Getting all available hosts on attestation hub");
 	PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
 	AhHostJpaController ahHostJpaController = persistenceServiceFactory.getHostController();
 	List<AhHost> ahHosts = ahHostJpaController.findAhHostEntities();
@@ -665,22 +668,80 @@ public class AttestationHubServiceImpl implements AttestationHubService {
 	return ahHost;
     }
 
-    @Override
-    public void markAllHostsAsDeleted() throws AttestationHubException {
-	PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
-	AhHostJpaController ahHostJpaController = persistenceServiceFactory.getHostController();
-	List<AhHost> ahHosts = ahHostJpaController.findAhHostEntities();
-	for (AhHost ahHost : ahHosts) {
-	    ahHost.setDeleted(true);
-	    try {
-		ahHostJpaController.edit(ahHost);
-	    } catch (NonexistentEntityException e) {
-		String msg = "Invalid host id: " + ahHost.getId();
-		log.error(msg, e);
-	    } catch (Exception e) {
-		String msg = "Error updating host as deleted: " + ahHost.getId();
-		log.error(msg, e);
-	    }
+	public void markExpiredHostsAsDeleted() {
+		PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
+		AhHostJpaController ahHostJpaController = persistenceServiceFactory.getHostController();
+		List<AhHost> ahHosts = ahHostJpaController.findAhHostEntities();
+		DateTimeFormatter formatter = ISODateTimeFormat.dateTime();
+		for (AhHost ahHost : ahHosts) {
+			if (DateTime.now().isAfter(formatter.parseDateTime(ahHost.getValidTo()))) {
+				ahHost.setDeleted(true);
+				try {
+					ahHostJpaController.edit(ahHost);
+				} catch (NonexistentEntityException e) {
+					String msg = "Invalid host id: " + ahHost.getId();
+					log.error(msg, e);
+				} catch (Exception e) {
+					String msg = "Error updating host as deleted: " + ahHost.getId();
+					log.error(msg, e);
+				}
+			}
+		}
 	}
-    }
+
+
+	@Override
+	public void markExpiredHostsAsUntrusted() {
+		PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
+		AhHostJpaController ahHostJpaController = persistenceServiceFactory.getHostController();
+		List<AhHost> ahHosts = ahHostJpaController.findAhHostEntities();
+		DateTimeFormatter formatter = ISODateTimeFormat.dateTime();
+		for (AhHost ahHost : ahHosts) {
+			if (DateTime.now().isAfter(formatter.parseDateTime(ahHost.getValidTo()))) {
+				ahHost.setTrusted(false);
+				try {
+					ahHostJpaController.edit(ahHost);
+				} catch (NonexistentEntityException e) {
+					String msg = "Invalid host id: " + ahHost.getId();
+					log.error(msg, e);
+				} catch (Exception e) {
+					String msg = "Error updating host as untrusted: " + ahHost.getId();
+					log.error(msg, e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void markHostAsDeleted(AhHost ahHost) {
+		PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
+		AhHostJpaController ahHostJpaController = persistenceServiceFactory.getHostController();
+    	ahHost.setDeleted(true);
+		try {
+			ahHostJpaController.edit(ahHost);
+		} catch (NonexistentEntityException e) {
+			String msg = "No host with id " + ahHost.getId() + " found while trying to mark the host as deleted";
+			log.error(msg, e);
+		} catch (Exception e) {
+			String msg = "Error updating host as deleted: " + ahHost.getId();
+			log.error(msg, e);
+		}
+
+	}
+
+	@Override
+	public void markHostAsUntrusted(AhHost ahHost) {
+		PersistenceServiceFactory persistenceServiceFactory = PersistenceServiceFactory.getInstance();
+		AhHostJpaController ahHostJpaController = persistenceServiceFactory.getHostController();
+		ahHost.setTrusted(false);
+		try {
+			ahHostJpaController.edit(ahHost);
+		} catch (NonexistentEntityException e) {
+			String msg = "No host with id " + ahHost.getId() + " found while trying to mark the host untrusted";
+			log.error(msg, e);
+		} catch (Exception e) {
+			String msg = "Error updating host as untrusted: " + ahHost.getId();
+			log.error(msg, e);
+		}
+	}
 }

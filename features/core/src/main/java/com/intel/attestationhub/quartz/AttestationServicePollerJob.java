@@ -6,10 +6,12 @@
 package com.intel.attestationhub.quartz;
 
 import com.intel.attestationhub.api.MWHost;
+import com.intel.attestationhub.manager.PluginManager;
 import com.intel.attestationhub.mtwclient.AttestationServiceClient;
 import com.intel.attestationhub.service.AttestationHubService;
 import com.intel.attestationhub.service.impl.AttestationHubServiceImpl;
 import com.intel.mtwilson.Folders;
+import com.intel.mtwilson.attestationhub.data.AhHost;
 import com.intel.mtwilson.flavor.rest.v2.model.Host;
 import com.intel.mtwilson.attestationhub.exception.AttestationHubException;
 import org.apache.commons.lang.StringUtils;
@@ -18,7 +20,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import javax.ws.rs.NotAuthorizedException;
 import java.io.*;
 import java.util.Date;
 import java.util.List;
@@ -36,9 +37,9 @@ public class AttestationServicePollerJob {
 
     public void execute() {
         log.info("AttestationServicePollerJob.execute - Poller run started at {}", new Date());
-	/*
-     * Fetch all the hosts from MTW
-	 */
+        /*
+         * Fetch all the hosts from MTW
+         */
         String lastRunDateTimeFileName = Folders.configuration() + File.separator + "HubSchedulerRun.txt";
         lastRunDateTimeFile = new File(lastRunDateTimeFileName);
         boolean isFirstRun = false;
@@ -76,9 +77,9 @@ public class AttestationServicePollerJob {
             return;
         }
 
-	/*
-	 * Add the hosts in the DB
-	 */
+        /*
+         * Add the hosts in the DB
+         */
         AttestationHubService attestationHubService = AttestationHubServiceImpl.getInstance();
         try {
             attestationHubService.saveHosts(hostAttestationsMap);
@@ -114,11 +115,12 @@ public class AttestationServicePollerJob {
         // Process the attestations received in the time window
 
         try {
+            syncDeletedHosts();
             hostAttestationsMap = attestationServiceClient.fetchHostAttestations(lastDateTimeFromLastRunFile);
         } catch (AttestationHubException e) {
             log.error("Poller.execute: Error fetching host attestations created since {} from MTW",
                     lastDateTimeFromLastRunFile, e);
-            if (e.getMessage().indexOf("java.net.ConnectException: Connection refused") != -1) {
+            if (e.getMessage().contains("java.net.ConnectException: Connection refused")) {
                 waitForAttestationServiceAndRetry();
             }
             logPollerRunComplete();
@@ -142,23 +144,23 @@ public class AttestationServicePollerJob {
             }
         } catch (AttestationHubException e) {
             log.error("AttestationServicePollerJob.execute - Error fetching hosts from MTW", e);
-            if (e.getMessage().indexOf("java.net.ConnectException: Connection refused") != -1) {
+            if (e.getMessage().contains("java.net.ConnectException: Connection refused")) {
                 waitForAttestationServiceAndRetry();
             }
             logPollerRunComplete();
             return null;
         }
 
-	/*
-	 * Fetch the host attestations
-	 */
+        /*
+         * Fetch the host attestations
+         */
         log.info("AttestationServicePollerJob.execute - Fetching attestations for the above hosts");
         Map<String, MWHost> hostAttestationsMap;
         try {
             hostAttestationsMap = attestationServiceClient.fetchHostAttestations(allHosts);
         } catch (AttestationHubException e) {
             log.error("Poller.execute: Error fetching SAMLS for hosts from MTW", e);
-            if (e.getMessage().indexOf("java.net.ConnectException: Connection refused") != -1) {
+            if (e.getMessage().contains("java.net.ConnectException: Connection refused")) {
                 waitForAttestationServiceAndRetry();
             }
             logPollerRunComplete();
@@ -172,12 +174,14 @@ public class AttestationServicePollerJob {
 
         if (isRetry) {
             // MTW has failed again. Mark all the hosts as inactive
-            log.info("Since exception occurred again, marking all the hosts as deleted");
+            log.info("Since exception occurred again, marking the hosts with expired report as untrusted and deleted");
             AttestationHubService attestationHubService = AttestationHubServiceImpl.getInstance();
             try {
-                attestationHubService.markAllHostsAsDeleted();
+                attestationHubService.markExpiredHostsAsUntrusted();
+                PluginManager.getInstance().synchAttestationInfo();
+                attestationHubService.markExpiredHostsAsDeleted();
             } catch (AttestationHubException e) {
-                log.error("Unable to mark the hosts as deleted", e);
+                log.error("Error marking hosts untrusted/deleted", e);
             }
             isRetry = false;
         } else {
@@ -255,4 +259,46 @@ public class AttestationServicePollerJob {
     private void logPollerRunComplete() {
         log.info("Poller run completed at {}", new Date());
     }
+
+    //mark hosts untrusted and deleted if hosts are deleted in VS
+    private void syncDeletedHosts() throws AttestationHubException {
+        List<Host> allHosts;
+        List<AhHost> allHostsInIH;
+        AttestationHubService attestationHubService = AttestationHubServiceImpl.getInstance();
+        allHostsInIH = attestationHubService.getHosts();
+        allHosts = attestationServiceClient.fetchHosts();
+        if (allHosts == null || allHosts.isEmpty()) {
+            syncAllHosts(allHostsInIH);
+        }
+        else {
+            for (AhHost hostInIH : allHostsInIH) {
+                boolean hostFound = false;
+                for (Host host : allHosts) {
+                    if (host.getHardwareUuid().toString().toLowerCase().
+                            equals(hostInIH.getHardwareUuid().toLowerCase())) {
+                        hostFound = true;
+                        break;
+                    }
+                }
+                if (!hostFound) {
+                    markHostWithProperStatus(hostInIH);
+                }
+            }
+        }
+    }
+
+    private void syncAllHosts(List<AhHost> ahHostList) throws AttestationHubException{
+        for (AhHost hostInIH : ahHostList) {
+            markHostWithProperStatus(hostInIH);
+        }
+    }
+
+    private void markHostWithProperStatus(AhHost hostInIH) throws AttestationHubException {
+        AttestationHubService attestationHubService = AttestationHubServiceImpl.getInstance();
+        if (!hostInIH.getTrusted())
+            attestationHubService.markHostAsDeleted(hostInIH);
+        else
+            attestationHubService.markHostAsUntrusted(hostInIH);
+    }
+
 }

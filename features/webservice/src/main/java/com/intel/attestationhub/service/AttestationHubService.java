@@ -66,6 +66,12 @@ public interface AttestationHubService {
     
     public List<AhHost> findHostsByHardwareUuid(String hardwareUuid) throws AttestationHubException;
     public AhHost findActiveHostByHardwareUuid(String hardwareUuid) throws AttestationHubException;
-    public void markAllHostsAsDeleted() throws AttestationHubException;
+    public void markExpiredHostsAsDeleted() throws AttestationHubException;
+
+    public void markExpiredHostsAsUntrusted() throws AttestationHubException;
+
+    public void markHostAsDeleted(AhHost ahHost) throws AttestationHubException;
+
+    public void markHostAsUntrusted(AhHost ahHost) throws AttestationHubException;
 
 }
