@@ -283,8 +283,9 @@ public class PluginManager {
 	    signature.initSign(privateKey);
 	    byte[] trustReportAsBytes = trustReportWithAdditions.getBytes();
 	    signature.update(trustReportAsBytes);
-	    signedTrustReport = Base64.getEncoder().encodeToString(jwtHeader.getBytes())+ "." + Base64.getEncoder().encodeToString(trustReportWithAdditions.getBytes())
-				    + "." +Base64.getEncoder().encodeToString(signature.sign());
+	    signedTrustReport = Base64.getUrlEncoder().encodeToString(jwtHeader.getBytes())+ "." + Base64.getUrlEncoder().encodeToString(trustReportWithAdditions.getBytes())
+				    + "." +Base64.getUrlEncoder().encodeToString(signature.sign());
+
 	}
 	catch (AttestationHubException e) {
             log.error("No private key found for encrypting trust report", e);
