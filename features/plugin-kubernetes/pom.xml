@@ -35,18 +35,9 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
-		<!-- jclouds OpenStack dependencies -->
-		<dependency>
-			<groupId>org.apache.jclouds.api</groupId>
-			<artifactId>openstack-keystone</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.jclouds.api</groupId>
-			<artifactId>openstack-nova</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
